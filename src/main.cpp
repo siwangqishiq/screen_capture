@@ -1,29 +1,24 @@
 
 #include <iostream>
-#include <Windows.h>
 #include <thread>
+#include <memory>
 #include "GLFW/glfw3.h"
-
-void findScreenSize(){
-    // HDC screen = GetDC(nullptr);
-    // int screenWidth = GetDeviceCaps(screen, HORZRES);
-    // int screenHeight = GetDeviceCaps(screen, VERTRES);
-
-    const int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    const int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-    std::cout << "screenWidth = " << screenWidth << std::endl;
-    std::cout << "screenHeight = " << screenHeight << std::endl;
-}
+#include "bridge.h"
 
 class Application{
 private:
     GLFWwindow *window;
+    std::shared_ptr<IScreenApi> mScreenApi;
+
 public:
+    void appInit(){
+        mScreenApi = std::make_shared<ScreenApi>();
+    }
+
     void execute(){
         glfwInit();
 
-        const int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-        const int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+        appInit();
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -32,8 +27,12 @@ public:
 
         //窗口透明
         // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER , GLFW_TRUE);
+        
+        int screenWidth = 0;
+        int screenHeight = 0;
+        mScreenApi->findScreenSize(screenWidth , screenHeight);
 
-        window = glfwCreateWindow(screenWidth, screenHeight, "run", nullptr, nullptr);
+        window = glfwCreateWindow(screenWidth, screenHeight, "screen capture", nullptr, nullptr);
         
         if (window == nullptr) {
             glfwTerminate();
