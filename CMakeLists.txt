@@ -6,6 +6,9 @@ project(app)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+# pthread
+set (CMKAE_CXX_FLAGS -pthread)
+
 include_directories(vender/glfw)
 
 add_subdirectory(vender/glfw)

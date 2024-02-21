@@ -32,6 +32,8 @@ public:
         int screenHeight = 0;
         mScreenApi->findScreenSize(screenWidth , screenHeight);
 
+        mScreenApi->captureScreen();
+
         window = glfwCreateWindow(screenWidth, screenHeight, "screen capture", nullptr, nullptr);
         
         if (window == nullptr) {
