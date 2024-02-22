@@ -1,14 +1,22 @@
 #include "bridge.h"
 #include <iostream>
 #include <string>
-#include <cstdint>
+#include "application.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+void ScreenApi::onCaptureFininshed(){
+    mApp->exit();
+}
+
 void ScreenApi::savePixel(int w,int h, uint8_t *pixel){
-    std::string filename = "screen_capture.png";
-    stbi_write_png(filename.c_str() , w, h, 1 , pixel , 0);
+    std::string filename = "screen.png";
+    stbi_write_png(filename.c_str() , w, h, 3 , pixel , 3 * w);
+
+    std::cout << "save image finished" << std::endl;
+
+    onCaptureFininshed();
     // stbi_write_jpg(filename.c_str(), 0, 0, 1, pixel , 100);
     // stbi_write_bmp(filename.c_str() , 0 , 0 ,1 , pixel);
 }
@@ -36,8 +44,9 @@ void ScreenApi::captureScreen(){
 
     HDC hmdc = CreateCompatibleDC(hdc);
     HBITMAP hBmpScreen = CreateCompatibleBitmap(hdc , scrWidth , scrHeight);
-    HBITMAP holdbmp = static_cast<HBITMAP>(SelectObject(hmdc, hBmpScreen));
-
+    SelectObject(hmdc, hBmpScreen);
+    // HBITMAP holdbmp = static_cast<HBITMAP>(SelectObject(hmdc, hBmpScreen));
+    
     BITMAP bm;
     GetObject(hBmpScreen, sizeof(bm), &bm);
 
@@ -46,15 +55,26 @@ void ScreenApi::captureScreen(){
     bi.biWidth = scrWidth;
     bi.biHeight = -scrHeight;
     bi.biPlanes = 1;
-    bi.biBitCount = 32;
+    bi.biBitCount = 8 * 3;
     bi.biCompression = BI_RGB;
 
-    uint32_t  *buf = new uint32_t [scrWidth*scrHeight];
+    uint8_t  *buf = new uint8_t [3 * scrWidth * scrHeight];
     BitBlt(hmdc, 0, 0, scrWidth, scrHeight, hdc, rect.left, rect.top, SRCCOPY);
     GetDIBits(hmdc, hBmpScreen, 0L, (DWORD)scrHeight, buf, (LPBITMAPINFO)&bi, (DWORD)DIB_RGB_COLORS);
 
-    savePixel(scrWidth , scrHeight , (uint8_t *)buf);
+    // bgr -> rgb
+    const int size = scrWidth * scrHeight * 3;
+    for(int i = 0 ; i < size ;i+=3){
+        auto tmp = buf[i];
+        buf[i] = buf[i + 2];
+        buf[i + 2] = tmp;
+    }//end for i
+
+    savePixel(scrWidth , scrHeight , buf);
+
     delete[] buf;
+
+
     // BITMAPFILEHEADER bfh = { 0 };
     // bfh.bfType = ((WORD)('M' << 8) | 'B');
     // bfh.bfSize = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+bi.biSizeImage;
