@@ -6,12 +6,18 @@ project(app)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-# pthread
-set (CMKAE_CXX_FLAGS -pthread)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
+    set (CMAKE_CXX_FLAGS -pthread)
+endif()
+
+
 
 include_directories(vender/glfw)
+include_directories(purple/include)
 
 add_subdirectory(vender/glfw)
+add_subdirectory(purple)
 
 aux_source_directory(src SRCS)
 
@@ -20,6 +26,7 @@ add_executable(${PROJECT_NAME} ${SRCS})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall")
 # set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
 
+target_link_libraries(${PROJECT_NAME} purple)
 target_link_libraries(${PROJECT_NAME} glfw)
 
 

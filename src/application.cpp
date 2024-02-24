@@ -1,6 +1,7 @@
 
 #include "application.h"
 #include "bridge.h"
+#include "purple.h"
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
@@ -39,6 +40,8 @@ void Application::execute(){
         return;
     }
 
+    glfwMakeContextCurrent(window);
+
     glfwSetWindowPos(window , 0 , 0);
     glfwSetWindowAttrib(window , GLFW_DECORATED , GLFW_FALSE);
 
@@ -48,11 +51,44 @@ void Application::execute(){
         }
     });
 
+   
+    purple::Engine::init(screenWidth , screenHeight);
+
+    init();
+
     while(!glfwWindowShouldClose(window)) {
+        tick();
         glfwSwapBuffers(window);
         glfwPollEvents();
         glfwSwapInterval(1);//锁定固定帧率
     }//end while
 
+    purple::Engine::dispose();
     glfwTerminate();
+}
+
+void Application::init(){
+    purple::Log::i("purple_engine" , "init");
+
+    image = purple::BuildImageByAsset(std::string("t2.jpg"));
+}
+
+void Application::tick(){
+    purple::Engine::tick();
+
+
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    purple::Rect imgDstRect;
+    imgDstRect.left = 0.0f;
+    imgDstRect.top = purple::ScreenHeight;
+    imgDstRect.width = purple::ScreenWidth;
+    imgDstRect.height = purple::ScreenHeight;
+    auto spriteBatch  = purple::Engine::getRenderEngine()->getSpriteBatch();
+    spriteBatch->begin();
+    auto src = image->getRect();
+    spriteBatch->renderImage(*image , src , imgDstRect);
+    spriteBatch->end();
 }
