@@ -56,6 +56,8 @@ namespace purple{
 
         std::shared_ptr<TextureInfo> loadTextureArray(std::vector<std::string> &textureFiles , bool needFlip = false);
 
+        std::shared_ptr<TextureInfo> loadTextureFromPixelData(std::string texName ,uint8_t *pixelData , int channelFormat , int width , int height);
+
         std::shared_ptr<TextureInfo> createEmptyTexture(std::string texName, 
             int width , int height , int format);
 

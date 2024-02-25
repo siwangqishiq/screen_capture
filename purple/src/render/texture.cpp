@@ -136,17 +136,14 @@ namespace purple{
         return textureInfo;
     }
 
-    //将纹理传送至GPU
-    std::shared_ptr<TextureInfo> TextureManager::loadTexture(std::string textureFilePath , 
-        bool needFlip){
-        Log::i(TAG , "load texture %s" , textureFilePath.c_str());
-        
-        int format = GL_RGBA;
-        int texWidth;
-        int texHeight;
-        auto data = readTextureFile(textureFilePath , needFlip , format , 
-            texWidth, texHeight);    
-        
+    //从像素数据 生成纹理
+    std::shared_ptr<TextureInfo> TextureManager::loadTextureFromPixelData(std::string texName 
+            , uint8_t *pixelData 
+            , int channelFormat 
+            , int width 
+            , int height){
+        int format = channelFormat;
+
         unsigned int tId = -1;
         glGenTextures(1 , &tId);
         if(tId <= 0 ){
@@ -161,17 +158,17 @@ namespace purple{
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, 
             convertChanelToInternalFormat(format),
-            texWidth, 
-            texHeight, 0, 
-            format, GL_UNSIGNED_BYTE, data.get());
+            width, 
+            height, 0, 
+            format, GL_UNSIGNED_BYTE, pixelData);
         glBindTexture(GL_TEXTURE_2D , 0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
         auto textureInfo = std::make_shared<TextureInfo>();
-        textureInfo->name = textureFilePath;
+        textureInfo->name = texName;
         textureInfo->textureId = tId;
-        textureInfo->width = texWidth;
-        textureInfo->height = texHeight;
+        textureInfo->width = width;
+        textureInfo->height = height;
         textureInfo->format = format;
 
         //add pool
@@ -183,6 +180,20 @@ namespace purple{
             textureInfo->height);
         
         return textureInfo;
+    }
+
+    //将纹理传送至GPU
+    std::shared_ptr<TextureInfo> TextureManager::loadTexture(std::string textureFilePath , 
+        bool needFlip){
+        Log::i(TAG , "load texture %s" , textureFilePath.c_str());
+        
+        int format = GL_RGBA;
+        int texWidth;
+        int texHeight;
+        auto data = readTextureFile(textureFilePath , needFlip , format , 
+            texWidth, texHeight);    
+        
+       return loadTextureFromPixelData(textureFilePath , data.get() , format , texWidth , texHeight);
     }
 
     std::shared_ptr<TextureInfo> TextureManager::acquireTexture(std::string textureFilePath , bool needFlip){
