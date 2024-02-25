@@ -27,13 +27,10 @@ void Application::execute(){
     //窗口透明
     // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER , GLFW_TRUE);
     
-    int screenWidth = 0;
-    int screenHeight = 0;
-    mScreenApi->findScreenSize(screenWidth , screenHeight);
+    mScreenApi->findScreenSize(mScreenWidth , mScreenHeight);
+    mScreenImagePixel = mScreenApi->captureScreen();
 
-    mScreenApi->captureScreen();
-
-    window = glfwCreateWindow(screenWidth, screenHeight, "screen capture", nullptr, nullptr);
+    window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", nullptr, nullptr);
     
     if (window == nullptr) {
         glfwTerminate();
@@ -50,9 +47,9 @@ void Application::execute(){
             glfwSetWindowShouldClose(windows_, true);
         }
     });
-
+    
    
-    purple::Engine::init(screenWidth , screenHeight);
+    purple::Engine::init(mScreenWidth , mScreenHeight);
 
     init();
 
@@ -71,6 +68,8 @@ void Application::init(){
     purple::Log::i("purple_engine" , "init");
 
     image = purple::BuildImageByAsset(std::string("t2.jpg"));
+
+    mScreenImage = purple::BuildImageByPixlData(mScreenImagePixel , mScreenWidth , mScreenHeight , GL_RGB);
 }
 
 void Application::tick(){
@@ -87,8 +86,17 @@ void Application::tick(){
     imgDstRect.width = purple::ScreenWidth;
     imgDstRect.height = purple::ScreenHeight;
     auto spriteBatch  = purple::Engine::getRenderEngine()->getSpriteBatch();
+
     spriteBatch->begin();
-    auto src = image->getRect();
-    spriteBatch->renderImage(*image , src , imgDstRect);
+    auto src = mScreenImage->getRect();
+    spriteBatch->renderImage(*mScreenImage , src , imgDstRect);
     spriteBatch->end();
+
+    purple::Rect maskRect = imgDstRect;
+    purple::Paint maskPaint;
+    maskPaint.color = glm::vec4(0.0f ,0.0f ,0.0f , 0.4f);
+    auto shapeBatch  = purple::Engine::getRenderEngine()->getShapeBatch();
+    shapeBatch->begin();
+    shapeBatch->renderRect(maskRect , maskPaint);
+    shapeBatch->end();
 }

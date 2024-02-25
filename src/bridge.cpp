@@ -30,7 +30,7 @@ void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
 }
 
-void ScreenApi::captureScreen(){
+uint8_t* ScreenApi::captureScreen(){
     // std::string filename = "test.bmp";
 
     HDC hdc = CreateDC("DISPLAY" , nullptr , nullptr , nullptr);
@@ -53,7 +53,7 @@ void ScreenApi::captureScreen(){
     BITMAPINFOHEADER bi = { 0 };
     bi.biSize = sizeof(BITMAPINFOHEADER);
     bi.biWidth = scrWidth;
-    bi.biHeight = -scrHeight;
+    bi.biHeight = scrHeight;
     bi.biPlanes = 1;
     bi.biBitCount = 8 * 3;
     bi.biCompression = BI_RGB;
@@ -72,9 +72,9 @@ void ScreenApi::captureScreen(){
 
     savePixel(scrWidth , scrHeight , buf);
 
-    delete[] buf;
+    return buf;
 
-
+    // delete[] buf;
     // BITMAPFILEHEADER bfh = { 0 };
     // bfh.bfType = ((WORD)('M' << 8) | 'B');
     // bfh.bfSize = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+bi.biSizeImage;

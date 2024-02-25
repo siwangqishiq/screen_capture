@@ -82,4 +82,7 @@ namespace purple{
 
     //加载一张空的纹理 纹理内容
     std::shared_ptr<TextureImage> BuildEmptyImage(int width , int height , int format);
+
+    //从像素数据中加载纹理
+    std::shared_ptr<TextureImage> BuildImageByPixlData(uint8_t *pixelData , int width , int height, int format);
 }

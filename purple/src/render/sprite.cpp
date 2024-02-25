@@ -9,6 +9,14 @@ namespace purple{
         return std::make_shared<TextureImage>(info);
     }
 
+    std::shared_ptr<TextureImage> BuildImageByPixlData(uint8_t *pixelData , int width , int height, int format){
+        std::string texName = std::string("pixel_image_") 
+            + std::to_string(width)+std::string("x")
+            + std::to_string(height);
+         std::shared_ptr<TextureInfo> info = TextureManager::getInstance()->loadTextureFromPixelData(texName , pixelData , format , width , height);
+         return std::make_shared<TextureImage>(info);
+    }
+
     std::shared_ptr<TextureImage> BuildEmptyImage(int width , int height , int format){
         static int emptyTextureCount = 0;
         emptyTextureCount++;

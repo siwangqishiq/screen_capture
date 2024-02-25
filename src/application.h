@@ -9,11 +9,22 @@
 #include "purple.h"
 
 class IScreenApi;
+
+enum ScreenState{
+    Idle
+};
+
 class Application{
 private:
     GLFWwindow *window;
     std::shared_ptr<IScreenApi> mScreenApi;
     std::shared_ptr<purple::TextureImage> image;
+    std::shared_ptr<purple::TextureImage> mScreenImage;
+
+    uint8_t* mScreenImagePixel = nullptr;
+    int mScreenWidth = 0;
+    int mScreenHeight = 0;
+
 public:
     void appInit();
 
@@ -23,4 +34,6 @@ public:
 
     void init();
     void tick();
+
+    ScreenState mState = ScreenState::Idle;
 };
