@@ -13,7 +13,7 @@ void ScreenApi::onCaptureFininshed(){
 void ScreenApi::savePixel(int w,int h, uint8_t *pixel){
     std::string filename = "screen.png";
     stbi_write_png(filename.c_str() , w, h, 3 , pixel , 3 * w);
-
+    
     std::cout << "save image finished" << std::endl;
 
     // onCaptureFininshed();
