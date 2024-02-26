@@ -91,26 +91,26 @@ uint8_t* ScreenApi::captureScreen(){
 // for linux
 #elif __linux__
 
-#include <gtk/gtk.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
-    screenWidth = gdk_screen_get_width(gdk_screen_get_default());
-    screenHeight = gdk_screen_get_height(gdk_screen_get_default());
+    Display *display = XOpenDisplay(nullptr);
+    Window root = DefaultRootWindow(display);
+
+    XWindowAttributes winAttr;
+    XGetWindowAttributes(display , root , &winAttr);
+    screenWidth = winAttr.width;
+    screenHeight = winAttr.height;
 }
 
 uint8_t* ScreenApi::captureScreen(){
-    GdkWindow *rootWindow = gdk_get_default_root_window();
-    if (rootWindow) {
-        GdkPixbuf *screenshot = gdk_pixbuf_get_from_window(root_window, 0, 0, gdk_screen_get_width(gdk_screen_get_default()), gdk_screen_get_height(gdk_screen_get_default()));
-        gdk_pixbuf_save(screenshot, "screenshot.png", "png", NULL, NULL);
-        g_object_unref(screenshot);
-
-        uint8_t *buf = new uint8_t [3 * scrWidth * scrHeight];
-
-        return buf;
-    } 
-
-    return nullptr;
+    int scrWidth = 0;
+    int scrHeight = 0;
+    findScreenSize(scrWidth , scrHeight);
+    
+    uint8_t *pixelBuf = new uint8_t [3 * scrWidth * scrHeight];
+    return pixelBuf;
 }
 
 // for mac

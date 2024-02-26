@@ -30,7 +30,13 @@ void Application::execute(){
     mScreenApi->findScreenSize(mScreenWidth , mScreenHeight);
     mScreenImagePixel = mScreenApi->captureScreen();
 
-    window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", nullptr, nullptr);
+    #ifdef _WIN32
+    window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
+        nullptr, nullptr);
+    #elif __linux__
+    window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
+        glfwGetPrimaryMonitor(), nullptr);
+    #endif
     // window = glfwCreateWindow(400, 200, "screen capture", nullptr, nullptr);
     
     if (window == nullptr) {

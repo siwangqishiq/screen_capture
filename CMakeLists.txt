@@ -29,6 +29,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall")
 target_link_libraries(${PROJECT_NAME} purple)
 target_link_libraries(${PROJECT_NAME} glfw)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(X11)
+    link_directories( /usr/lib/X11 )
+    target_link_libraries(${PROJECT_NAME} X11)
+endif()
 
 
 
