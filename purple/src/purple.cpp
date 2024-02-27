@@ -12,6 +12,10 @@
 namespace purple{
     std::shared_ptr<RenderEngine> purple::Engine::renderEngine_ = nullptr;
     std::shared_ptr<Timer> purple::Engine::timer_ = nullptr;
+
+    int purple::Engine::ScreenWidth = 0;
+    int purple::Engine::ScreenHeight = 0;
+    const char* purple::Engine::TAG = "purple";
     
     void Engine::init(int width , int height){
         Log::w(TAG,"init engine");

@@ -429,8 +429,8 @@ namespace purple{
         shader_.setUniformVec4("uRect" , 
             glm::vec4(rect_.left , rect_.top , rect_.width , rect_.height));
         
-        int viewWidth = purple::ScreenWidth;
-        int viewHeight = purple::ScreenHeight;
+        int viewWidth = purple::Engine::ScreenWidth;
+        int viewHeight = purple::Engine::ScreenHeight;
         
         shader_.setUniformFloat("uViewWidth" , viewWidth);
         shader_.setUniformFloat("uViewHeight" , viewHeight);

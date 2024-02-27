@@ -9,17 +9,18 @@
 #include "widget/timer.h"
 #include "render/texture.h"
 #include "render/sprite.h"
+#include "render/common.h"
 
 
 namespace purple{
     
-    inline const char *TAG = "purple";
-    inline int ScreenWidth;
-    inline int ScreenHeight;
-
     class RenderEngine;
     class Engine{
     public:
+        static const char *TAG;
+        static int ScreenWidth;
+        static int ScreenHeight;
+        
         static void init(int width , int height);
 
         static void dispose();

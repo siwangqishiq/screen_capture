@@ -49,8 +49,8 @@ namespace purple{
     void RenderEngine::onScreenResize(){
     //    viewWidth_ = appContext_->viewWidth_;
     //    viewHeight_ = appContext_->viewHeight_;
-        resetNormalMat(ScreenWidth , ScreenHeight);
-        glViewport(0 , 0 , ScreenWidth , ScreenHeight);
+        resetNormalMat(purple::Engine::ScreenWidth , purple::Engine::ScreenHeight);
+        glViewport(0 , 0 , purple::Engine::ScreenWidth , purple::Engine::ScreenHeight);
     }
 
     void RenderEngine::init(){

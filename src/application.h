@@ -7,12 +7,14 @@
 #include "GLFW/glfw3.h"
 
 #include "purple.h"
+#include <vector>
 
 class IScreenApi;
 
 enum ScreenState{
     Idle,
     DRAW_CAPTURE_ZONE,// 抓取需要截取的区域
+    CAPTURE_ZONE_GETTED//取得截取区域
 };
 
 enum EventAction{
@@ -35,8 +37,11 @@ private:
     float mCaptureEndX = 0.0f;
     float mCaptureEndY = 0.0f;
 
+    std::vector<float> calClipPoints();
+
     void renderScreenCaptureImage();
     void renderMaskZone();
+    void renderSubThumbPreview();
 public:
     void appInit();
 
@@ -60,5 +65,9 @@ public:
     int mScreenWidth = 0;
     int mScreenHeight = 0;
 
+    float mScaleThumbFactor = 5.0f;//子略缩图 放大倍数
+    float mThumbPreviewSize = 32.0f;
+
     purple::Paint mMaskZonePaint;
+    purple::Paint mMaskZoneBorderPaint;
 };
