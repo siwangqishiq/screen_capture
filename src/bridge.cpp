@@ -108,8 +108,30 @@ uint8_t* ScreenApi::captureScreen(){
     int scrWidth = 0;
     int scrHeight = 0;
     findScreenSize(scrWidth , scrHeight);
-    
+
     uint8_t *pixelBuf = new uint8_t [3 * scrWidth * scrHeight];
+
+    Display *display = XOpenDisplay(nullptr);
+    Window root = DefaultRootWindow(display);
+
+    XImage *image = XGetImage(display, root , 0, 0, 
+        scrWidth , scrHeight, AllPlanes , ZPixmap);
+
+    int index = 0;
+    for(int y = scrHeight - 1; y >= 0 ;y--){
+        for(int x = 0; x < scrWidth ; x++){
+            unsigned long pixel = XGetPixel(image, x, y);
+            uint8_t red = pixel >> 16;
+            uint8_t green = (pixel >> 8) & 0xff;
+            uint8_t blue = (pixel)& 0xff;
+
+            pixelBuf[index + 0] = red;
+            pixelBuf[index + 1] = green;
+            pixelBuf[index + 2] = blue;
+
+            index += 3;
+        }//end for x
+    }//end for y
     return pixelBuf;
 }
 
