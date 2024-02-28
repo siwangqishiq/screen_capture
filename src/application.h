@@ -42,6 +42,9 @@ private:
     void renderScreenCaptureImage();
     void renderMaskZone();
     void renderSubThumbPreview();
+
+    void adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
+            float preWinWidth , float preWinHeight);
 public:
     void appInit();
 

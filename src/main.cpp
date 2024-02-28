@@ -15,6 +15,9 @@ int main(){
     // findScreenSize();
 
     std::thread th(subThreadEntry);
+
+    std::cout << "wait th thread ended..." << std::endl;
     th.join();
+    std::cout << "main thread finished" << std::endl;
     return 0;
 }//end main

@@ -237,30 +237,40 @@ void Application::renderSubThumbPreview(){
         return;
     }
 
-    auto result = calClipPoints();
-    const float left = result[0];
-    const float right = result[1];
-    const float top = result[2];
-    const float bottom = result[3];
-
-    const float previewOffsetX = 24.0f;
-    const float previewOffsetY = 32.0f;
-
-    float previewLeft = mEventX + previewOffsetX;
-    float previewTop = mScreenHeight - mEventY - previewOffsetY;
-
     purple::Rect srcRect;
     srcRect.left = mEventX - mThumbPreviewSize / 2.0f;
     srcRect.top = mScreenHeight - (mEventY - mThumbPreviewSize / 2.0f);
-
     srcRect.width = mThumbPreviewSize;
     srcRect.height = mThumbPreviewSize;
+
+    const float previewOffsetX = 24.0f;
+    const float previewOffsetY = 32.0f;
+    float previewLeft = mEventX + previewOffsetX;
+    float previewTop = mScreenHeight - mEventY - previewOffsetY;
 
     purple::Rect dstRect;
     dstRect.left = previewLeft;
     dstRect.top = previewTop;
     dstRect.width = srcRect.width * mScaleThumbFactor;
     dstRect.height = srcRect.height * mScaleThumbFactor;
+
+    const float infoTextSize = 20.0f;
+    purple::Rect infoRect = dstRect;
+    infoRect.top = dstRect.getBottom() - 8.0f;
+    infoRect.width = 200.0f;
+    infoRect.height = infoTextSize * 2.0f + 16.0f;
+    purple::TextPaint txtPaint;
+    txtPaint.setTextSize(infoTextSize);
+    txtPaint.textGravity = purple::TextGravity::CenterLeft; 
+
+    //调整预览窗口位置
+    adjustScalePreviewWinPosition(previewLeft , previewTop , dstRect.width , dstRect.height + infoRect.height);
+
+    //reset postion
+    dstRect.left = previewLeft;
+    dstRect.top = previewTop;
+    infoRect.left = dstRect.left;
+    infoRect.top = dstRect.getBottom() - 8.0f;
 
     auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
     spriteBatch->begin();
@@ -295,7 +305,8 @@ void Application::renderSubThumbPreview(){
     if(mScreenImagePixel != nullptr){
         int offset = (mScreenHeight - posY) * mScreenWidth + posX;
         offset = (offset << 1) + offset;
-        if(offset >= 0){
+        const int pixelSizeLimit = mScreenWidth * mScreenHeight * 3;
+        if(offset >= 0 && offset < pixelSizeLimit ){
             uint8_t colorR = mScreenImagePixel[offset + 0];
             uint8_t colorG = mScreenImagePixel[offset + 1];
             uint8_t colorB = mScreenImagePixel[offset + 2];
@@ -307,15 +318,7 @@ void Application::renderSubThumbPreview(){
         }
     }
     
-    const float infoTextSize = 20.0f;
-    purple::Rect infoRect = dstRect;
-    infoRect.top = dstRect.getBottom() - 8.0f;
-    infoRect.width = 200.0f;
-    infoRect.height = infoTextSize * 2.0f + 16.0f;
-    purple::TextPaint txtPaint;
-    txtPaint.setTextSize(infoTextSize);
-    txtPaint.textGravity = purple::TextGravity::CenterLeft; 
-
+    
     purple::Rect warpRect;
     purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
         infoRect , txtPaint , &warpRect);
@@ -329,6 +332,22 @@ void Application::renderSubThumbPreview(){
     shapeBatch->end();
     purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
         infoRect , txtPaint , nullptr);
+}
+
+void Application::adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
+        float preWinWidth , float preWinHeight){
+    // auto result = calClipPoints();
+    // const float clipLeft = result[0];
+    // const float clipRight = result[1];
+    // const float clipTop = result[2];
+    // const float clipBottom = result[3];
+    if(originTop - preWinHeight < 0){
+        originTop = preWinHeight;
+    } 
+
+    if(originLeft + preWinWidth > mScreenWidth){
+        originLeft = mScreenWidth - preWinWidth;
+    }
 }
 
 void Application::onResize(int w , int h){
@@ -352,7 +371,7 @@ void Application::onEventAction(EventAction action , float x , float y){
             break;
         }//end switch
     }else if(mState == DRAW_CAPTURE_ZONE){
-        // purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
+        purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
         switch (action){
         case ActionDown:
             mCaptureStartX = x;

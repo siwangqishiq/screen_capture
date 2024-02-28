@@ -46,6 +46,9 @@ namespace purple{
 
     void Engine::dispose(){
         Log::w(TAG,"engine dispose");
+        if(renderEngine_ != nullptr){
+            renderEngine_->free();
+        }
     }
 
     std::shared_ptr<RenderEngine> Engine::getRenderEngine(){
