@@ -65,8 +65,8 @@ public:
     int mScreenWidth = 0;
     int mScreenHeight = 0;
 
-    float mScaleThumbFactor = 5.0f;//子略缩图 放大倍数
-    float mThumbPreviewSize = 32.0f;
+    float mScaleThumbFactor = 3.0f;//子略缩图 放大倍数
+    float mThumbPreviewSize = 64.0f;
 
     purple::Paint mMaskZonePaint;
     purple::Paint mMaskZoneBorderPaint;

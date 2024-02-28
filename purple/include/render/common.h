@@ -101,6 +101,14 @@ namespace purple{
             height = 0.0f;
         }
 
+        inline float getTop(){
+            return top;
+        }
+
+        inline float getLeft(){
+            return left;
+        }
+
         inline float getRight(){
             return left + width;
         }

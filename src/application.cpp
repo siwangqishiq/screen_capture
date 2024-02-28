@@ -243,11 +243,11 @@ void Application::renderSubThumbPreview(){
     const float top = result[2];
     const float bottom = result[3];
 
-    const float padding = 32.0f;
+    const float previewOffsetX = 24.0f;
+    const float previewOffsetY = 32.0f;
 
-
-    float previewLeft = 0.0f;
-    float previewTop = mScreenHeight;
+    float previewLeft = mEventX + previewOffsetX;
+    float previewTop = mScreenHeight - mEventY - previewOffsetY;
 
     purple::Rect srcRect;
     srcRect.left = mEventX - mThumbPreviewSize / 2.0f;
@@ -267,6 +267,68 @@ void Application::renderSubThumbPreview(){
     spriteBatch->renderImage(*mScreenImage, srcRect , dstRect);
     spriteBatch->end();  
 
+    auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    shapeBatch->begin();
+    shapeBatch->renderRect(dstRect , mMaskZoneBorderPaint);
+    shapeBatch->end();
+
+    std::vector<float> lines(8);
+    lines[0] = dstRect.left;
+    lines[1] = dstRect.top - dstRect.height / 2.0f;
+    lines[2] = dstRect.getRight();
+    lines[3] = dstRect.top - dstRect.height / 2.0f;
+    lines[4] = dstRect.left + dstRect.width / 2.0f;
+    lines[5] = dstRect.top;
+    lines[6] = dstRect.left + dstRect.width / 2.0f;
+    lines[7] = dstRect.getBottom();
+    purple::Paint linesPaint;
+    linesPaint.color = App::COLOR_GREEN;
+    linesPaint.stokenWidth = 1.0f;
+    purple::Engine::getRenderEngine()->renderLines(lines , linesPaint);
+
+    int posX = static_cast<int>(mEventX);
+    int posY = static_cast<int>(mEventY);
+    std::wstring infoStr = 
+        L" 位置(" + std::to_wstring(posX) + 
+        L" , " + std::to_wstring(posY) + L")";
+
+    if(mScreenImagePixel != nullptr){
+        int offset = (mScreenHeight - posY) * mScreenWidth + posX;
+        offset = (offset << 1) + offset;
+        if(offset >= 0){
+            uint8_t colorR = mScreenImagePixel[offset + 0];
+            uint8_t colorG = mScreenImagePixel[offset + 1];
+            uint8_t colorB = mScreenImagePixel[offset + 2];
+
+            infoStr += L"\n 颜色(" + std::to_wstring(colorR) 
+                + L"," + std::to_wstring(colorG)
+                + L"," + std::to_wstring(colorB) 
+                + L")";
+        }
+    }
+    
+    const float infoTextSize = 20.0f;
+    purple::Rect infoRect = dstRect;
+    infoRect.top = dstRect.getBottom() - 8.0f;
+    infoRect.width = 200.0f;
+    infoRect.height = infoTextSize * 2.0f + 16.0f;
+    purple::TextPaint txtPaint;
+    txtPaint.setTextSize(infoTextSize);
+    txtPaint.textGravity = purple::TextGravity::CenterLeft; 
+
+    purple::Rect warpRect;
+    purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
+        infoRect , txtPaint , &warpRect);
+    shapeBatch->begin();
+    purple::Paint txtWrapPaint;
+    txtWrapPaint.color = App::COLOR_BLACK;
+    if(infoRect.width < warpRect.width){
+        infoRect.width = warpRect.width;
+    }
+    shapeBatch->renderRect(infoRect , txtWrapPaint);
+    shapeBatch->end();
+    purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
+        infoRect , txtPaint , nullptr);
 }
 
 void Application::onResize(int w , int h){
