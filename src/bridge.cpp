@@ -25,6 +25,10 @@ void ScreenApi::savePixel(int w,int h, uint8_t *pixel){
 #ifdef _WIN32
 #include <Windows.h>
 
+bool Application::isWindows = true;
+bool Application::isMac = false;
+bool Application::isLinux = false;
+
 void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     screenWidth = GetSystemMetrics(SM_CXSCREEN);
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -94,6 +98,10 @@ uint8_t* ScreenApi::captureScreen(){
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+bool Application::isWindows = false;
+bool Application::isMac = false;
+bool Application::isLinux = true;
+
 void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     Display *display = XOpenDisplay(nullptr);
     Window root = DefaultRootWindow(display);
@@ -137,6 +145,10 @@ uint8_t* ScreenApi::captureScreen(){
 
 // for mac
 #elif __APPLE__
+
+bool Application::isWindows = false;
+bool Application::isMac = true;
+bool Application::isLinux = false;
 
 void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     screenWidth = 1280;

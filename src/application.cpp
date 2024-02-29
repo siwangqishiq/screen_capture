@@ -3,6 +3,7 @@
 #include "bridge.h"
 #include "purple.h"
 #include "constants.h"
+#include "action_menu.h"
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
@@ -89,17 +90,24 @@ void Application::execute(){
         }
         // std::cout << "pos: " << mouseX << "  " << mouseY << std::endl;
     });
+
+    // glfwSetCharCallback(windows , [](GLFWwindow* windows_ , unsigned int codepoint){
+    // });
     
     purple::Engine::init(mScreenWidth , mScreenHeight);
     init();
+
     while(!glfwWindowShouldClose(window)) {
         tick();
         glfwSwapBuffers(window);
         glfwPollEvents();
+
         glfwSwapInterval(1);//锁定固定帧率
     }//end while
-
+    
+    mActionMenu->dispose();
     purple::Engine::dispose();
+    glfwDestroyWindow(window);
     glfwTerminate();
 }
 
@@ -113,6 +121,9 @@ void Application::init(){
     mMaskZoneBorderPaint.fillStyle = purple::FillStyle::Stroken; 
 
     mScreenImage = purple::BuildImageByPixlData(mScreenImagePixel , mScreenWidth , mScreenHeight , GL_RGB);
+
+    mActionMenu = std::make_shared<ActionMenu>(this);
+    mActionMenu->init();
 }
 
 void Application::tick(){
@@ -127,6 +138,9 @@ void Application::tick(){
     renderMaskZone();
     renderSubThumbPreview();
 
+    if(mActionMenu != nullptr){
+        mActionMenu->tick();
+    }
     // purple::Rect maskRect = imgDstRect;
     // purple::Paint maskPaint;
     // maskPaint.color = glm::vec4(0.0f ,0.0f ,0.0f , 0.4f);
@@ -366,7 +380,7 @@ void Application::onEventAction(EventAction action , float x , float y){
             break;
         }//end switch
     }else if(mState == DRAW_CAPTURE_ZONE){
-        purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
+        // purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
         switch (action){
         case ActionDown:
             mCaptureStartX = x;

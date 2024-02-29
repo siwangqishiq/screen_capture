@@ -10,6 +10,7 @@
 #include <vector>
 
 class IScreenApi;
+class ActionMenu;
 
 enum ScreenState{
     Idle,
@@ -46,6 +47,10 @@ private:
     void adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
             float preWinWidth , float preWinHeight);
 public:
+    static bool isWindows;
+    static bool isMac;
+    static bool isLinux;
+    
     void appInit();
 
     void execute();
@@ -73,4 +78,7 @@ public:
 
     purple::Paint mMaskZonePaint;
     purple::Paint mMaskZoneBorderPaint;
+
+    //操作菜单
+    std::shared_ptr<ActionMenu> mActionMenu;
 };

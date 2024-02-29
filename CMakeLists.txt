@@ -11,8 +11,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set (CMAKE_CXX_FLAGS -pthread)
 endif()
 
-
-
 include_directories(vender/glfw)
 include_directories(purple/include)
 
