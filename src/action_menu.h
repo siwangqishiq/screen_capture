@@ -27,6 +27,17 @@ public:
 
     float mWidth = 64.0f;
     float mHeight = 64.0f;
+    float mLeft = 0.0f;
+    float mTop = 0.0f;
+
+    purple::Rect genItemWrapRect(){
+        return purple::Rect(mLeft , mTop , mWidth , mHeight);
+    }
+
+    void resetPostion(float l , float t){
+        mLeft = l;
+        mTop = t;
+    }
 private:
     ActionMenu *mMenu;
     std::string mName;
@@ -44,7 +55,7 @@ public:
     void tick();
     void dispose();
     
-    bool onEventAction(EventAction action , float x , float y);
+    bool dispatchEventAction(EventAction action , float x , float y);
 
     virtual ~ActionMenu(){
         purple::Log::i("ActionMenu" , "ActionMenu deconstructor.");
@@ -57,4 +68,15 @@ private:
     Application *mApp;
     glm::vec4 mBgColor = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);
     std::vector<std::shared_ptr<MenuItem>> mMenuItems;
+
+    std::shared_ptr<MenuItem> mGrapMenuItem = nullptr;
+
+    float mItemGapSize = 8.0f;
+
+    float findMenuWidth();
+
+    //重置menuitem位置
+    void resetMenuItemsPosition();
+
+    int isHitMenuItems(float x , float y);
 };

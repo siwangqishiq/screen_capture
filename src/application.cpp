@@ -174,15 +174,19 @@ std::vector<float> Application::calClipPoints(){
 }
 
 void Application::renderMaskZone(){
-    // if(mState == ScreenState::Idle){
-    //     return;
-    // }
     auto result = calClipPoints();
 
-    const float left = result[0];
-    const float right = result[1];
-    const float top = result[2];
-    const float bottom = result[3];
+    float left = result[0];
+    float right = result[1];
+    float top = result[2];
+    float bottom = result[3];
+
+    if(mState == ScreenState::Idle){
+        left = 0.0f;
+        right = 0.0f;
+        top = mScreenHeight;
+        bottom = mScreenHeight;
+    }
     // purple::Log::i("left" , "left = %f mCaptureEndX = %f" ,left ,mCaptureEndX);
 
     purple::Rect topRect;
@@ -311,9 +315,11 @@ void Application::renderSubThumbPreview(){
     linesPaint.stokenWidth = 1.0f;
     purple::Engine::getRenderEngine()->renderLines(lines , linesPaint);
 
-    int posX = static_cast<int>(mEventX);
-    int posY = static_cast<int>(mEventY);
-    std::wstring infoStr = purple::FormatWstring(L" 位置(%d,%d)" , posX , posY);
+    const int posX = static_cast<int>(mEventX);
+    const int posY = static_cast<int>(mEventY);
+    std::wstring infoStr = 
+        L" 位置(" + std::to_wstring(posX) + 
+        L" , " + std::to_wstring(posY) + L")";
 
     if(mScreenImagePixel != nullptr){
         int offset = (mScreenHeight - posY) * mScreenWidth + posX;
@@ -323,8 +329,11 @@ void Application::renderSubThumbPreview(){
             uint8_t colorR = mScreenImagePixel[offset + 0];
             uint8_t colorG = mScreenImagePixel[offset + 1];
             uint8_t colorB = mScreenImagePixel[offset + 2];
-            infoStr += purple::FormatWstring(L"\n 颜色(%u,%u,%u) " 
-                , colorR , colorG, colorB);
+
+            infoStr += L"\n 颜色(" + std::to_wstring(colorR) 
+                + L"," + std::to_wstring(colorG)
+                + L"," + std::to_wstring(colorB) 
+                + L")";
         }
     }
     
@@ -345,11 +354,6 @@ void Application::renderSubThumbPreview(){
 
 void Application::adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
         float preWinWidth , float preWinHeight){
-    // auto result = calClipPoints();
-    // const float clipLeft = result[0];
-    // const float clipRight = result[1];
-    // const float clipTop = result[2];
-    // const float clipBottom = result[3];
     if(originTop - preWinHeight < 0){
         originTop = preWinHeight;
     } 
@@ -366,6 +370,10 @@ void Application::onResize(int w , int h){
 void Application::onEventAction(EventAction action , float x , float y){
     // mEventX = x;
     // mEventY = y;
+
+    if(mActionMenu->dispatchEventAction(action , x , y)){
+        return;
+    }
 
     if(mState == Idle || mState == CAPTURE_ZONE_GETTED){ // idle空闲状态
         mState = DRAW_CAPTURE_ZONE;
@@ -394,9 +402,10 @@ void Application::onEventAction(EventAction action , float x , float y){
             mCaptureEndX = x;
             mCaptureEndY = y;
             purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
-            mState = CAPTURE_ZONE_GETTED;
-            break;
-        default:
+            std::vector<float> ps = calClipPoints();
+            const int width = static_cast<int>(ps[1] - ps[0]);
+            const int height = static_cast<int>(ps[2] - ps[3]);
+            mState = (width <= 0 || height <= 0)?Idle:CAPTURE_ZONE_GETTED;
             break;
         }//end switch
     }//end if

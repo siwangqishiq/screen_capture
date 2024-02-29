@@ -165,6 +165,11 @@ namespace purple{
         FillStyle fillStyle = Filled;
         float stokenWidth = 1.0f;
     };
+
+    inline bool isPointInRect(Rect &rect,float x , float y){
+        return x >= rect.left && x <= rect.getRight()
+             && y <= rect.top && y >= rect.getBottom();
+    }
 }
 
 

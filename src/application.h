@@ -38,7 +38,6 @@ private:
     float mCaptureEndX = 0.0f;
     float mCaptureEndY = 0.0f;
 
-    std::vector<float> calClipPoints();
 
     void renderScreenCaptureImage();
     void renderMaskZone();
@@ -63,6 +62,9 @@ public:
     void onResize(int w,int h);
 
     void onEventAction(EventAction action , float x , float y);
+
+    //计算裁剪点坐标 
+    std::vector<float> calClipPoints();
 
     ScreenState mState = ScreenState::Idle;
 
