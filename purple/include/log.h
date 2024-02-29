@@ -8,6 +8,7 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <cstdarg>
 
 namespace purple{
     #define _CRT_SECURE_NO_WARNINGS 
@@ -45,6 +46,23 @@ namespace purple{
 
         delete[] pstrOut;
         return str;
+    }
+
+    inline std::wstring FormatWstring(const wchar_t * _Format, ...){
+        std::wstring _str;
+
+        std::wstring tmp;
+        va_list marker = NULL;
+        va_start(marker, _Format);
+        size_t num_of_chars = _vscwprintf(_Format, marker);
+        if (num_of_chars > tmp.capacity()) {
+            tmp.resize(num_of_chars + 1);
+        }
+
+        vswprintf_s((wchar_t *)tmp.data(), tmp.capacity(), _Format, marker);
+        va_end(marker);
+        _str = tmp.c_str();
+        return _str;
     }
 
     /**

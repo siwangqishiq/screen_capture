@@ -232,6 +232,7 @@ void Application::renderMaskZone(){
     }
 }
 
+// 细节预览窗口渲染
 void Application::renderSubThumbPreview(){
     if(mState != DRAW_CAPTURE_ZONE){
         return;
@@ -298,9 +299,7 @@ void Application::renderSubThumbPreview(){
 
     int posX = static_cast<int>(mEventX);
     int posY = static_cast<int>(mEventY);
-    std::wstring infoStr = 
-        L" 位置(" + std::to_wstring(posX) + 
-        L" , " + std::to_wstring(posY) + L")";
+    std::wstring infoStr = purple::FormatWstring(L" 位置(%d,%d)" , posX , posY);
 
     if(mScreenImagePixel != nullptr){
         int offset = (mScreenHeight - posY) * mScreenWidth + posX;
@@ -310,14 +309,10 @@ void Application::renderSubThumbPreview(){
             uint8_t colorR = mScreenImagePixel[offset + 0];
             uint8_t colorG = mScreenImagePixel[offset + 1];
             uint8_t colorB = mScreenImagePixel[offset + 2];
-
-            infoStr += L"\n 颜色(" + std::to_wstring(colorR) 
-                + L"," + std::to_wstring(colorG)
-                + L"," + std::to_wstring(colorB) 
-                + L")";
+            infoStr += purple::FormatWstring(L"\n 颜色(%u,%u,%u) " 
+                , colorR , colorG, colorB);
         }
     }
-    
     
     purple::Rect warpRect;
     purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
