@@ -19,6 +19,9 @@ void ActionMenu::addMenuItems(){
 
     std::shared_ptr<MenuItem> cancelItem = std::make_shared<CancelMenuItem>(this->mApp);
     mMenuItems.push_back(cancelItem);
+
+    // std::shared_ptr<MenuItem> cancelItem2 = std::make_shared<CancelMenuItem>(this->mApp);
+    // mMenuItems.push_back(cancelItem2);
 }
 
 void ActionMenu::update(){
@@ -26,7 +29,18 @@ void ActionMenu::update(){
         return;
     }
 
+    // CAPTURE_ZONE_GETTED
     resetMenuItemsPosition();
+
+    float x = mApp->mEventX;
+    float y = mApp->mScreenHeight - mApp->mEventY;
+    for(auto item: mMenuItems){
+        item->isMouseHove = false;
+        auto rect = item->genItemWrapRect();
+        if(purple::isPointInRect(rect , x , y)){
+            item->isMouseHove = true;
+        }
+    }//end for each
 }
 
 void ActionMenu::render(){
@@ -99,6 +113,7 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
             int findIndex = isHitMenuItems(x , y);
             if(findIndex >= 0){
                 mGrapMenuItem = mMenuItems[findIndex];
+                mGrapMenuItem->isPressed = true;
                 ret = true;
                 // purple::Log::e("menu" , "grab menu wait...");
             }
@@ -116,6 +131,7 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
                 auto rect = mGrapMenuItem->genItemWrapRect();
                 if(purple::isPointInRect(rect , x , y)){
                     mGrapMenuItem->onItemClick();
+                    mGrapMenuItem->clearFlags();
                 }
             }
             ret = true;
@@ -133,15 +149,31 @@ void ActionMenu::dispose(){
 }
 
 void MenuItem::render(float left , float top){
-    auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
-    spriteBatch->begin();
-
-    purple::Rect srcRect = mIconImage->getRect();
     purple::Rect dstRect;
     dstRect.left = mLeft;
     dstRect.top = mTop;
     dstRect.width = mWidth;
     dstRect.height = mHeight;
+
+    auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    shapeBatch->begin();
+    purple::Paint bgPaint;
+    bgPaint.color = glm::vec4(1.0f , 1.0f , 1.0f ,1.0f);
+
+    shapeBatch->renderRect(dstRect , bgPaint);
+    if(this->isMouseHove){
+        purple::Paint mskPaint;
+        mskPaint.color = glm::vec4(0.0f , 0.0f , 0.0f ,0.08f);
+        shapeBatch->renderRect(dstRect , mskPaint);
+    }
+    shapeBatch->end();
+
+
+    auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
+    spriteBatch->begin();
+
+    purple::Rect srcRect = mIconImage->getRect();
+
     spriteBatch->renderImage(*mIconImage , srcRect , dstRect);
     spriteBatch->end();
 }

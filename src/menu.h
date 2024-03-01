@@ -19,16 +19,19 @@ public:
         mIconImage = purple::BuildImageByAsset(mIcon);
     }
     
-    void render(float left , float top);
+    virtual void render(float left , float top);
 
     virtual void onItemClick() override;
 
     ~MenuItem(){}
 
-    float mWidth = 64.0f;
-    float mHeight = 64.0f;
+    float mWidth = 40.0f;
+    float mHeight = 40.0f;
     float mLeft = 0.0f;
     float mTop = 0.0f;
+
+    bool isMouseHove = false;
+    bool isPressed = false;
 
     purple::Rect genItemWrapRect(){
         return purple::Rect(mLeft , mTop , mWidth , mHeight);
@@ -37,6 +40,11 @@ public:
     void resetPostion(float l , float t){
         mLeft = l;
         mTop = t;
+    }
+
+    void clearFlags(){
+        isMouseHove = false;
+        isPressed = false;
     }
 protected:
     Application *mApp;
