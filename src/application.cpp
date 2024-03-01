@@ -26,7 +26,7 @@ void Application::execute(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    // glfwWindowHint(GLFW_SAMPLES, 4);
     // glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
     //窗口透明
@@ -35,17 +35,17 @@ void Application::execute(){
     mScreenApi->findScreenSize(mScreenWidth , mScreenHeight);
     mScreenImagePixel = mScreenApi->captureScreen();
 
-    // #ifdef _WIN32
-    // window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
-    //     glfwGetPrimaryMonitor(), nullptr);
-    // #elif __linux__
-    // window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
-    //     glfwGetPrimaryMonitor(), nullptr);
-    // #endif
-    
+    #ifdef _WIN32
+    window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
+        nullptr, nullptr);
+    #elif __linux__
+    //linux系统下 必须全屏 才能截取到全部的画面
     window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
         glfwGetPrimaryMonitor(), nullptr);
-    // window = glfwCreateWindow(400, 200, "screen capture", nullptr, nullptr);
+    #endif
+    
+    // window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
+    //     glfwGetPrimaryMonitor(), nullptr);
     
     if (window == nullptr) {
         glfwTerminate();
@@ -118,7 +118,7 @@ void Application::execute(){
 }
 
 void Application::init(){
-    glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_MULTISAMPLE);
 
     purple::Log::i("purple_engine" , "init");
 
@@ -282,10 +282,10 @@ void Application::renderSubThumbPreview(){
     dstRect.width = srcRect.width * mScaleThumbFactor;
     dstRect.height = srcRect.height * mScaleThumbFactor;
 
-    const float infoTextSize = 20.0f;
+    const float infoTextSize = 24.0f;
     purple::Rect infoRect = dstRect;
     infoRect.top = dstRect.getBottom() - 8.0f;
-    infoRect.width = 200.0f;
+    infoRect.width = 230.0f;
     infoRect.height = infoTextSize * 2.0f + 16.0f;
     purple::TextPaint txtPaint;
     txtPaint.setTextSize(infoTextSize);

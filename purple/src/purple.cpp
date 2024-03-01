@@ -23,6 +23,7 @@ namespace purple{
     
     void Engine::init(int width , int height){
         Log::w(TAG,"init engine");
+        long startTime = currentTimeMillis();
         ScreenWidth = width;
         ScreenHeight = height;
 
@@ -40,6 +41,9 @@ namespace purple{
         renderEngine_->onScreenResize();
 
         AudioManager::getInstance()->init();
+
+        long endTime = currentTimeMillis();
+        Log::i(TAG , "purple engine start time : %ld ms" , endTime - startTime);
     }
 
     void Engine::tick(){

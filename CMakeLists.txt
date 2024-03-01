@@ -11,6 +11,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set (CMAKE_CXX_FLAGS -pthread)
 endif()
 
+# SET(CMAKE_BUILD_TYPE "Release")
+SET(CMAKE_BUILD_TYPE "Debug")
+
 include_directories(vender/glfw)
 include_directories(purple/include)
 
