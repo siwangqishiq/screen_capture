@@ -32,7 +32,7 @@ namespace purple{
         std::shared_ptr<TextureInfo> textureInfo_;
     };
 
-    class Point;
+    struct Point;
 
     class TextureImageRegion{
     public:

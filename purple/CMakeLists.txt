@@ -4,6 +4,7 @@ project(purple)
 
 include_directories(include)
 
+
 aux_source_directory(src SRCS)
 aux_source_directory(src/audio      SRC_AUDIO)
 aux_source_directory(src/input      SRC_INPUT)

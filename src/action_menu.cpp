@@ -11,10 +11,12 @@ void ActionMenu::init(){
 
 void ActionMenu::addMenuItems(){
     // confirm item
-    std::shared_ptr<MenuItem> confirmItem = std::make_shared<MenuItem>(this, "confirm" , "ic_confirm.png");
+    std::shared_ptr<MenuItem> confirmItem = std::make_shared<MenuItem>(this->mApp, 
+        "confirm" , "ic_confirm.png");
     mMenuItems.push_back(confirmItem);
 
-    std::shared_ptr<MenuItem> cancelItem = std::make_shared<MenuItem>(this, "cancel" , "ic_cancel.png");
+    std::shared_ptr<MenuItem> cancelItem = std::make_shared<MenuItem>(this->mApp, 
+        "cancel" , "ic_cancel.png");
     mMenuItems.push_back(cancelItem);
 }
 
@@ -86,16 +88,25 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
             if(findIndex >= 0){
                 mGrapMenuItem = mMenuItems[findIndex];
                 ret = true;
+                // purple::Log::e("menu" , "grab menu wait...");
+            }
+            break;
+        }
+        case ActionMove:{
+            if(mGrapMenuItem != nullptr){
+                ret = true;
             }
             break;
         }
         case ActionUp:{
              if(mGrapMenuItem != nullptr){
+                // purple::Log::e("menu" , "grab menu up will click?");
                 auto rect = mGrapMenuItem->genItemWrapRect();
                 if(purple::isPointInRect(rect , x , y)){
                     mGrapMenuItem->onItemClick();
                 }
             }
+            ret = true;
             mGrapMenuItem = nullptr;
             break;
         }
@@ -124,6 +135,7 @@ void MenuItem::render(float left , float top){
 }
 
 void MenuItem::onItemClick(){
-    purple::Log::e("menu" , "%s menuitem clicked" , this->mName.c_str());
+    purple::Log::e("menu" , "%s clicked" , this->mName.c_str());
+    mApp->mState = ScreenState::Idle; 
 }
 

@@ -14,8 +14,8 @@ public:
 // 菜单项
 class MenuItem: public IMenuItemCallback{
 public:
-    MenuItem(ActionMenu *menu , std::string _name , std::string _icon) 
-        : mMenu(menu) , mName(_name) , mIcon(_icon){
+    MenuItem(Application *_app , std::string _name , std::string _icon) 
+        : mApp(_app) , mName(_name) , mIcon(_icon){
         mIconImage = purple::BuildImageByAsset(mIcon);
     }
     
@@ -39,7 +39,7 @@ public:
         mTop = t;
     }
 private:
-    ActionMenu *mMenu;
+    Application *mApp;
     std::string mName;
     std::string mIcon;
 
