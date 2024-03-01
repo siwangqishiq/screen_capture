@@ -26,6 +26,9 @@ void Application::execute(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
 
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    // glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
     //窗口透明
     // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER , GLFW_TRUE);
     
@@ -112,6 +115,8 @@ void Application::execute(){
 }
 
 void Application::init(){
+    glEnable(GL_MULTISAMPLE);
+    
     purple::Log::i("purple_engine" , "init");
 
     // image = purple::BuildImageByAsset(std::string("t2.jpg"));
