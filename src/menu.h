@@ -85,6 +85,8 @@ private:
 
     float findMenuWidth();
 
+    float findMenuHeight();
+
     //重置menuitem位置
     void resetMenuItemsPosition();
 

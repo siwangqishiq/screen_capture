@@ -35,13 +35,16 @@ void Application::execute(){
     mScreenApi->findScreenSize(mScreenWidth , mScreenHeight);
     mScreenImagePixel = mScreenApi->captureScreen();
 
-    #ifdef _WIN32
-    window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
-        nullptr, nullptr);
-    #elif __linux__
+    // #ifdef _WIN32
+    // window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
+    //     glfwGetPrimaryMonitor(), nullptr);
+    // #elif __linux__
+    // window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
+    //     glfwGetPrimaryMonitor(), nullptr);
+    // #endif
+    
     window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
         glfwGetPrimaryMonitor(), nullptr);
-    #endif
     // window = glfwCreateWindow(400, 200, "screen capture", nullptr, nullptr);
     
     if (window == nullptr) {
@@ -116,7 +119,7 @@ void Application::execute(){
 
 void Application::init(){
     glEnable(GL_MULTISAMPLE);
-    
+
     purple::Log::i("purple_engine" , "init");
 
     // image = purple::BuildImageByAsset(std::string("t2.jpg"));

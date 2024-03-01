@@ -69,6 +69,10 @@ void ActionMenu::locateMenuLocation(float &right , float &top){
     const float offsetPadding = 8.0f; 
     right = clipRight;
     top = clipBottom - offsetPadding;
+
+    if(top - findMenuHeight() <= offsetPadding){
+        top = findMenuHeight() + offsetPadding;
+    }
 }
 
 float ActionMenu::findMenuWidth(){
@@ -76,6 +80,17 @@ float ActionMenu::findMenuWidth(){
     for(int i = mMenuItems.size() - 1;i >= 0; i--){
         auto item = mMenuItems[i];
         totalWidth += item->mWidth;
+    }//end for i
+    return totalWidth;
+}
+
+float ActionMenu::findMenuHeight(){
+    float totalWidth = 0.0f;
+    for(int i = mMenuItems.size() - 1;i >= 0; i--){
+        auto item = mMenuItems[i];
+        if(item->mHeight > 0){
+            return item->mHeight;
+        }
     }//end for i
     return totalWidth;
 }

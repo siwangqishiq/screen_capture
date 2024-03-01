@@ -30,6 +30,9 @@ bool Application::isLinux = false;
 void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     screenWidth = GetSystemMetrics(SM_CXSCREEN);
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    // screenWidth = 4 * screenWidth;
+    // screenHeight = 4 * screenHeight;
 }
 
 uint8_t* ScreenApi::captureScreen(){
