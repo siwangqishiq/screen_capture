@@ -45,10 +45,13 @@ private:
 
     void adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
             float preWinWidth , float preWinHeight);
+    
 public:
     static bool isWindows;
     static bool isMac;
     static bool isLinux;
+
+    bool isReadPixelMode = false;
     
     void appInit();
 
@@ -58,6 +61,7 @@ public:
 
     void init();
     void tick();
+    void render();
 
     void onResize(int w,int h);
 

@@ -3,7 +3,7 @@
 #include "bridge.h"
 #include "purple.h"
 #include "constants.h"
-#include "action_menu.h"
+#include "menu.h"
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
@@ -128,7 +128,12 @@ void Application::init(){
 
 void Application::tick(){
     purple::Engine::tick();
+    mActionMenu->update();
 
+    render();
+}
+
+void Application::render(){
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -138,16 +143,8 @@ void Application::tick(){
     renderMaskZone();
     renderSubThumbPreview();
 
-    if(mActionMenu != nullptr){
-        mActionMenu->tick();
-    }
-    // purple::Rect maskRect = imgDstRect;
-    // purple::Paint maskPaint;
-    // maskPaint.color = glm::vec4(0.0f ,0.0f ,0.0f , 0.4f);
-    // auto shapeBatch  = purple::Engine::getRenderEngine()->getShapeBatch();
-    // shapeBatch->begin();
-    // shapeBatch->renderRect(maskRect , maskPaint);
-    // shapeBatch->end();
+    //menu render
+    mActionMenu->render();
 }
 
 void Application::renderScreenCaptureImage(){
@@ -174,6 +171,10 @@ std::vector<float> Application::calClipPoints(){
 }
 
 void Application::renderMaskZone(){
+    if(isReadPixelMode){ 
+        return;
+    }
+
     auto result = calClipPoints();
 
     float left = result[0];

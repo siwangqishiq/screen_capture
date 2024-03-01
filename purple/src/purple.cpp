@@ -5,9 +5,13 @@
 #include "audio/audio.h"
 #include <stdio.h>
 #include "widget/timer.h"
+#include <algorithm>
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 namespace purple{
     std::shared_ptr<RenderEngine> purple::Engine::renderEngine_ = nullptr;
@@ -61,5 +65,31 @@ namespace purple{
         }
 
         return timer_;
+    }
+
+    //将引擎绘制内容 导出为图片
+    int Engine::exportImageFile(std::string path ,int left , int bottom, int width , int height){
+        Log::i("purple_engine" , "export image : %d, %d , %d , %d"
+            , left , bottom , width , height);
+        if(left < 0 || bottom < 0 || width <= 0 || height <= 0){
+            Log::e("purple_engine" , "export image error invalied param : %d, %d , %d , %d"
+                , left , bottom , width , height);
+            return -1;
+        }
+
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        glReadBuffer(GL_BACK_LEFT);
+        const int channel = 3;
+        const int size = channel * width * height;
+        std::vector<uint8_t> pixels(size);
+        glReadPixels(left , bottom , width , height,
+                    GL_RGB , GL_UNSIGNED_BYTE , pixels.data());
+        for(int line = 0; line != height/2; ++line) {
+            std::swap_ranges(pixels.begin() + 3 * width * line,
+                             pixels.begin() + 3 * width * (line+1),
+                             pixels.begin() + 3 * width * (height-line-1));
+        }//end for line
+        stbi_write_png(path.c_str() , width, height, channel , pixels.data() , channel * width);
+        return 0;    
     }
 }

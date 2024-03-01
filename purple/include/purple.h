@@ -30,6 +30,10 @@ namespace purple{
         static std::shared_ptr<RenderEngine> getRenderEngine();
 
         static std::shared_ptr<Timer> getTimer();
+        
+        //导出图片
+        static int exportImageFile(std::string path ,int left , int top , 
+                int width , int height);
     private:
         static std::shared_ptr<RenderEngine> renderEngine_;
         static std::shared_ptr<Timer> timer_;

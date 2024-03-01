@@ -38,7 +38,7 @@ public:
         mLeft = l;
         mTop = t;
     }
-private:
+protected:
     Application *mApp;
     std::string mName;
     std::string mIcon;
@@ -52,8 +52,10 @@ public:
     ActionMenu(Application *_app);
 
     void init();
-    void tick();
+    void update();
     void dispose();
+
+    void render();
     
     bool dispatchEventAction(EventAction action , float x , float y);
 

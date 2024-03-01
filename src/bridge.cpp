@@ -3,19 +3,17 @@
 #include <string>
 #include "application.h"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+// #define STB_IMAGE_WRITE_IMPLEMENTATION
+// #include "stb_image_write.h"
 
 void ScreenApi::onCaptureFininshed(){
     mApp->exit();
 }
 
 void ScreenApi::savePixel(int w,int h, uint8_t *pixel){
-    std::string filename = "screen.png";
-    stbi_write_png(filename.c_str() , w, h, 3 , pixel , 3 * w);
-    
-    std::cout << "save image finished" << std::endl;
-
+    // std::string filename = "screen.png";
+    // stbi_write_png(filename.c_str() , w, h, 3 , pixel , 3 * w);
+    // std::cout << "save image finished" << std::endl;
     // onCaptureFininshed();
     // stbi_write_jpg(filename.c_str(), 0, 0, 1, pixel , 100);
     // stbi_write_bmp(filename.c_str() , 0 , 0 ,1 , pixel);
@@ -74,7 +72,7 @@ uint8_t* ScreenApi::captureScreen(){
         buf[i + 2] = tmp;
     }//end for i
 
-    savePixel(scrWidth , scrHeight , buf);
+    // savePixel(scrWidth , scrHeight , buf);
 
     return buf;
 

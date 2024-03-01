@@ -1,5 +1,8 @@
-#include "action_menu.h"
+#include "menu.h"
 #include "application.h"
+
+#include "action_confirm.h"
+#include "action_cancel.h"
 
 ActionMenu::ActionMenu(Application *_app){
     mApp = _app;
@@ -11,22 +14,31 @@ void ActionMenu::init(){
 
 void ActionMenu::addMenuItems(){
     // confirm item
-    std::shared_ptr<MenuItem> confirmItem = std::make_shared<MenuItem>(this->mApp, 
-        "confirm" , "ic_confirm.png");
+    std::shared_ptr<MenuItem> confirmItem = std::make_shared<ConfirmMenuItem>(this->mApp);
     mMenuItems.push_back(confirmItem);
 
-    std::shared_ptr<MenuItem> cancelItem = std::make_shared<MenuItem>(this->mApp, 
-        "cancel" , "ic_cancel.png");
+    std::shared_ptr<MenuItem> cancelItem = std::make_shared<CancelMenuItem>(this->mApp);
     mMenuItems.push_back(cancelItem);
 }
 
-void ActionMenu::tick(){
+void ActionMenu::update(){
     if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED){
         return;
     }
 
     resetMenuItemsPosition();
+}
 
+void ActionMenu::render(){
+    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED){
+        return;
+    }
+
+    //do render
+    if(mApp->isReadPixelMode){ // no need to render
+       return; 
+    }
+    
     //render all items
     for(int i = mMenuItems.size() - 1;i >= 0; i--){
         auto item = mMenuItems[i];
@@ -135,7 +147,6 @@ void MenuItem::render(float left , float top){
 }
 
 void MenuItem::onItemClick(){
-    purple::Log::e("menu" , "%s clicked" , this->mName.c_str());
-    mApp->mState = ScreenState::Idle; 
+    purple::Log::w("menu" , "%s clicked" , this->mName.c_str());
 }
 
