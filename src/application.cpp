@@ -43,11 +43,15 @@ void Application::execute(){
     window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
         glfwGetPrimaryMonitor(), nullptr);
     #endif
-    
+
     // window = glfwCreateWindow(mScreenWidth, mScreenHeight, "screen capture", 
     //     glfwGetPrimaryMonitor(), nullptr);
     
     if (window == nullptr) {
+        const char *desc;
+        glfwGetError(&desc);
+        std::cout << desc << std::endl;
+        std::cerr << "window create failed!!!" << std::endl;
         glfwTerminate();
         return;
     }
@@ -104,10 +108,10 @@ void Application::execute(){
     init();
 
     while(!glfwWindowShouldClose(window)) {
-        tick();
-        glfwSwapBuffers(window);
         glfwPollEvents();
 
+        tick();
+        glfwSwapBuffers(window);
         glfwSwapInterval(1);//锁定固定帧率
     }//end while
     
