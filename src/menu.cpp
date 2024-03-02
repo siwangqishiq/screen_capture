@@ -3,6 +3,7 @@
 
 #include "action_confirm.h"
 #include "action_cancel.h"
+#include "action_edit.h"
 
 ActionMenu::ActionMenu(Application *_app){
     mApp = _app;
@@ -13,15 +14,26 @@ void ActionMenu::init(){
 }
 
 void ActionMenu::addMenuItems(){
+    
+    //paint a rectangle
+    std::shared_ptr<MenuItem> edRectItem = std::make_shared<EditPaintRectMenuItem>(this->mApp);
+    mMenuItems.push_back(edRectItem);
+
+    //paint a circle
+    std::shared_ptr<MenuItem> edCircleItem = std::make_shared<EditPaintCircleMenuItem>(this->mApp);
+    mMenuItems.push_back(edCircleItem);
+
+    //paint pencil
+    std::shared_ptr<MenuItem> edPencilItem = std::make_shared<EditPaintPencilMenuItem>(this->mApp);
+    mMenuItems.push_back(edPencilItem);
+
     // confirm item
     std::shared_ptr<MenuItem> confirmItem = std::make_shared<ConfirmMenuItem>(this->mApp);
     mMenuItems.push_back(confirmItem);
 
+    // cancel
     std::shared_ptr<MenuItem> cancelItem = std::make_shared<CancelMenuItem>(this->mApp);
     mMenuItems.push_back(cancelItem);
-
-    // std::shared_ptr<MenuItem> cancelItem2 = std::make_shared<CancelMenuItem>(this->mApp);
-    // mMenuItems.push_back(cancelItem2);
 }
 
 void ActionMenu::update(){

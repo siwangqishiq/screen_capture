@@ -25,8 +25,8 @@ public:
 
     ~MenuItem(){}
 
-    float mWidth = 40.0f;
-    float mHeight = 40.0f;
+    float mWidth = 50.0f;
+    float mHeight = 50.0f;
     float mLeft = 0.0f;
     float mTop = 0.0f;
 

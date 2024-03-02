@@ -11,6 +11,7 @@
 
 class IScreenApi;
 class ActionMenu;
+class IEditor;
 
 enum ScreenState{
     Idle,
@@ -40,6 +41,7 @@ private:
 
 
     void renderScreenCaptureImage();
+    void renderEditorContent();
     void renderMaskZone();
     void renderSubThumbPreview();
 
@@ -85,6 +87,7 @@ public:
     purple::Paint mMaskZonePaint;
     purple::Paint mMaskZoneBorderPaint;
 
-    //操作菜单
-    std::shared_ptr<ActionMenu> mActionMenu;
+    std::shared_ptr<ActionMenu> mActionMenu; //操作菜单
+
+    std::vector<std::shared_ptr<IEditor>> mEditorList; //编辑操作列表
 };

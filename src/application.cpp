@@ -4,6 +4,7 @@
 #include "purple.h"
 #include "constants.h"
 #include "menu.h"
+#include "editor.h"
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
@@ -104,7 +105,10 @@ void Application::execute(){
     // glfwSetCharCallback(windows , [](GLFWwindow* windows_ , unsigned int codepoint){
     // });
     
+    //紫电引擎初始化
     purple::Engine::init(mScreenWidth , mScreenHeight);
+
+    //应用初始化
     init();
 
     while(!glfwWindowShouldClose(window)) {
@@ -149,8 +153,9 @@ void Application::render(){
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // draw bottom image (screen image)
-    renderScreenCaptureImage();
+    renderScreenCaptureImage();// draw bottom image (screen image)
+
+    renderEditorContent();//editor content render
 
     renderMaskZone();
     renderSubThumbPreview();
@@ -171,6 +176,12 @@ void Application::renderScreenCaptureImage(){
     auto src = mScreenImage->getRect();
     spriteBatch->renderImage(*mScreenImage , src , imgDstRect);
     spriteBatch->end();
+}
+
+void Application::renderEditorContent(){
+    for(std::shared_ptr<IEditor> pEd : mEditorList){
+        pEd->renderEditorContent();
+    }//end for each
 }
 
 std::vector<float> Application::calClipPoints(){
