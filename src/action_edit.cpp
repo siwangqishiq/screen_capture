@@ -6,6 +6,12 @@
 std::string EditPaintRectMenuItem::Name = "paint_rect";
 void EditPaintRectMenuItem::onItemClick(){
     purple::Log::i("menu" , "%s menu click." , this->mName.c_str());
+
+    isSelected = !isSelected;
+
+    if(isSelected){
+        
+    }
 }
 
 

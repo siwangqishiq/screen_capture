@@ -16,7 +16,8 @@ class IEditor;
 enum ScreenState{
     Idle,
     DRAW_CAPTURE_ZONE,// 抓取需要截取的区域
-    CAPTURE_ZONE_GETTED//取得截取区域
+    CAPTURE_ZONE_GETTED,//取得截取区域
+    CAPTURE_ZONE_EDIT //截取区域编辑
 };
 
 enum EventAction{
@@ -47,7 +48,10 @@ private:
 
     void adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
             float preWinWidth , float preWinHeight);
-    
+
+    std::shared_ptr<IEditor> mCurrentEditor = nullptr;
+
+    void moveEditorToList(std::shared_ptr<IEditor> editor);
 public:
     static bool isWindows;
     static bool isMac;
@@ -68,6 +72,9 @@ public:
     void onResize(int w,int h);
 
     void onEventAction(EventAction action , float x , float y);
+
+    //设置当前编辑器
+    bool setCurrentEditor(std::shared_ptr<IEditor> editor);
 
     //计算裁剪点坐标 
     std::vector<float> calClipPoints();

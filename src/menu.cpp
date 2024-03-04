@@ -188,7 +188,7 @@ void MenuItem::render(float left , float top){
     bgPaint.color = glm::vec4(1.0f , 1.0f , 1.0f ,1.0f);
 
     shapeBatch->renderRect(dstRect , bgPaint);
-    if(this->isMouseHove){
+    if(this->isMouseHove || isSelected){
         purple::Paint mskPaint;
         mskPaint.color = glm::vec4(0.0f , 0.0f , 0.0f ,0.08f);
         shapeBatch->renderRect(dstRect , mskPaint);

@@ -137,7 +137,7 @@ void Application::init(){
     mMaskZoneBorderPaint.fillStyle = purple::FillStyle::Stroken; 
 
     mScreenImage = purple::BuildImageByPixlData(mScreenImagePixel , mScreenWidth , mScreenHeight , GL_RGB);
-
+    
     mActionMenu = std::make_shared<ActionMenu>(this);
     mActionMenu->init();
 }
@@ -154,7 +154,6 @@ void Application::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     renderScreenCaptureImage();// draw bottom image (screen image)
-
     renderEditorContent();//editor content render
 
     renderMaskZone();
@@ -182,6 +181,10 @@ void Application::renderEditorContent(){
     for(std::shared_ptr<IEditor> pEd : mEditorList){
         pEd->renderEditorContent();
     }//end for each
+
+    if(mCurrentEditor != nullptr){
+        mCurrentEditor->renderEditorContent();
+    }//end if
 }
 
 std::vector<float> Application::calClipPoints(){
@@ -435,4 +438,26 @@ void Application::onEventAction(EventAction action , float x , float y){
     }//end if
 
     // purple::Log::i("onEventAction" , "action = %d ,(%f , %f)" , action , x , y);
+}
+
+bool Application::setCurrentEditor(std::shared_ptr<IEditor> editor){
+    if(mState != CAPTURE_ZONE_GETTED || editor == nullptr){
+        return false;
+    }
+
+    if(mCurrentEditor != nullptr){
+        moveEditorToList(mCurrentEditor);
+    }
+
+    mCurrentEditor = editor;
+    mState = CAPTURE_ZONE_EDIT;
+    return true;
+}
+
+void Application::moveEditorToList(std::shared_ptr<IEditor> editor){
+    if(editor == nullptr){
+        return;
+    }
+
+    mEditorList.push_back(editor);
 }

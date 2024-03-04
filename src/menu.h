@@ -51,6 +51,8 @@ protected:
     std::string mName;
     std::string mIcon;
 
+    bool isSelected = false;
+
     std::shared_ptr<purple::TextureImage> mIconImage;
 };
 
