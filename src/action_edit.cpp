@@ -1,6 +1,8 @@
 #include "application.h"
 #include "action_edit.h"
 
+#include "editor_rect.h"
+
 
 // --------------------RECT------------------------
 std::string EditPaintRectMenuItem::Name = "paint_rect";
@@ -8,9 +10,9 @@ void EditPaintRectMenuItem::onItemClick(){
     purple::Log::i("menu" , "%s menu click." , this->mName.c_str());
 
     isSelected = !isSelected;
-
+    
     if(isSelected){
-        
+        mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
     }
 }
 

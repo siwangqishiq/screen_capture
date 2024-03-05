@@ -56,7 +56,8 @@ void ActionMenu::update(){
 }
 
 void ActionMenu::render(){
-    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED){
+    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED && 
+        mApp->mState != ScreenState::CAPTURE_ZONE_EDIT ){
         return;
     }
 
@@ -130,7 +131,8 @@ void ActionMenu::resetMenuItemsPosition(){
  }
 
 bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
-    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED){
+    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED 
+        && mApp->mState != ScreenState::CAPTURE_ZONE_EDIT){
         return false;
     }
 
@@ -190,7 +192,7 @@ void MenuItem::render(float left , float top){
     shapeBatch->renderRect(dstRect , bgPaint);
     if(this->isMouseHove || isSelected){
         purple::Paint mskPaint;
-        mskPaint.color = glm::vec4(0.0f , 0.0f , 0.0f ,0.08f);
+        mskPaint.color = glm::vec4(0.0f , 0.0f , 0.0f ,0.2f);
         shapeBatch->renderRect(dstRect , mskPaint);
     }
     shapeBatch->end();

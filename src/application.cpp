@@ -435,7 +435,12 @@ void Application::onEventAction(EventAction action , float x , float y){
             mState = (width <= 0 || height <= 0)?Idle:CAPTURE_ZONE_GETTED;
             break;
         }//end switch
-    }//end if
+    }else if(mState == CAPTURE_ZONE_EDIT){//编辑模式
+        if(mCurrentEditor != nullptr){
+            mCurrentEditor->dispatchEventAction(action , x , y);
+        }
+    }
+    //end if
 
     // purple::Log::i("onEventAction" , "action = %d ,(%f , %f)" , action , x , y);
 }
