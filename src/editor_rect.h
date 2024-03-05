@@ -17,6 +17,10 @@ public:
     virtual void renderEditorContent() override;
 
     virtual bool dispatchEventAction(EventAction action , float x , float y) override;
+
+    virtual void endPaint();
+
+    void limitInRect(purple::Rect &rect , float &x , float &y);
 private:
     Application *mApp;
 

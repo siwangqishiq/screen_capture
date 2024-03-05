@@ -76,12 +76,13 @@ public:
     void locateMenuLocation(float &right , float &top);
 
     void addMenuItems();
+
+    std::shared_ptr<MenuItem> mGrapMenuItem = nullptr;
 private:
     Application *mApp;
     glm::vec4 mBgColor = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);
     std::vector<std::shared_ptr<MenuItem>> mMenuItems;
 
-    std::shared_ptr<MenuItem> mGrapMenuItem = nullptr;
 
     float mItemGapSize = 8.0f;
 

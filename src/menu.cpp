@@ -37,7 +37,8 @@ void ActionMenu::addMenuItems(){
 }
 
 void ActionMenu::update(){
-    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED){
+    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED
+        && mApp->mState != ScreenState::CAPTURE_ZONE_EDIT){
         return;
     }
 
@@ -156,15 +157,15 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
         }
         case ActionUp:{
              if(mGrapMenuItem != nullptr){
-                // purple::Log::e("menu" , "grab menu up will click?");
                 auto rect = mGrapMenuItem->genItemWrapRect();
                 if(purple::isPointInRect(rect , x , y)){
                     mGrapMenuItem->onItemClick();
                     mGrapMenuItem->clearFlags();
                 }
+                ret = true;
+                // purple::Log::e("menu" , "grab menu up will click?");
+                mGrapMenuItem = nullptr;
             }
-            ret = true;
-            mGrapMenuItem = nullptr;
             break;
         }
         default:

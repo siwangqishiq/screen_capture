@@ -37,21 +37,12 @@ bool RectEditor::dispatchEventAction(EventAction action , float x , float y){
             return true;
         }
     }else{
+        // purple::Log::e("eidtor" , "action move or up  action = %d" , action);
         if(!mVisible){
             return false;
         }
 
-        if(x <= left){
-            x = left;
-        }else if(x >= right){
-            x = right;
-        }
-
-        if(y >= top){
-            y = top;
-        }else if(y <= bottom){
-            y = bottom;
-        }
+        limitInRect(captureContentRect , x , y);
 
         if(action == EventAction::ActionMove){
             mEndX = x;
@@ -59,11 +50,34 @@ bool RectEditor::dispatchEventAction(EventAction action , float x , float y){
         }else if(action == EventAction::ActionUp){
             mEndX = x;
             mEndY = y;
-        }//end if
 
+            endPaint();
+        }//end if
         return true;
     }
 
     return false;
+}
+
+//限制坐标在矩形区域内
+void RectEditor::limitInRect(purple::Rect &rect , float &x , float &y){
+    if(x <= rect.left){
+        x = rect.left;
+    }else if(x >= rect.getRight()){
+        x = rect.getRight();
+    }
+
+    if(y >= rect.top){
+        y = rect.top;
+    }else if(y <= rect.getBottom()){
+        y = rect.getBottom();
+    }
+}
+
+void RectEditor::endPaint(){
+    // mApp->mEditorList.push_back(std::shared_ptr<IEditor>(this));
+    mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
+
+    purple::Log::e("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
 

@@ -76,6 +76,9 @@ public:
     //设置当前编辑器
     bool setCurrentEditor(std::shared_ptr<IEditor> editor);
 
+    //是否可以重置选区
+    bool canResetClipZone();
+
     //计算裁剪点坐标 
     std::vector<float> calClipPoints();
 

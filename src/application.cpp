@@ -310,7 +310,9 @@ void Application::renderSubThumbPreview(){
     txtPaint.textGravity = purple::TextGravity::CenterLeft; 
 
     //调整预览窗口位置
-    adjustScalePreviewWinPosition(previewLeft , previewTop , dstRect.width , dstRect.height + infoRect.height);
+    adjustScalePreviewWinPosition(previewLeft , previewTop , 
+            dstRect.width , 
+            dstRect.height + infoRect.height);
 
     //reset postion
     dstRect.left = previewLeft;
@@ -403,6 +405,10 @@ void Application::onEventAction(EventAction action , float x , float y){
     }
 
     if(mState == Idle || mState == CAPTURE_ZONE_GETTED){ // idle空闲状态
+        if(mState == CAPTURE_ZONE_GETTED && !canResetClipZone()){ //已经确定选区的情况下 有编辑内容 这时不能重置选区
+            return;
+        }
+
         mState = DRAW_CAPTURE_ZONE;
         switch (action){
         case ActionDown:
@@ -436,6 +442,7 @@ void Application::onEventAction(EventAction action , float x , float y){
             break;
         }//end switch
     }else if(mState == CAPTURE_ZONE_EDIT){//编辑模式
+        // purple::Log::i("onEventAction" , "action: %d , x = %f , y = %f" ,action, x , y);
         if(mCurrentEditor != nullptr){
             mCurrentEditor->dispatchEventAction(action , x , y);
         }
@@ -446,17 +453,23 @@ void Application::onEventAction(EventAction action , float x , float y){
 }
 
 bool Application::setCurrentEditor(std::shared_ptr<IEditor> editor){
-    if(mState != CAPTURE_ZONE_GETTED || editor == nullptr){
-        return false;
-    }
+    // if(mState != CAPTURE_ZONE_GETTED || editor == nullptr){
+    //     return false;
+    // }
 
     if(mCurrentEditor != nullptr){
         moveEditorToList(mCurrentEditor);
     }
 
     mCurrentEditor = editor;
-    mState = CAPTURE_ZONE_EDIT;
+    if(mCurrentEditor != nullptr){
+        mState = CAPTURE_ZONE_EDIT;
+    }
     return true;
+}
+
+bool Application::canResetClipZone(){
+    return mEditorList.empty();
 }
 
 void Application::moveEditorToList(std::shared_ptr<IEditor> editor){

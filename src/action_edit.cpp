@@ -11,8 +11,11 @@ void EditPaintRectMenuItem::onItemClick(){
 
     isSelected = !isSelected;
     
-    if(isSelected){
+    if(isSelected){ //编辑按钮被选中
         mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
+    }else{ //取消选中
+        mApp->setCurrentEditor(nullptr);
+        mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
     }
 }
 
