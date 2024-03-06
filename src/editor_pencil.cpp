@@ -1,11 +1,11 @@
-#include "editor_rect.h"
-#include "purple.h"
+#include "editor_pencil.h"
 
-void RectEditor::renderEditorContent(){
+
+void PencilEditor::renderEditorContent(){
     if(!mVisible){
         return;
     }
-
+    
     float left = mStartX < mEndX?mStartX:mEndX;//left
     float right = mStartX < mEndX?mEndX:mStartX;//right
     float top = mStartY > mEndY?mStartY:mEndY;//top
@@ -18,9 +18,7 @@ void RectEditor::renderEditorContent(){
     shapeBatch->end();
 }
 
-void RectEditor::endPaint(){
-    // mApp->mEditorList.push_back(std::shared_ptr<IEditor>(this));
-    mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
+void PencilEditor::endPaint(){
+    mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp));
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
-
