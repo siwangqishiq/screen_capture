@@ -82,11 +82,34 @@ float renderCircleBlur(vec2 pos , float blur){
     return 1.0f - smoothstep(radius - blur , radius , distance(pos , center));
 }
 
+//render a stoken oval
+float stokenOval(vec2 pos , vec2 center , float stokenWidth){
+    float ra = vRect.z / 2.0f;
+    float rb = vRect.w / 2.0f;
 
+    float raInner = ra - 2.0f * stokenWidth;
+    float rbInner = rb - 2.0f * stokenWidth;
+
+    float xa = pos.x - center.x;
+    float xb = pos.y - center.y;
+
+    if(pow(xa , 2.0f) / pow(ra , 2.0f) + (pow(xb , 2.0f)) / pow(rb , 2.0f) <= 1.0f
+        && pow(xa , 2.0f) / pow(raInner , 2.0f) + (pow(xb , 2.0f)) / pow(rbInner , 2.0f) >= 1.0f){
+        return one;
+    }
+    return zero;
+}
+
+//render a oval
 float renderOval(vec2 pos){
     float ra = vRect.z / 2.0f;
     float rb = vRect.w / 2.0f;
     vec2 center = vec2(vRect.x + ra , vRect.y - rb);
+
+    if(floatEqual(vShape.y , mode_stoken)){
+        float stokenWidth = vShape.z;
+        return stokenOval(pos , center , stokenWidth);
+    }
 
     float xa = pos.x - center.x;
     float xb = pos.y - center.y;
