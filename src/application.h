@@ -57,6 +57,10 @@ public:
     static bool isMac;
     static bool isLinux;
 
+    std::string mOutputFilePath = "test_screen.png";
+
+    double mLastClickTime = 0.0;
+
     bool isReadPixelMode = false;
     
     void appInit();
@@ -78,6 +82,9 @@ public:
 
     //是否可以重置选区
     bool canResetClipZone();
+
+    //鼠标双击
+    bool onMouseDoubleClick();
 
     //计算裁剪点坐标 
     std::vector<float> calClipPoints();

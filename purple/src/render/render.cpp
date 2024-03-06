@@ -577,7 +577,7 @@ namespace purple{
     void RenderEngine::renderTriangles(std::vector<float> &data ,glm::mat4 &transMat, Paint &paint){
         const int attrPerVer = 2 + 4;
         int vertexCount = data.size() / attrPerVer;
-
+        
     }
 
     //自定义带纹理的shader

@@ -46,13 +46,13 @@ public:
         isMouseHove = false;
         isPressed = false;
     }
-protected:
+
     Application *mApp;
     std::string mName;
     std::string mIcon;
-
+protected:
     bool isSelected = false;
-
+    
     std::shared_ptr<purple::TextureImage> mIconImage;
 };
 
@@ -76,6 +76,8 @@ public:
     void locateMenuLocation(float &right , float &top);
 
     void addMenuItems();
+
+    std::shared_ptr<MenuItem> findMenuItemByName(std::string name) const;
 
     std::shared_ptr<MenuItem> mGrapMenuItem = nullptr;
 private:

@@ -36,6 +36,15 @@ void ActionMenu::addMenuItems(){
     mMenuItems.push_back(cancelItem);
 }
 
+std::shared_ptr<MenuItem> ActionMenu::findMenuItemByName(std::string name) const{
+    for(auto item : mMenuItems){
+        if(item->mName == name){
+            return item;
+        }
+    }//end for each
+    return nullptr;
+}
+
 void ActionMenu::update(){
     if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED
         && mApp->mState != ScreenState::CAPTURE_ZONE_EDIT){

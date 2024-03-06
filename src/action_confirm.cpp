@@ -21,9 +21,9 @@ void ConfirmMenuItem::doSaveImage() const{
     float right = coords[1];
     float top = coords[2];
     float bottom = coords[3];
-
+    
     long t1 = purple::currentTimeMillis();
-    int errCode = purple::Engine::exportImageFile("test_screen.png" 
+    int errCode = purple::Engine::exportImageFile(mApp->mOutputFilePath
         , static_cast<int>(left) 
         , static_cast<int>(bottom)
         , static_cast<int>(right - left) 

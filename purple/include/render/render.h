@@ -58,6 +58,9 @@ namespace purple{
 
         //归一化变换矩阵
         glm::mat3 normalMatrix_;
+        
+        //单位矩阵
+        glm::mat4 tmpTransMatrix_;
 
         //==============render api ================
 

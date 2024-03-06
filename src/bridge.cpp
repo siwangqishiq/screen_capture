@@ -30,9 +30,6 @@ bool Application::isLinux = false;
 void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     screenWidth = GetSystemMetrics(SM_CXSCREEN);
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
-    // screenWidth = 4 * screenWidth;
-    // screenHeight = 4 * screenHeight;
 }
 
 uint8_t* ScreenApi::captureScreen(){
@@ -156,6 +153,15 @@ void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
     screenHeight = 800;
 }
 
-#else
+uint8_t* ScreenApi::captureScreen(){
+    int scrWidth = 0;
+    int scrHeight = 0;
+    findScreenSize(scrWidth , scrHeight);
+
+    uint8_t *pixelBuf = new uint8_t [3 * scrWidth * scrHeight];
+    return pixelBuf;
+}
+
+#else //other platforms raspiberry playstation switch xbox?
 
 #endif

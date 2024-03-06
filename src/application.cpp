@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "menu.h"
 #include "editor.h"
+#include "action_confirm.h"
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
@@ -79,9 +80,18 @@ void Application::execute(){
         Application* app_ = static_cast<Application *>(glfwGetWindowUserPointer(windows_));
         if(button == GLFW_MOUSE_BUTTON_LEFT){ //左键事件
             if(event == GLFW_PRESS){
+                bool isCost = false;
+                double currentTime = glfwGetTime();
+                if(currentTime - app_->mLastClickTime < 0.2f){
+                    isCost = app_->onMouseDoubleClick();
+                }
+                app_->mLastClickTime = currentTime;
                 app_->mMouseActionDown = true;
-                app_->onEventAction(ActionDown , app_->mEventX 
-                    , app_->mScreenHeight - app_->mEventY);
+
+                if(!isCost){
+                    app_->onEventAction(ActionDown , app_->mEventX 
+                        , app_->mScreenHeight - app_->mEventY);
+                }
             }else if(event == GLFW_RELEASE){
                 app_->mMouseActionDown = false;
                 app_->onEventAction(ActionUp , app_->mEventX 
@@ -404,8 +414,8 @@ void Application::onEventAction(EventAction action , float x , float y){
         return;
     }
 
-    if(mState == Idle || mState == CAPTURE_ZONE_GETTED){ // idle空闲状态
-        if(mState == CAPTURE_ZONE_GETTED && !canResetClipZone()){ //已经确定选区的情况下 有编辑内容 这时不能重置选区
+    if(mState == Idle){ // idle空闲状态
+        if(!canResetClipZone()){ //已经确定选区的情况下 有编辑内容 这时不能重置选区
             return;
         }
 
@@ -470,6 +480,19 @@ bool Application::setCurrentEditor(std::shared_ptr<IEditor> editor){
 
 bool Application::canResetClipZone(){
     return mEditorList.empty();
+}
+
+bool Application::onMouseDoubleClick(){
+    purple::Log::w("app" , "onMouseDoubleClick ");
+
+    auto confirmMenuItem = mActionMenu->findMenuItemByName(ConfirmMenuItem::Name);
+    if(confirmMenuItem != nullptr){
+        confirmMenuItem->onItemClick();
+        return true;
+    }else{
+        purple::Log::e("app" , "not found confirmMenuItem");
+    }
+    return false;
 }
 
 void Application::moveEditorToList(std::shared_ptr<IEditor> editor){
