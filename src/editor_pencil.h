@@ -8,11 +8,16 @@ class PencilEditor : public BaseEditor{
 public:
     PencilEditor(Application *_app) : BaseEditor(_app){
         mPaint.color = glm::vec4(0.0f , 0.0f , 1.0f , 1.0f);
-        mPaint.fillStyle = purple::FillStyle::Stroken;
-        mPaint.stokenWidth = 6.0f; 
+        mPaint.fillStyle = purple::FillStyle::Filled;
+        mPencilStokenWidth = 6.0f;
     }
 
     virtual void renderEditorContent() override;
     
     virtual void endPaint();
+
+    virtual bool dispatchEventAction(EventAction action , float x , float y) override;
+private:
+    std::vector<glm::vec2> mPoints;
+    float mPencilStokenWidth;
 };

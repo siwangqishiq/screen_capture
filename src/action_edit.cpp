@@ -14,12 +14,7 @@ void EditPaintRectMenuItem::onItemClick(){
     isSelected = !isSelected;
     
     if(isSelected){ //编辑按钮被选中
-        for(auto menuItem : mApp->mActionMenu->getMenuItems()){
-            if(menuItem->mName != EditPaintRectMenuItem::Name){
-                menuItem->isSelected = false;
-            }
-        }//end for each
-
+        clearOtherMenuItemSelectState();
         mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
@@ -35,12 +30,7 @@ void EditPaintCircleMenuItem::onItemClick(){
     
     isSelected = !isSelected;
     if(isSelected){ //编辑按钮被选中
-        for(auto menuItem : mApp->mActionMenu->getMenuItems()){
-            if(menuItem->mName != EditPaintCircleMenuItem::Name){
-                menuItem->isSelected = false;
-            }
-        }//end for each
-
+        clearOtherMenuItemSelectState();
         mApp->setCurrentEditor(std::make_shared<CircleEditor>(mApp));
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
@@ -56,12 +46,7 @@ void EditPaintPencilMenuItem::onItemClick(){
 
     isSelected = !isSelected;
     if(isSelected){ //编辑按钮被选中
-        for(auto menuItem : mApp->mActionMenu->getMenuItems()){
-            if(menuItem->mName != EditPaintPencilMenuItem::Name){
-                menuItem->isSelected = false;
-            }
-        }//end for each
-
+        clearOtherMenuItemSelectState();
         mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp));
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);

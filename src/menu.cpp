@@ -187,6 +187,14 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
 void ActionMenu::dispose(){
 }
 
+void MenuItem::clearOtherMenuItemSelectState(){
+    for(std::shared_ptr<MenuItem> menuItem : mApp->mActionMenu->getMenuItems()){
+        if(menuItem.get() != this){
+            menuItem->isSelected = false;
+        }
+    }//end for each
+}
+
 void MenuItem::render(float left , float top){
     purple::Rect dstRect;
     dstRect.left = mLeft;

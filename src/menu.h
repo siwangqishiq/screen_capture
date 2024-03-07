@@ -42,6 +42,8 @@ public:
         mTop = t;
     }
 
+    void clearOtherMenuItemSelectState();
+
     void clearFlags(){
         isMouseHove = false;
         isPressed = false;
