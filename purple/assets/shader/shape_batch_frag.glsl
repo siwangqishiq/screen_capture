@@ -87,8 +87,8 @@ float stokenOval(vec2 pos , vec2 center , float stokenWidth){
     float ra = vRect.z / 2.0f;
     float rb = vRect.w / 2.0f;
 
-    float raInner = ra - 2.0f * stokenWidth;
-    float rbInner = rb - 2.0f * stokenWidth;
+    float raInner = max(ra - 2.0f * stokenWidth , 0.0f);
+    float rbInner = max(rb - 2.0f * stokenWidth , 0.0f);
 
     float xa = pos.x - center.x;
     float xb = pos.y - center.y;

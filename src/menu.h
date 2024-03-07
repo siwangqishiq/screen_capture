@@ -50,8 +50,8 @@ public:
     Application *mApp;
     std::string mName;
     std::string mIcon;
-protected:
     bool isSelected = false;
+protected:
     
     std::shared_ptr<purple::TextureImage> mIconImage;
 };
@@ -80,6 +80,10 @@ public:
     std::shared_ptr<MenuItem> findMenuItemByName(std::string name) const;
 
     std::shared_ptr<MenuItem> mGrapMenuItem = nullptr;
+
+    std::vector<std::shared_ptr<MenuItem>> getMenuItems() const{
+        return mMenuItems;
+    }
 private:
     Application *mApp;
     glm::vec4 mBgColor = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);

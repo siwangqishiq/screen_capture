@@ -43,7 +43,7 @@ namespace purple{
         AudioManager::getInstance()->init();
 
         long endTime = currentTimeMillis();
-        Log::i(TAG , "purple engine start time : %ld ms" , endTime - startTime);
+        Log::w(TAG , "purple engine start time : %ld ms" , endTime - startTime);
     }
 
     void Engine::tick(){
