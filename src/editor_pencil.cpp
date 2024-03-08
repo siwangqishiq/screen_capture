@@ -36,6 +36,7 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
             mEndY = y;
 
             mPoints.push_back(glm::vec2(mEndX , mEndY));
+
             mVisible = true;
             return true;
         }
@@ -48,11 +49,13 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
         limitInRect(captureContentRect , x , y);
 
         if(action == EventAction::ActionMove){
+            addPoints(x , y);
+
             mEndX = x;
             mEndY = y;
-
-            mPoints.push_back(glm::vec2(mEndX , mEndY));
         }else if(action == EventAction::ActionUp){
+            addPoints(x , y);
+
             mEndX = x;
             mEndY = y;
 
@@ -62,4 +65,17 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
         return true;
     }
     return false;
+}
+
+void PencilEditor::addPoints(float x , float y){
+    glm::vec2 startPos(mEndX , mEndY);
+    glm::vec2 curPos = startPos;
+    glm::vec2 endPos(x, y);
+    glm::vec2 dirNormal = glm::normalize(endPos - startPos);
+    
+    while(glm::distance(curPos , endPos) > mMinDistance){
+        curPos = startPos + dirNormal * mMinDistance;
+        mPoints.push_back(curPos);
+        startPos = curPos;
+    }//end while
 }

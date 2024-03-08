@@ -3,6 +3,7 @@
 #include "menu.h"
 #include <string>
 
+
 //绘制矩形
 class EditPaintRectMenuItem : public MenuItem{
 public:
@@ -32,3 +33,5 @@ public:
     
     virtual void onItemClick() override;
 };
+
+

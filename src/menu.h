@@ -11,6 +11,44 @@ public:
     virtual void onItemClick() = 0;
 };
 
+class MenuItem;
+class EditPaintSetting{
+private:
+    float mLeft;
+    float mTop;
+    float mItemWidth = 25.0f;
+    float mHeight = 40.0f;
+    float mWidth = 0.0f;
+
+    float mMargin = 8.0f;
+
+    std::vector<glm::vec4> mColors = 
+        {
+            glm::vec4(1.0f , 0.0f , 0.0f , 1.0f),
+            glm::vec4(1.0f , 0.5f , 0.0f , 1.0f),
+            glm::vec4(0.0f , 0.0f , 1.0f , 1.0f),
+            glm::vec4(0.0f , 1.0f , 0.0f , 1.0f),
+            glm::vec4(0.0f , 0.0f , 0.0f , 1.0f),
+            glm::vec4(1.0f , 1.0f , 1.0f , 1.0f)
+        };
+    
+    std::vector<float> mSizes = {3.0f , 6.0f , 12.0f};
+
+    int mCurrentSizeIndex = 1;
+    int mCurrentColorIndex = 0;
+public:
+    EditPaintSetting(MenuItem *_item) : mMenuItem(_item){}
+
+    bool isVisible = false;
+    
+    void update();
+    void render();
+
+    bool dispatchEventAction(EventAction action , float x , float y);
+
+    MenuItem *mMenuItem;
+};
+
 // 菜单项
 class MenuItem: public IMenuItemCallback{
 public:
@@ -53,8 +91,10 @@ public:
     std::string mName;
     std::string mIcon;
     bool isSelected = false;
-protected:
     
+    std::shared_ptr<EditPaintSetting> mEditSetting = nullptr;
+
+protected:
     std::shared_ptr<purple::TextureImage> mIconImage;
 };
 
@@ -103,3 +143,4 @@ private:
 
     int isHitMenuItems(float x , float y);
 };
+

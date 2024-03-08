@@ -18,14 +18,17 @@ void ActionMenu::addMenuItems(){
     //paint a rectangle
     std::shared_ptr<MenuItem> edRectItem = std::make_shared<EditPaintRectMenuItem>(this->mApp);
     mMenuItems.push_back(edRectItem);
+    edRectItem->mEditSetting = std::make_shared<EditPaintSetting>(edRectItem.get());
 
     //paint a circle
     std::shared_ptr<MenuItem> edCircleItem = std::make_shared<EditPaintCircleMenuItem>(this->mApp);
     mMenuItems.push_back(edCircleItem);
+    edCircleItem->mEditSetting = std::make_shared<EditPaintSetting>(edCircleItem.get());
 
     //paint pencil
     std::shared_ptr<MenuItem> edPencilItem = std::make_shared<EditPaintPencilMenuItem>(this->mApp);
     mMenuItems.push_back(edPencilItem);
+    edPencilItem->mEditSetting = std::make_shared<EditPaintSetting>(edPencilItem.get());
 
     // confirm item
     std::shared_ptr<MenuItem> confirmItem = std::make_shared<ConfirmMenuItem>(this->mApp);
@@ -61,6 +64,10 @@ void ActionMenu::update(){
         auto rect = item->genItemWrapRect();
         if(purple::isPointInRect(rect , x , y)){
             item->isMouseHove = true;
+        }
+        
+        if(item->mEditSetting != nullptr){
+            item->mEditSetting->update();
         }
     }//end for each
 }
@@ -191,6 +198,10 @@ void MenuItem::clearOtherMenuItemSelectState(){
     for(std::shared_ptr<MenuItem> menuItem : mApp->mActionMenu->getMenuItems()){
         if(menuItem.get() != this){
             menuItem->isSelected = false;
+
+            if(menuItem->mEditSetting != nullptr){
+                menuItem->mEditSetting->isVisible = false;
+            }
         }
     }//end for each
 }
@@ -215,7 +226,6 @@ void MenuItem::render(float left , float top){
     }
     shapeBatch->end();
 
-
     auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
     spriteBatch->begin();
 
@@ -223,9 +233,54 @@ void MenuItem::render(float left , float top){
 
     spriteBatch->renderImage(*mIconImage , srcRect , dstRect);
     spriteBatch->end();
+
+    if(this->mEditSetting != nullptr){
+        this->mEditSetting->render();
+    }//end if
 }
 
 void MenuItem::onItemClick(){
     purple::Log::w("menu" , "%s clicked" , this->mName.c_str());
 }
+
+void EditPaintSetting::update(){
+    //measure and location
+    int itemCount = mSizes.size() + mColors.size();
+    mWidth = itemCount * mItemWidth;
+
+    purple::Rect menuRect = mMenuItem->genItemWrapRect();
+
+    mTop = menuRect.getBottom() - mMargin;
+    if(mTop - mHeight <= 0.0f){
+        mTop = menuRect.getTop() + mMargin;
+    }
+
+    mLeft = menuRect.getLeft() + menuRect.width / 2.0f - mWidth / 2.0f ;
+}
+
+void EditPaintSetting::render(){
+    if(!isVisible){
+        return;
+    }
+
+    purple::Paint paint;
+    paint.color = glm::vec4(1.0f , 1.0f , 1.0f, 1.0f);
+    paint.fillStyle = purple::FillStyle::Filled;
+
+    purple::Rect rect(mLeft , mTop , mWidth , mHeight);
+
+    auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    shapeBatch->begin();
+    shapeBatch->renderRoundRect(rect , 3.0f , paint);
+    shapeBatch->end();
+}
+
+bool EditPaintSetting::dispatchEventAction(EventAction action , float x , float y){
+    if(!isVisible){
+        return false;
+    }
+
+    return false;
+}
+
 

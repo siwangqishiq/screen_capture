@@ -12,12 +12,15 @@ public:
         mPencilStokenWidth = 6.0f;
     }
 
+    void addPoints(float x , float y);
+
     virtual void renderEditorContent() override;
     
     virtual void endPaint();
 
     virtual bool dispatchEventAction(EventAction action , float x , float y) override;
 private:
+    float mMinDistance = 2.0f;
     std::vector<glm::vec2> mPoints;
     float mPencilStokenWidth;
 };
