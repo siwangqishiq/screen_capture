@@ -1,10 +1,10 @@
-#include "menu.h"
+#include "action/menu.h"
 #include "application.h"
 
-#include "action_confirm.h"
-#include "action_cancel.h"
-#include "action_edit.h"
-#include "editor.h"
+#include "action/action_confirm.h"
+#include "action/action_cancel.h"
+#include "action/action_edit.h"
+#include "editor/editor.h"
 
 ActionMenu::ActionMenu(Application *_app){
     mApp = _app;

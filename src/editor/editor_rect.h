@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "editor.h"
+#include "editor/editor.h"
 #include "application.h"
 #include "purple.h"
 

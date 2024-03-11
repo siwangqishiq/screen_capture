@@ -1,5 +1,5 @@
 #include "application.h"
-#include "action_confirm.h"
+#include "action/action_confirm.h"
 
 std::string ConfirmMenuItem::Name = "confirm";
 

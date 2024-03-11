@@ -1,4 +1,4 @@
-#include "bridge.h"
+#include "platform/bridge.h"
 #include <iostream>
 #include <string>
 #include "application.h"

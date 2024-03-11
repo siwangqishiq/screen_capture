@@ -1,11 +1,11 @@
 
 #include "application.h"
-#include "bridge.h"
+#include "platform/bridge.h"
 #include "purple.h"
-#include "constants.h"
-#include "menu.h"
-#include "editor.h"
-#include "action_confirm.h"
+#include "config/constants.h"
+#include "action/menu.h"
+#include "editor/editor.h"
+#include "action/action_confirm.h"
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);

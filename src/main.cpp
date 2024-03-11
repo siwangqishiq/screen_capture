@@ -3,7 +3,7 @@
 #include <thread>
 #include <memory>
 #include "application.h"
-#include "bridge.h"
+#include "platform/bridge.h"
 #include <string>
 
 void subThreadEntry(){

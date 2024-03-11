@@ -16,13 +16,23 @@ SET(CMAKE_BUILD_TYPE "Debug")
 
 include_directories(vender/glfw)
 include_directories(purple/include)
+include_directories(src)
 
 add_subdirectory(vender/glfw)
 add_subdirectory(purple)
 
 aux_source_directory(src SRCS)
+aux_source_directory(src/platform SRCS_PLATFORM)
+aux_source_directory(src/action SRCS_ACTION)
+aux_source_directory(src/editor SRCS_EDITOR)
+aux_source_directory(src/config SRCS_CONFIG)
 
-add_executable(${PROJECT_NAME} ${SRCS})
+add_executable(${PROJECT_NAME}  ${SRCS}
+                                ${SRCS_PLATFORM}
+                                ${SRCS_ACTION}
+                                ${SRCS_EDITOR}
+                                ${SRCS_CONFIG}
+                                )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall")
 # set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")

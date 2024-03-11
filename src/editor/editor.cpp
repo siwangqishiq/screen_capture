@@ -1,4 +1,4 @@
-#include "editor.h"
+#include "editor/editor.h"
 #include "application.h"
 
 //限制坐标在矩形区域内

@@ -1,9 +1,9 @@
 #include "application.h"
-#include "action_edit.h"
+#include "action/action_edit.h"
 
-#include "editor_rect.h"
-#include "editor_circle.h"
-#include "editor_pencil.h"
+#include "editor/editor_rect.h"
+#include "editor/editor_circle.h"
+#include "editor/editor_pencil.h"
 
 
 // --------------------RECT------------------------

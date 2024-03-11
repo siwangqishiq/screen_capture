@@ -1,4 +1,4 @@
-#include "editor_rect.h"
+#include "editor/editor_rect.h"
 #include "purple.h"
 
 void RectEditor::renderEditorContent(){
