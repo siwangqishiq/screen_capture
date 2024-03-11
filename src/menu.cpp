@@ -4,6 +4,7 @@
 #include "action_confirm.h"
 #include "action_cancel.h"
 #include "action_edit.h"
+#include "editor.h"
 
 ActionMenu::ActionMenu(Application *_app){
     mApp = _app;
@@ -147,6 +148,22 @@ void ActionMenu::resetMenuItemsPosition(){
     return -1;
  }
 
+ bool ActionMenu::isHitEditPanel(float x , float y){
+    for(unsigned int i = 0 ; i < mMenuItems.size() ;i++){
+        auto editPanel = mMenuItems[i]->mEditSetting;
+        if(editPanel != nullptr && editPanel->isVisible){
+            auto rect = editPanel->genWrapRect();
+            if(purple::isPointInRect(rect , x , y)){
+                mEditPaintSetting = editPanel;
+                mEditPaintSetting->dispatchEventAction(EventAction::ActionDown , x, y);
+                mEditPaintSetting->onActionDown(x , y);
+                return true;
+            }
+        }//end if
+    }//end for i
+     return false;
+ }
+
 bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
     if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED 
         && mApp->mState != ScreenState::CAPTURE_ZONE_EDIT){
@@ -163,11 +180,17 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
                 ret = true;
                 // purple::Log::e("menu" , "grab menu wait...");
             }
+
+            isHitEditPanel(x , y);
             break;
         }
         case ActionMove:{
             if(mGrapMenuItem != nullptr){
                 ret = true;
+            }
+            if(mEditPaintSetting != nullptr){
+                ret = true;
+                mEditPaintSetting->dispatchEventAction(ActionMove , x , y);
             }
             break;
         }
@@ -181,6 +204,13 @@ bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
                 ret = true;
                 // purple::Log::e("menu" , "grab menu up will click?");
                 mGrapMenuItem = nullptr;
+            }
+
+            if(mEditPaintSetting != nullptr){
+                mEditPaintSetting->dispatchEventAction(ActionUp , x , y);
+                mEditPaintSetting->onActionUp(x , y);
+                ret = true;
+                mEditPaintSetting = nullptr;
             }
             break;
         }
@@ -272,15 +302,118 @@ void EditPaintSetting::render(){
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
     shapeBatch->begin();
     shapeBatch->renderRoundRect(rect , 3.0f , paint);
+
+    unsigned int index = 0;
+    float x = rect.left;
+    float y = rect.top;
+    //render storken width panel
+    purple::Paint grayPaint;
+    grayPaint.color = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);
+
+    purple::Paint selectedPaint;
+    selectedPaint.color = getSelectedColor();
+    if(mCurrentColorIndex == mColors.size() - 1){
+        selectedPaint.fillStyle = purple::FillStyle::Stroken;
+        selectedPaint.color = glm::vec4(0.0f , 0.0f , 0.0f ,1.0f);
+    }
+    for(index = 0; index < this->mSizes.size(); index++){
+        if(mCurrentSizeIndex == index){
+            shapeBatch->renderCircle(x + index * mItemWidth + mItemWidth / 2.0f 
+                , y - mHeight / 2.0f , mSizes[index] , selectedPaint);
+        }else{
+            shapeBatch->renderCircle(x + index * mItemWidth + mItemWidth / 2.0f 
+                , y - mHeight / 2.0f , mSizes[index] , grayPaint);
+        }
+        
+    }//end for index
+
+    //render color panel
+    float colorCubeWidth = mItemWidth * 0.8f;
+    float colorCubeHeight = colorCubeWidth;
+    
+    for(;index < mSizes.size() + mColors.size() ; index++){
+        unsigned int colorIndex = index - mSizes.size();
+        float left = x + index * mItemWidth + (mItemWidth - colorCubeWidth) / 2.0f;
+        float top = y - (mHeight - colorCubeHeight) / 2.0f;
+        purple::Rect colorCubeRect(left , top , colorCubeWidth , colorCubeHeight);
+        purple::Paint colorCubePaint;
+        colorCubePaint.color = mColors[colorIndex];
+
+        if(mSizes.size() + mColors.size() - 1 == index){ // last is white show a stoken rect
+            colorCubePaint.fillStyle = purple::FillStyle::Stroken;
+            colorCubePaint.color = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);
+        }
+
+        shapeBatch->renderRect(colorCubeRect , colorCubePaint);
+        if(colorIndex == mCurrentColorIndex){
+            purple::Paint colorSelectPaint;
+            colorSelectPaint.color = glm::vec4(1.0f , 1.0f ,1.0f ,1.0f);
+            if(mSizes.size() + mColors.size() - 1 == index){ // last is white 
+                colorSelectPaint.color = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);
+            }
+            auto selectRect = colorCubeRect;
+            selectRect.width = 0.5f*colorCubeRect.width;
+            selectRect.height = 0.5f*colorCubeRect.height;
+            selectRect.left += selectRect.width / 2.0f;
+            selectRect.top -= selectRect.height / 2.0f;
+
+            shapeBatch->renderRect(selectRect , colorSelectPaint);
+        }
+    }//end for index
+
     shapeBatch->end();
 }
 
 bool EditPaintSetting::dispatchEventAction(EventAction action , float x , float y){
-    if(!isVisible){
-        return false;
-    }
-
     return false;
 }
 
+int EditPaintSetting::findActionIndex(float x , float y){
+    purple::Rect rect = genWrapRect();
+    if(purple::isPointInRect(rect , x , y)){
+        float offset = x - rect.left;
+        int itemCount = mSizes.size() + mColors.size();
+        const int retIndex = static_cast<int>(offset / mItemWidth);
+        if(retIndex >= itemCount){
+            return -1;
+        }
+        return retIndex;
+    }
+    return -1;
+}
+
+void EditPaintSetting::onActionDown(float x , float y){
+    // purple::Log::e("EditPaintSetting" , "onActionDown %f ,%f" , x , y);
+    mOnActionDownIndex = findActionIndex(x , y);
+}
+
+void EditPaintSetting::onActionUp(float x , float y){
+    // purple::Log::e("EditPaintSetting" , "onActionUp %f ,%f" , x , y);
+    int currentIndex = findActionIndex(x , y);
+    if(mOnActionDownIndex >=0 && mOnActionDownIndex == currentIndex){
+        onClickItem(currentIndex);
+    }
+    mOnActionDownIndex = -1;
+}
+
+bool EditPaintSetting::onClickItem(int clickIndex){
+    purple::Log::w("EditPaintSetting" , "onClickItem %d" , clickIndex);
+
+    int sizesLimit = static_cast<int>(mSizes.size());
+    int colorLimit = static_cast<int>(mColors.size());
+    if(clickIndex >= 0 && clickIndex < sizesLimit){
+        mCurrentSizeIndex = clickIndex;
+        if(mMenuItem->mApp->mCurrentEditor != nullptr){
+            mMenuItem->mApp->mCurrentEditor->setStrokenWidth(getSelectedSize());
+        }
+        return true;
+    }else if(sizesLimit <= clickIndex && clickIndex < sizesLimit + colorLimit){
+        mCurrentColorIndex = clickIndex - sizesLimit;
+        if(mMenuItem->mApp->mCurrentEditor != nullptr){
+            mMenuItem->mApp->mCurrentEditor->setColor(getSelectedColor());
+        }
+        return true;
+    }
+    return false;
+}
 

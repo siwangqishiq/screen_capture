@@ -12,11 +12,12 @@ public:
 };
 
 class MenuItem;
+
 class EditPaintSetting{
 private:
     float mLeft;
     float mTop;
-    float mItemWidth = 25.0f;
+    float mItemWidth = 40.0f;
     float mHeight = 40.0f;
     float mWidth = 0.0f;
 
@@ -32,19 +33,41 @@ private:
             glm::vec4(1.0f , 1.0f , 1.0f , 1.0f)
         };
     
-    std::vector<float> mSizes = {3.0f , 6.0f , 12.0f};
+    std::vector<float> mSizes = {5.0f , 10.0f , 15.0f};
 
-    int mCurrentSizeIndex = 1;
-    int mCurrentColorIndex = 0;
+    unsigned int mCurrentSizeIndex = 1;
+    unsigned int mCurrentColorIndex = 0;
+
+    int mOnActionDownIndex = -1;
+
+    int findActionIndex(float x , float y);
 public:
     EditPaintSetting(MenuItem *_item) : mMenuItem(_item){}
 
+    purple::Rect genWrapRect(){
+        return purple::Rect(mLeft , mTop , mWidth , mHeight);
+    }
+
     bool isVisible = false;
+
+    glm::vec4 getSelectedColor(){
+        return mColors[mCurrentColorIndex];
+    }
+
+    float getSelectedSize(){
+        return mSizes[mCurrentSizeIndex];
+    }
     
     void update();
     void render();
 
     bool dispatchEventAction(EventAction action , float x , float y);
+
+    void onActionDown(float x , float y);
+
+    void onActionUp(float x , float y);
+
+    bool onClickItem(int clickIndex);
 
     MenuItem *mMenuItem;
 };
@@ -123,6 +146,8 @@ public:
 
     std::shared_ptr<MenuItem> mGrapMenuItem = nullptr;
 
+    std::shared_ptr<EditPaintSetting> mEditPaintSetting = nullptr;
+
     std::vector<std::shared_ptr<MenuItem>> getMenuItems() const{
         return mMenuItems;
     }
@@ -142,5 +167,7 @@ private:
     void resetMenuItemsPosition();
 
     int isHitMenuItems(float x , float y);
+
+    bool isHitEditPanel(float x , float y);
 };
 

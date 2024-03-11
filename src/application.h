@@ -49,8 +49,6 @@ private:
     void adjustScalePreviewWinPosition(float &originLeft , float &originTop , 
             float preWinWidth , float preWinHeight);
 
-    std::shared_ptr<IEditor> mCurrentEditor = nullptr;
-
     void moveEditorToList(std::shared_ptr<IEditor> editor);
 public:
     static bool isWindows;
@@ -107,4 +105,6 @@ public:
     std::shared_ptr<ActionMenu> mActionMenu; //操作菜单
 
     std::vector<std::shared_ptr<IEditor>> mEditorList; //编辑操作列表
+
+    std::shared_ptr<IEditor> mCurrentEditor = nullptr;
 };

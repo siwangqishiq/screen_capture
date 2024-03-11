@@ -20,7 +20,7 @@ void RectEditor::renderEditorContent(){
 
 void RectEditor::endPaint(){
     // mApp->mEditorList.push_back(std::shared_ptr<IEditor>(this));
-    mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
+    mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp , mPaint.color , mPaint.stokenWidth));
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
 

@@ -15,7 +15,7 @@ void PencilEditor::renderEditorContent(){
 }
 
 void PencilEditor::endPaint(){
-    mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp));
+    mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp , mPaint.color , this->mPencilStokenWidth));
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
 
@@ -78,4 +78,8 @@ void PencilEditor::addPoints(float x , float y){
         mPoints.push_back(curPos);
         startPos = curPos;
     }//end while
+}
+
+void PencilEditor::setStrokenWidth(float width){
+    mPencilStokenWidth = width;
 }

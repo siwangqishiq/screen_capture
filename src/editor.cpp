@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "application.h"
 
 //限制坐标在矩形区域内
 void BaseEditor::limitInRect(purple::Rect &rect , float &x , float &y){
@@ -58,4 +59,12 @@ bool BaseEditor::dispatchEventAction(EventAction action , float x , float y){
 
 void BaseEditor::endPaint(){
     //do nothing wait sub class
+}
+
+void BaseEditor::setColor(glm::vec4 color){
+    mPaint.color = color;
+}
+
+void BaseEditor::setStrokenWidth(float width){
+    mPaint.stokenWidth = width;
 }

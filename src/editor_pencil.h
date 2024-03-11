@@ -6,10 +6,10 @@
 
 class PencilEditor : public BaseEditor{
 public:
-    PencilEditor(Application *_app) : BaseEditor(_app){
-        mPaint.color = glm::vec4(0.0f , 0.0f , 1.0f , 1.0f);
+    PencilEditor(Application *_app , glm::vec4 color , float size) : BaseEditor(_app){
+        mPaint.color = color;
         mPaint.fillStyle = purple::FillStyle::Filled;
-        mPencilStokenWidth = 6.0f;
+        mPencilStokenWidth = size;
     }
 
     void addPoints(float x , float y);
@@ -19,6 +19,8 @@ public:
     virtual void endPaint();
 
     virtual bool dispatchEventAction(EventAction action , float x , float y) override;
+
+    virtual void setStrokenWidth(float width);
 private:
     float mMinDistance = 2.0f;
     std::vector<glm::vec2> mPoints;

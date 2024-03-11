@@ -8,10 +8,10 @@
 
 class RectEditor : public BaseEditor{
 public:
-    RectEditor(Application *_app) : BaseEditor(_app){
-        mPaint.color = glm::vec4(1.0f , 0.0f , 0.0f , 1.0f);
+    RectEditor(Application *_app , glm::vec4 color , float size) : BaseEditor(_app){
+        mPaint.color = color;
         mPaint.fillStyle = purple::FillStyle::Stroken;
-        mPaint.stokenWidth = 6.0f; 
+        mPaint.stokenWidth = size;
     }
     
     virtual void renderEditorContent() override;

@@ -18,8 +18,10 @@ void EditPaintRectMenuItem::onItemClick(){
 
         if(this->mEditSetting != nullptr){
             this->mEditSetting->isVisible = true;
+            mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp,
+                mEditSetting->getSelectedColor(),
+                mEditSetting->getSelectedSize()));
         }
-        mApp->setCurrentEditor(std::make_shared<RectEditor>(mApp));
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
@@ -42,8 +44,10 @@ void EditPaintCircleMenuItem::onItemClick(){
 
         if(this->mEditSetting != nullptr){
             this->mEditSetting->isVisible = true;
+            mApp->setCurrentEditor(std::make_shared<CircleEditor>(mApp
+                ,mEditSetting->getSelectedColor()
+                ,mEditSetting->getSelectedSize()));
         }
-        mApp->setCurrentEditor(std::make_shared<CircleEditor>(mApp));
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
@@ -65,9 +69,11 @@ void EditPaintPencilMenuItem::onItemClick(){
         clearOtherMenuItemSelectState();
 
         if(this->mEditSetting != nullptr){
-            this->mEditSetting->isVisible = true;
+            mEditSetting->isVisible = true;
+            mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp 
+                ,mEditSetting->getSelectedColor()
+                ,mEditSetting->getSelectedSize()));
         }
-        mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp));
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;

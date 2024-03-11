@@ -18,6 +18,6 @@ void CircleEditor::renderEditorContent(){
 }
 
 void CircleEditor::endPaint(){
-    mApp->setCurrentEditor(std::make_shared<CircleEditor>(mApp));
+    mApp->setCurrentEditor(std::make_shared<CircleEditor>(mApp , mPaint.color , mPaint.stokenWidth));
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }

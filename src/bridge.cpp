@@ -34,7 +34,7 @@ void ScreenApi::findScreenSize(int &screenWidth , int &screenHeight){
 
 uint8_t* ScreenApi::captureScreen(){
     // std::string filename = "test.bmp";
-
+    
     HDC hdc = CreateDC("DISPLAY" , nullptr , nullptr , nullptr);
     int scrWidth = 0;
     int scrHeight = 0;
