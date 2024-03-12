@@ -9,7 +9,7 @@ public:
     PencilEditor(Application *_app , glm::vec4 color , float size) : BaseEditor(_app){
         mPaint.color = color;
         mPaint.fillStyle = purple::FillStyle::Filled;
-        mPencilStokenWidth = size;
+        mPencilStokenWidth = size / 2.0f;
     }
 
     void addPoints(float x , float y);

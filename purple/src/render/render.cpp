@@ -102,6 +102,10 @@ namespace purple{
         //arc
         ShaderManager::getInstance()->loadAssetShader("primitive_arc" , 
             "shader/primitive_arc_vert.glsl", "shader/primitive_arc_frag.glsl");
+
+        //triangle
+        ShaderManager::getInstance()->loadAssetShader("primitive_triangles",
+            "shader/primitive_triangles_vert.glsl", "shader/primitive_triangles_frag.glsl");
     }
 
     void RenderEngine::resetNormalMat(float w , float h){
@@ -550,34 +554,24 @@ namespace purple{
     }
 
     //三角形绘制
-    void RenderEngine::renderTriangles(
+    void RenderEngine::renderTriangle(
                         float p1x,  float p1y, 
                         float p2x , float p2y,
                         float p3x , float p3y,
-                        glm::mat4 &transMat, Paint &paint){
-        const int attrPerVer = 3 + 4;
-        std::vector<float> data(attrPerVer * 3);
-        int index = 0;
+                        glm::mat4 &mat, Paint &paint){
         std::vector<float> posVec = {p1x , p1y , p2x , p2y , p3x , p3y};
-        while(index < 3){
-            int offset = index * attrPerVer;
-            data[offset + 0] = posVec[index << 1 + 0];
-            data[offset + 1] = posVec[index << 1 + 1];
-            
-            data[offset + 2] = paint.color[0];
-            data[offset + 3] = paint.color[1];
-            data[offset + 4] = paint.color[2];
-            data[offset + 5] = paint.color[3];
-            index++;
-        }//end while
-        renderTriangles(data , transMat , paint);
+        renderTriangles(posVec , mat , paint);
     }
 
     //三角形绘制
-    void RenderEngine::renderTriangles(std::vector<float> &data ,glm::mat4 &transMat, Paint &paint){
-        const int attrPerVer = 2 + 4;
-        int vertexCount = data.size() / attrPerVer;
-        
+    void RenderEngine::renderTriangles(std::vector<float> &vertex ,glm::mat4 &mat, Paint &paint){
+        TrianglesRenderCommand cmd(this);
+        Shader trianglesShader = ShaderManager::getInstance()->getShaderByName("primitive_triangles");
+        // std::cout << "vertex " << vertex[0]<< ", " << vertex[1]
+        //     << "  , "<< vertex[2]<< ", " << vertex[3]
+        //     << "  , "<< vertex[4]<< ", " << vertex[5] << std::endl;
+        cmd.putParams(trianglesShader , vertex , paint , mat);
+        cmd.runCommands();
     }
 
     //自定义带纹理的shader

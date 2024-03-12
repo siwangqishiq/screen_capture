@@ -25,7 +25,7 @@ void ActionMenu::addMenuItems(){
     std::shared_ptr<MenuItem> edCircleItem = std::make_shared<EditPaintCircleMenuItem>(this->mApp);
     mMenuItems.push_back(edCircleItem);
     edCircleItem->mEditSetting = std::make_shared<EditPaintSetting>(edCircleItem.get());
-
+    
     //paint pencil
     std::shared_ptr<MenuItem> edPencilItem = std::make_shared<EditPaintPencilMenuItem>(this->mApp);
     mMenuItems.push_back(edPencilItem);
@@ -298,6 +298,15 @@ void EditPaintSetting::render(){
     paint.fillStyle = purple::FillStyle::Filled;
 
     purple::Rect rect(mLeft , mTop , mWidth , mHeight);
+
+    float centerX = rect.center().x;
+    
+    purple::Engine::getRenderEngine()->renderTriangle(
+        centerX - mItemWidth / 5.0f , mTop,
+        centerX + mItemWidth / 5.0f , mTop,
+        centerX , mTop + mMargin /2.0f,
+        paint
+    );
 
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
     shapeBatch->begin();

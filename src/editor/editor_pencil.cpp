@@ -81,5 +81,5 @@ void PencilEditor::addPoints(float x , float y){
 }
 
 void PencilEditor::setStrokenWidth(float width){
-    mPencilStokenWidth = width;
+    mPencilStokenWidth = width / 2.0f;
 }

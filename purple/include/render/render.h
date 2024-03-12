@@ -80,11 +80,21 @@ namespace purple{
         void renderLines(std::vector<float> &points , Paint &paint);
 
         //三角形绘制
-        void renderTriangles(
+        void renderTriangle(
+                        float p1x,  float p1y, 
+                        float p2x , float p2y,
+                        float p3x , float p3y, Paint &paint){
+            renderTriangle(p1x , p1y , p2x , p2y , p3x , p3y , tmpTransMatrix_ , paint);
+        }
+
+        //三角形绘制
+        void renderTriangle(
                             float p1x,  float p1y, 
                             float p2x , float p2y,
                             float p3x , float p3y,
                             glm::mat4 &transMat, Paint &paint);
+
+
 
         //三角形绘制
         void renderTriangles(std::vector<float> &data ,glm::mat4 &transMat, Paint &paint);

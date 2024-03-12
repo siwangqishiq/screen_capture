@@ -21,7 +21,7 @@ private:
     float mHeight = 40.0f;
     float mWidth = 0.0f;
 
-    float mMargin = 8.0f;
+    float mMargin = 12.0f;
 
     std::vector<glm::vec4> mColors = 
         {
