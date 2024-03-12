@@ -9,7 +9,8 @@ public:
     PencilEditor(Application *_app , glm::vec4 color , float size) : BaseEditor(_app){
         mPaint.color = color;
         mPaint.fillStyle = purple::FillStyle::Filled;
-        mPencilStokenWidth = size / 2.0f;
+        mPaint.stokenWidth = size;
+        // mPencilStokenWidth = size / 2.0f;
     }
 
     void addPoints(float x , float y);
@@ -24,5 +25,6 @@ public:
 private:
     float mMinDistance = 2.0f;
     std::vector<glm::vec2> mPoints;
+    std::vector<float> mPaintPoints;
     float mPencilStokenWidth;
 };

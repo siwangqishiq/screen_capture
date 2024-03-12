@@ -528,7 +528,8 @@ namespace purple{
 
         renderByLines = false;
 
-        vertexCount_ = (points.size()/2 - 1) * 4;
+        // vertexCount_ = (points.size()/2 - 1) * 4;
+        vertexCount_ = 3 * points.size();
         attrCount_ = 3;
 
         const float depth = engine_->getAndChangeDepthValue();
@@ -879,7 +880,7 @@ namespace purple{
         glBindBuffer(GL_ARRAY_BUFFER , 0);
         glBindVertexArray(0);
 
-         std::cout << "vertexCount_ = " << vertexCount_ << std::endl;
+        // std::cout << "vertexCount_ = " << vertexCount_ << std::endl;
     }
 }
 

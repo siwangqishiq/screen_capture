@@ -6,16 +6,18 @@ void PencilEditor::renderEditorContent(){
         return;
     }
     
-    auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
-    shapeBatch->begin();
-    for(auto p : mPoints){
-        shapeBatch->renderCircle(p[0] , p[1] , mPencilStokenWidth , mPaint);
-    }//end for each
-    shapeBatch->end();
+    // auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    // shapeBatch->begin();
+    // for(auto p : mPoints){
+    //     shapeBatch->renderCircle(p[0] , p[1] , mPencilStokenWidth , mPaint);
+    // }//end for each
+    // shapeBatch->end();
+
+    purple::Engine::getRenderEngine()->renderLines(mPaintPoints , mPaint);
 }
 
 void PencilEditor::endPaint(){
-    mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp , mPaint.color , this->mPencilStokenWidth));
+    mApp->setCurrentEditor(std::make_shared<PencilEditor>(mApp , mPaint.color , mPaint.stokenWidth));
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
 
@@ -36,6 +38,11 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
             mEndY = y;
 
             mPoints.push_back(glm::vec2(mEndX , mEndY));
+
+            mPaintPoints.push_back(mStartX);
+            mPaintPoints.push_back(mStartY);
+            mPaintPoints.push_back(mEndX);
+            mPaintPoints.push_back(mEndY);
 
             mVisible = true;
             return true;
@@ -68,18 +75,24 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
 }
 
 void PencilEditor::addPoints(float x , float y){
-    glm::vec2 startPos(mEndX , mEndY);
-    glm::vec2 curPos = startPos;
-    glm::vec2 endPos(x, y);
-    glm::vec2 dirNormal = glm::normalize(endPos - startPos);
+    // glm::vec2 startPos(mEndX , mEndY);
+    // glm::vec2 curPos = startPos;
+    // glm::vec2 endPos(x, y);
+    // glm::vec2 dirNormal = glm::normalize(endPos - startPos);
     
-    while(glm::distance(curPos , endPos) > mMinDistance){
-        curPos = startPos + dirNormal * mMinDistance;
-        mPoints.push_back(curPos);
-        startPos = curPos;
-    }//end while
+    // while(glm::distance(curPos , endPos) > mMinDistance){
+    //     curPos = startPos + dirNormal * mMinDistance;
+    //     mPoints.push_back(curPos);
+    //     startPos = curPos;
+    // }//end while
+
+    mPaintPoints.push_back(mEndX);
+    mPaintPoints.push_back(mEndY);
+    mPaintPoints.push_back(x);
+    mPaintPoints.push_back(y);
 }
 
 void PencilEditor::setStrokenWidth(float width){
-    mPencilStokenWidth = width / 2.0f;
+    // mPencilStokenWidth = width / 2.0f;
+    mPaint.stokenWidth = width;
 }

@@ -310,7 +310,7 @@ void EditPaintSetting::render(){
 
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
     shapeBatch->begin();
-    shapeBatch->renderRoundRect(rect , 3.0f , paint);
+    shapeBatch->renderRoundRect(rect , 4.0f , paint);
 
     unsigned int index = 0;
     float x = rect.left;
