@@ -7,6 +7,8 @@
 #include "editor/editor.h"
 #include "action/action_confirm.h"
 
+bool Application::isDebug = true;
+
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
 }
@@ -112,8 +114,15 @@ void Application::execute(){
         // std::cout << "pos: " << mouseX << "  " << mouseY << std::endl;
     });
 
-    // glfwSetCharCallback(windows , [](GLFWwindow* windows_ , unsigned int codepoint){
-    // });
+    glfwSetCharCallback(window , [](GLFWwindow* windows_ , unsigned int codepoint){
+        // Application* app_ = static_cast<Application *>(glfwGetWindowUserPointer(windows_));
+        // // app_->mInputContent += std::to_wstring(codepoint);
+        // wchar_t ch = codepoint;
+        // app_->mInputContent += ch;                
+    });
+
+    // mMoveCursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+    // glfwSetCursor(window , mMoveCursor);
     
     //紫电引擎初始化
     purple::Engine::init(mScreenWidth , mScreenHeight);
@@ -131,8 +140,19 @@ void Application::execute(){
     
     mActionMenu->dispose();
     purple::Engine::dispose();
+
+    dispose();
+}
+
+void Application::dispose(){
+    // std::cout << "Application::dispose..." << std::endl;
+    if(mMoveCursor != nullptr){
+        glfwDestroyCursor(mMoveCursor);
+    }
+
     glfwDestroyWindow(window);
     glfwTerminate();
+    // std::cout << "Application::dispose ended" << std::endl;
 }
 
 void Application::init(){
@@ -150,13 +170,111 @@ void Application::init(){
     
     mActionMenu = std::make_shared<ActionMenu>(this);
     mActionMenu->init();
+
+    mControlButtonRects = std::vector<purple::Rect>(8);
+
+    purple::Engine::getTimer()->scheduleAtFixedRate([this](void *app){
+        fps = renderTimes;
+        renderTimes = 0;
+    } , 1000);
 }
 
 void Application::tick(){
     purple::Engine::tick();
+
+    updateControllButtons();
     mActionMenu->update();
 
     render();
+
+
+    //for debug
+    if(isDebug){
+        purple::TextPaint fpsPaint;
+        fpsPaint.setTextSize(50.0f);
+
+        purple::Engine::getRenderEngine()->renderText(mInputContent , 
+            0.0f , mScreenHeight - 50.0f,
+            fpsPaint);
+
+        renderTimes++;
+        std::wstring fpsStr = L"" + std::to_wstring(fps);
+        purple::Engine::getRenderEngine()->renderText(fpsStr , 
+            mScreenWidth - 100.0f , mScreenHeight - 50.0f,
+            fpsPaint);
+    }
+}
+
+void Application::updateControllButtons(){
+    auto result = calClipPoints();
+    const float left = result[0];
+    const float right = result[1];
+    const float top = result[2];
+    const float bottom = result[3];
+
+    if(right - left < 1.0f || top - bottom < 1.0f){
+        return;
+    }
+
+    const float radius = 4.0f;
+    const float size = 2.0f * radius;
+    mControlButtonRects[0].left = left - radius;
+    mControlButtonRects[0].top = top + radius;
+    mControlButtonRects[0].width = size;
+    mControlButtonRects[0].height = size;
+
+    float midX = (left + right) / 2.0f;
+    mControlButtonRects[1].left = midX - radius;
+    mControlButtonRects[1].top = top + radius;
+    mControlButtonRects[1].width = size;
+    mControlButtonRects[1].height = size;
+
+    mControlButtonRects[2].left = right - radius;
+    mControlButtonRects[2].top = top + radius;
+    mControlButtonRects[2].width = size;
+    mControlButtonRects[2].height = size;
+
+    float midY = (bottom + top) / 2.0f;
+    mControlButtonRects[3].left = right - radius;
+    mControlButtonRects[3].top = midY + radius;
+    mControlButtonRects[3].width = size;
+    mControlButtonRects[3].height = size;
+
+    mControlButtonRects[4].left = right - radius;
+    mControlButtonRects[4].top = bottom + radius;
+    mControlButtonRects[4].width = size;
+    mControlButtonRects[4].height = size;
+
+    mControlButtonRects[5].left = midX - radius;
+    mControlButtonRects[5].top = bottom + radius;
+    mControlButtonRects[5].width = size;
+    mControlButtonRects[5].height = size;
+    
+    mControlButtonRects[6].left = left - radius;
+    mControlButtonRects[6].top = bottom + radius;
+    mControlButtonRects[6].width = size;
+    mControlButtonRects[6].height = size;
+
+    mControlButtonRects[7].left = left - radius;
+    mControlButtonRects[7].top = midY + radius;
+    mControlButtonRects[7].width = size;
+    mControlButtonRects[7].height = size;
+}
+
+void Application::renderControllButtons(){
+    if(!canResetClipZone()){
+        return;
+    }
+
+    auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    auto paint = mMaskZoneBorderPaint;
+    paint.fillStyle = purple::FillStyle::Filled;
+
+    shapeBatch->begin();
+    for(purple::Rect &rect : mControlButtonRects){
+        shapeBatch->renderRect(rect , paint);
+    }//end for each
+    shapeBatch->end();
 }
 
 void Application::render(){
@@ -285,11 +403,15 @@ void Application::renderMaskZone(){
         purple::Engine::getRenderEngine()->renderText(clipSizeStr , 
             left + padding , top + padding , txtPaint);
     }
+
+    //render control button
+    renderControllButtons();
 }
 
 // 细节预览窗口渲染
 void Application::renderSubThumbPreview(){
-    if(mState != DRAW_CAPTURE_ZONE){
+    if(mState != DRAW_CAPTURE_ZONE 
+        && mState != RESIZE_CAPTURE_ZONE){
         return;
     }
 
@@ -456,10 +578,184 @@ void Application::onEventAction(EventAction action , float x , float y){
         if(mCurrentEditor != nullptr){
             mCurrentEditor->dispatchEventAction(action , x , y);
         }
-    }
-    //end if
+    }else if(mState == RESIZE_CAPTURE_ZONE){ //调整选区
+        switch (action){
+        case ActionMove:
+            resizeUpdate(action , x , y);
+            break;
+        case ActionUp:{
+            resizeUpdate(action , x , y);
+            purple::Log::i("onEventAction RESIZE_CAPTURE_ZONE" , "x = %f , y = %f" , x , y);
+            std::vector<float> ps = calClipPoints();
+            const int width = static_cast<int>(ps[1] - ps[0]);
+            const int height = static_cast<int>(ps[2] - ps[3]);
+            mState = (width <= 0 || height <= 0)?Idle:CAPTURE_ZONE_GETTED;
+            break;
+        }
+        default:
+            break;
+        }//end switch
+    }else if(mState == MOVE_CAPTURE_ZONE){ //move capture zone
+        switch (action){
+        case ActionMove:
+            moveCaptureZone(action , x , y);
+            break;
+        case ActionUp:{
+            moveCaptureZone(action , x , y);
+            purple::Log::i("onEventAction MOVE_CAPTURE_ZONE" , "x = %f , y = %f" , x , y);
+            std::vector<float> ps = calClipPoints();
+            const int width = static_cast<int>(ps[1] - ps[0]);
+            const int height = static_cast<int>(ps[2] - ps[3]);
+            mState = (width <= 0 || height <= 0)?Idle:CAPTURE_ZONE_GETTED;
+            break;
+        }
+        default:
+            break;
+        }//end switch
+    } else if(mState == CAPTURE_ZONE_GETTED){
+        if(action == ActionDown && canResetClipZone()){
+            //control button click detect
+            for(unsigned int i = 0 ; i < mControlButtonRects.size() ;i++){
+                purple::Rect &rect = mControlButtonRects[i];
+                if(purple::isPointInRect(rect , x , y)){
+                    mState = RESIZE_CAPTURE_ZONE;
+                    mResizeType = static_cast<ResizeType>(i + 1);
+                    purple::Log::i("onTouchEvent" , "on touch control button code: %d" , mResizeType);
+                    resizeUpdate(action , x , y);
+                    return;
+                }
+            }//end for i
+
+            // move zone click detect
+            std::vector<float> ps = calClipPoints();
+            const int width = static_cast<int>(ps[1] - ps[0]);
+            const int height = static_cast<int>(ps[2] - ps[3]);
+            purple::Rect captureZoneRect(ps[0] , ps[2] , width , height);
+            // purple::Log::e("captureZoneRect" , "captureZoneRect detect");
+            if(purple::isPointInRect(captureZoneRect , x , y)){
+                // purple::Log::e("captureZoneRect" , "captureZoneRect get");
+                mState = MOVE_CAPTURE_ZONE;
+                moveCaptureZone(action , x , y);
+            }
+        }//end if    
+    }//end if
 
     // purple::Log::i("onEventAction" , "action = %d ,(%f , %f)" , action , x , y);
+}
+
+void Application::resizeUpdate(EventAction action , float x , float y){
+    if(mResizeType == None){
+        return;
+    }
+
+    if(action == EventAction::ActionDown){ //adjusr start pos
+        std::vector<float> result = calClipPoints();
+        const float left = result[0];
+        const float right = result[1];
+        const float top = result[2];
+        const float bottom = result[3];
+
+        switch(mResizeType){
+        case LeftTop:
+            mCaptureStartX = right;
+            mCaptureStartY = bottom;
+            break;
+        case RightTop:
+            mCaptureStartX = left;
+            mCaptureStartY = bottom;
+            break;
+        case RightBottom:
+            mCaptureStartX = left;
+            mCaptureStartY = top;
+            break;
+        case LeftBottom:
+            mCaptureStartX = right;
+            mCaptureStartY = top;
+            break;
+        case HmidTop:
+            mCaptureStartY = bottom;
+            break;
+        case HmidBottom:
+            mCaptureStartY = top;
+            break;
+        case LeftVmid:
+            mCaptureStartX = right;
+            break;
+        case RightVmid:
+            mCaptureStartX = left;
+            break;
+        default:
+            break;
+        }//end switch
+    }
+
+    switch(mResizeType){
+    case LeftVmid:
+    case RightVmid:
+        mCaptureEndX = x;
+        break;
+    case HmidTop:
+    case HmidBottom:
+        mCaptureEndY = y;
+        break;
+    case LeftTop:
+    case RightTop:
+    case RightBottom:
+    case LeftBottom:
+        mCaptureEndX = x;
+        mCaptureEndY = y;
+        break;
+    default:
+        break;
+    }//end switch
+}
+
+void Application::moveCaptureZone(EventAction action , float x , float y){
+    // purple::Log::e("captureZoneRect" , "moveCaptureZone action %d" , action);
+    switch(action){
+        case ActionDown:
+            mLastX = x;
+            mLastY = y;
+            break;
+        case ActionMove:
+        case ActionUp:
+            adjustMoveCaptureZone(x - mLastX , y - mLastY);
+            break;
+        default:
+            break;
+    }//end switch
+
+    mLastX = x;
+    mLastY = y;
+}
+
+void Application::adjustMoveCaptureZone(float dx , float dy){
+    //do limit
+    mCaptureStartX += dx;
+    mCaptureEndX += dx;
+    float left = mCaptureStartX < mCaptureEndX?mCaptureStartX:mCaptureEndX;//left
+    if(left < 0.0f){
+        mCaptureStartX -= dx;
+        mCaptureEndX -= dx;
+    }
+    float right = mCaptureStartX < mCaptureEndX?mCaptureEndX:mCaptureStartX;//right
+    if(right > mScreenWidth){
+        mCaptureStartX -= dx;
+        mCaptureEndX -= dx;
+    }
+    
+    mCaptureStartY += dy;
+    mCaptureEndY += dy;
+    float top = mCaptureStartY > mCaptureEndY?mCaptureStartY:mCaptureEndY;//top
+    if(top > mScreenHeight){
+        mCaptureStartY -= dy;
+        mCaptureEndY -= dy;
+    }
+    float bottom = mCaptureStartY > mCaptureEndY?mCaptureEndY:mCaptureStartY;//bottom
+    if(bottom < 0.0f){
+        mCaptureStartY -= dy;
+        mCaptureEndY -= dy;
+    }
 }
 
 bool Application::setCurrentEditor(std::shared_ptr<IEditor> editor){

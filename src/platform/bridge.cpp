@@ -38,9 +38,7 @@ uint8_t* ScreenApi::captureScreen(){
     HDC hdc = CreateDC("DISPLAY" , nullptr , nullptr , nullptr);
     int scrWidth = 0;
     int scrHeight = 0;
-    RECT rect = {0};
-    scrWidth = GetDeviceCaps(hdc, HORZRES);
-    scrHeight = GetDeviceCaps(hdc, VERTRES);
+    findScreenSize(scrWidth , scrHeight);
 
     std::cout << "screen size " << scrWidth << " ," << scrHeight << std::endl;
 
@@ -60,6 +58,7 @@ uint8_t* ScreenApi::captureScreen(){
     bi.biBitCount = 8 * 3;
     bi.biCompression = BI_RGB;
 
+    RECT rect = {0};
     uint8_t  *buf = new uint8_t [3 * scrWidth * scrHeight];
     BitBlt(hmdc, 0, 0, scrWidth, scrHeight, hdc, rect.left, rect.top, SRCCOPY);
     GetDIBits(hmdc, hBmpScreen, 0L, (DWORD)scrHeight, buf, (LPBITMAPINFO)&bi, (DWORD)DIB_RGB_COLORS);

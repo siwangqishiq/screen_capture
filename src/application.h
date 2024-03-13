@@ -16,6 +16,8 @@ class IEditor;
 enum ScreenState{
     Idle,
     DRAW_CAPTURE_ZONE,// 抓取需要截取的区域
+    RESIZE_CAPTURE_ZONE,//截取区域调整
+    MOVE_CAPTURE_ZONE,//移动截取区域
     CAPTURE_ZONE_GETTED,//取得截取区域
     CAPTURE_ZONE_EDIT //截取区域编辑
 };
@@ -24,6 +26,18 @@ enum EventAction{
     ActionDown,
     ActionMove,
     ActionUp
+};
+
+enum ResizeType{
+    None = 0,
+    LeftTop = 1,
+    HmidTop = 2,
+    RightTop = 3,
+    RightVmid = 4,
+    RightBottom = 5,
+    HmidBottom = 6,
+    LeftBottom = 7,
+    LeftVmid = 8
 };
 
 class Application{
@@ -50,10 +64,20 @@ private:
             float preWinWidth , float preWinHeight);
 
     void moveEditorToList(std::shared_ptr<IEditor> editor);
+    
+    int fps = 0;
+    int renderTimes = 0;
+
+    ResizeType mResizeType = ResizeType::None;
+    float mLastX;
+    float mLastY;
 public:
+    static bool isDebug;
     static bool isWindows;
     static bool isMac;
     static bool isLinux;
+
+    std::wstring mInputContent;
 
     std::string mOutputFilePath = "test_screen.png";
 
@@ -69,7 +93,12 @@ public:
 
     void init();
     void tick();
+    void dispose();
     void render();
+
+    void updateControllButtons();
+
+    void renderControllButtons();
 
     void onResize(int w,int h);
 
@@ -83,6 +112,12 @@ public:
 
     //鼠标双击
     bool onMouseDoubleClick();
+
+    void resizeUpdate(EventAction action , float x , float y);
+
+    void moveCaptureZone(EventAction action , float x , float y);
+
+    void adjustMoveCaptureZone(float dx , float dy);
 
     //计算裁剪点坐标 
     std::vector<float> calClipPoints();
@@ -99,6 +134,8 @@ public:
     float mScaleThumbFactor = 3.0f;//子略缩图 放大倍数
     float mThumbPreviewSize = 64.0f;
 
+    GLFWcursor *mMoveCursor = nullptr;
+
     purple::Paint mMaskZonePaint;
     purple::Paint mMaskZoneBorderPaint;
 
@@ -107,4 +144,6 @@ public:
     std::vector<std::shared_ptr<IEditor>> mEditorList; //编辑操作列表
 
     std::shared_ptr<IEditor> mCurrentEditor = nullptr;
+
+    std::vector<purple::Rect> mControlButtonRects; //resize control buttonsrect
 };
