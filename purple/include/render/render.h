@@ -29,6 +29,7 @@ namespace purple{
 
     class ShapeBatch;
     class SpriteBatch;
+    class TextureInfo;
 
     class RenderEngine{
     public:
@@ -144,6 +145,17 @@ namespace purple{
         void renderShader(Shader &shader , Rect &showRect , 
                 std::function<void(void)> preRenderCallback);
 
+        //创建虚拟纹理 
+        std::shared_ptr<TextureInfo> buildVirtualTexture(
+                std::string texName,
+                int texWidth , 
+                int texHeight ,
+                std::function<void(int , int)> renderFn);
+
+        //更新虚拟纹理 
+        void updateVirtualTexture(std::shared_ptr<TextureInfo> texInfo ,
+                std::function<void(int , int)> renderFn);
+
         std::shared_ptr<ShapeBatch> getShapeBatch();
 
         std::shared_ptr<SpriteBatch> getSpriteBatch();
@@ -182,6 +194,8 @@ namespace purple{
 
         int viewWidth_;
         int viewHeight_;
+
+        int createFrameBufferForVirtualTexture(std::shared_ptr<TextureInfo> texInfo);
     };
 
     //字符信息

@@ -625,5 +625,112 @@ namespace purple{
         buf[8] = buf[0];
         buf[9] = buf[1];
     }
+
+    std::shared_ptr<TextureInfo> RenderEngine::buildVirtualTexture(
+            std::string texName,
+            int texWidth , 
+            int texHeight ,
+            std::function<void(int , int)> renderFn){
+        //craete a virtual texture
+        std::shared_ptr<TextureInfo> ret = TextureManager::getInstance()->createEmptyTexture(texName , texWidth , texHeight , GL_RGBA);
+        if(ret == nullptr){
+            Log::e("buildVirtualTexture" , "createEmptyTexture error");
+            return nullptr;
+        }
+
+        ret->category = TextureCategory::VIRTUAL_TEX;
+        const int viewWidth = texWidth;
+        const int viewHeight = texHeight;
+
+        int errCode = createFrameBufferForVirtualTexture(ret);
+        if(errCode < 0){
+            Log::e("buildVirtualTexture" , "createFrameBufferForVirtualTexture error");
+            return nullptr;
+        }
+        
+        glBindFramebuffer(GL_FRAMEBUFFER , ret->framebufferId);
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+            Log::e("buildVirtualTexture" , "framebuffer state is error");
+            glBindFramebuffer(GL_FRAMEBUFFER , 0);
+            return nullptr;
+        }
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
+        
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0 , 0 , viewWidth , viewHeight);
+        resetNormalMat(viewWidth , viewHeight);
+
+        renderFn(viewWidth , viewHeight); // user custom render function callback
+
+        glBindFramebuffer(GL_FRAMEBUFFER , 0);
+        onScreenResize();
+        return ret;
+    }
+
+    int RenderEngine::createFrameBufferForVirtualTexture(std::shared_ptr<TextureInfo> texInfo){
+        if(texInfo == nullptr || texInfo->textureId == 0){
+            return -1;
+        }
+
+        GLuint frameBufferIds[1];
+        glGenFramebuffers(1 , frameBufferIds);
+        texInfo->framebufferId = frameBufferIds[0];
+        glBindFramebuffer(GL_FRAMEBUFFER , texInfo->framebufferId);
+
+        GLuint  renderBufferIds[1];
+        glGenRenderbuffers(1 , renderBufferIds);
+        texInfo->renderBufferId = renderBufferIds[0];
+
+        glBindRenderbuffer(GL_RENDERBUFFER , texInfo->renderBufferId);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8 
+            , texInfo->width , texInfo->height);
+        glBindRenderbuffer(GL_RENDERBUFFER , 0);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER , GL_COLOR_ATTACHMENT0 ,
+                            GL_TEXTURE_2D , texInfo->textureId , 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER , GL_DEPTH_STENCIL_ATTACHMENT ,
+                                GL_RENDERBUFFER , texInfo->renderBufferId);
+
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_COMPLETE){
+            Log::e("createFrameBuffer" , "createFrameBuffer error.");
+            glBindFramebuffer(GL_FRAMEBUFFER , 0);
+            return -1;
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER , 0);
+        return 0;
+    }
+
+    //更新虚拟纹理 
+    void RenderEngine::updateVirtualTexture(std::shared_ptr<TextureInfo> texInfo ,std::function<void(int , int)> renderFn){
+        if(texInfo == nullptr || texInfo->category != TextureCategory::VIRTUAL_TEX){
+            Log::e("updateVirtualTexture" , "texture state error");
+            return;
+        }
+
+        const int viewWidth = texInfo->width;
+        const int viewHeight = texInfo->height;
+        
+        glBindFramebuffer(GL_FRAMEBUFFER , texInfo->framebufferId);
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+            Log::e("updateVirtualTexture" , "framebuffer state is error");
+            glBindFramebuffer(GL_FRAMEBUFFER , 0);
+            return;
+        }
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
+        
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0 , 0 , viewWidth , viewHeight);
+        resetNormalMat(viewWidth , viewHeight);
+
+        renderFn(viewWidth , viewHeight); // user custom render function callback
+
+        glBindFramebuffer(GL_FRAMEBUFFER , 0);
+        onScreenResize();
+    }
 }
 

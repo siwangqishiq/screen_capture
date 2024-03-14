@@ -41,9 +41,23 @@ namespace purple{
         for(auto pair : textureBank_){
             auto texInfoPtr= pair.second;
             Log::i("texture_manager" , "texture del %s" , (texInfoPtr->name).c_str());
+
             if(texInfoPtr != nullptr){
                 glDeleteTextures(1 , &(texInfoPtr->textureId));
-            }
+                
+                //visual texture delete
+                if(texInfoPtr->category == TextureCategory::VIRTUAL_TEX){
+                    if(texInfoPtr->renderBufferId != 0){
+                        GLuint ids[] = {texInfoPtr->renderBufferId};
+                        glDeleteRenderbuffers(1 , ids);
+                    }
+                    
+                    if(texInfoPtr->framebufferId != 0){
+                        GLuint ids[] = {texInfoPtr->framebufferId};
+                        glDeleteFramebuffers(1 , ids);
+                    }
+                }//end if
+            }//end if
         }//end for each
         textureBank_.clear();
         Log::i("texture_manager" , "texture manager clear");

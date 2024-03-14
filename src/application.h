@@ -12,6 +12,7 @@
 class IScreenApi;
 class ActionMenu;
 class IEditor;
+class TextureInfo;
 
 enum ScreenState{
     Idle,
@@ -71,6 +72,8 @@ private:
     ResizeType mResizeType = ResizeType::None;
     float mLastX;
     float mLastY;
+
+    std::shared_ptr<purple::TextureInfo> mVirtualTexture;
 public:
     static bool isDebug;
     static bool isWindows;

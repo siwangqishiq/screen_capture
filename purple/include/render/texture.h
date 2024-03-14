@@ -18,6 +18,11 @@ namespace purple{
         TEXTURE_2D_ARRAY
     };
 
+    enum TextureCategory{
+        NORMAL_TEX, //正常纹理
+        VIRTUAL_TEX //虚拟纹理
+    };
+
     struct TextureInfo{
         std::string name;//纹理名称
         unsigned int textureId = -1;//纹理ID
@@ -26,6 +31,10 @@ namespace purple{
         TextureType type = TEXTURE_2D;
         int depth;
         int format;
+        
+        TextureCategory category = NORMAL_TEX; //纹理状态
+        unsigned int renderBufferId = 0;
+        unsigned int framebufferId = 0;
     };
 
     GLint convertChanelToInternalFormat(int channelFormat);
