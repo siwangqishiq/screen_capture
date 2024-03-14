@@ -654,6 +654,8 @@ namespace purple{
             glBindFramebuffer(GL_FRAMEBUFFER , 0);
             return nullptr;
         }
+            
+        glClearColor(0.0f , 0.0f, 0.0f , 0.0f);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
@@ -723,6 +725,7 @@ namespace purple{
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
         
+        glClearColor(0.0f , 0.0f, 0.0f , 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0 , 0 , viewWidth , viewHeight);
         resetNormalMat(viewWidth , viewHeight);

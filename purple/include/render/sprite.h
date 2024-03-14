@@ -28,6 +28,10 @@ namespace purple{
         //更新纹理数据
         virtual void updateTextureData(uint8_t *pData);
 
+        std::shared_ptr<TextureInfo> getTextureInfo(){
+            return textureInfo_;
+        }
+        
     private:
         std::shared_ptr<TextureInfo> textureInfo_;
     };

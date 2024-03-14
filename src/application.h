@@ -45,7 +45,6 @@ class Application{
 private:
     GLFWwindow *window;
     std::shared_ptr<IScreenApi> mScreenApi;
-    std::shared_ptr<purple::TextureImage> image;
     std::shared_ptr<purple::TextureImage> mScreenImage;
 
     uint8_t* mScreenImagePixel = nullptr;

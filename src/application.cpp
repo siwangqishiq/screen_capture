@@ -178,19 +178,22 @@ void Application::init(){
         renderTimes = 0;
     } , 1000);
 
-    mVirtualTexture = purple::Engine::getRenderEngine()->buildVirtualTexture("v_texture" , 200,400, 
-        [&](int w, int h){
-            purple::Log::w("VirtualTexture" , "VirtualTexture size = %d , %d" , w , h);
+    // mVirtualTexture = purple::Engine::getRenderEngine()->buildVirtualTexture("v_texture" 
+    //     , 200,200, 
+    //     [](int w, int h){
             
-            purple::Rect rect1(0.0f , h , w, h);
-            purple::Paint paint;
-            paint.color = glm::vec4(0.0f , 1.0f , 0.0f ,1.0f);
-            auto batch = purple::Engine::getRenderEngine()->getShapeBatch();
-            batch->begin();
-            batch->renderRoundRect(rect1 , 10.0f  , paint);
-            batch->end();
-        }
-    );
+    //         // purple::Log::w("VirtualTexture" , "VirtualTexture size = %d , %d" , w , h);
+    //         purple::Rect rect1(0.0f , h , w, h);
+    //         purple::TextPaint paint;
+    //         paint.textColor = glm::vec4(1.0f , 0.0f , 0.0f ,1.0f);
+    //         paint.setTextSize(h / 4.0f);
+    //         paint.textGravity = purple::TextGravity::Center;
+    //         // purple::Engine::getRenderEngine()->renderText(L"你好世界",
+    //         //     0.0f , 0.0f , paint);
+    //         purple::Engine::getRenderEngine()
+    //             ->renderTextWithRect(L"你好世界" , rect1 , paint , nullptr);
+    //     }
+    // );
 }
 
 void Application::tick(){
@@ -205,25 +208,31 @@ void Application::tick(){
     //for debug
     if(isDebug){
         // purple::Engine::getRenderEngine()->updateVirtualTexture(mVirtualTexture,
-        // [](int w , int h){
+        // [this](int w , int h){
         //     purple::Rect rect1(0.0f , h , w, h);
         //     purple::Paint paint;
-        //     paint.color = glm::vec4(1.0f , 1.0f , 1.0f ,1.0f);
-        //     auto batch = purple::Engine::getRenderEngine()->getShapeBatch();
+        //     paint.color = glm::vec4(1.0f , 0.0f , 0.0f ,1.0f);
+        //     // auto batch = purple::Engine::getRenderEngine()->getShapeBatch();
+        //     // batch->begin();
+        //     // batch->renderRoundRect(rect1 , 20.0f  , paint);
+        //     // batch->end();
+
+        //     auto batch = purple::Engine::getRenderEngine()->getSpriteBatch();
         //     batch->begin();
-        //     batch->renderRoundRect(rect1 , 10.0f  , paint);
+        //     purple::Rect srcRect = this->mScreenImage->getRect();
+        //     batch->renderImage(mScreenImage , srcRect , rect1);
         //     batch->end();
         // });
 
         // auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
         // spriteBatch->begin();
-        // purple::Rect srcRect(0.0f, mVirtualTexture->height / 1.0f
-        //     , (float)(mVirtualTexture->width) , (float)(mVirtualTexture->height));
         // purple::TextureImage image(mVirtualTexture);
-        // purple::Rect dst(0 , mScreenHeight , 100 , 100);
+        // purple::Rect srcRect = image.getRect();
+        // purple::Rect dst(mScreenWidth -  srcRect.width , mScreenHeight 
+        //     , srcRect.width, srcRect.height);
         // spriteBatch->renderImage(image , srcRect , dst);
         // spriteBatch->end();
-        
+
 
         purple::TextPaint fpsPaint;
         fpsPaint.setTextSize(50.0f);
@@ -231,7 +240,7 @@ void Application::tick(){
         purple::Engine::getRenderEngine()->renderText(mInputContent , 
             0.0f , mScreenHeight - 50.0f,
             fpsPaint);
-
+        
         renderTimes++;
         std::wstring fpsStr = L"" + std::to_wstring(fps);
         purple::Engine::getRenderEngine()->renderText(fpsStr , 
