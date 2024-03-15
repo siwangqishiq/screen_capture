@@ -45,7 +45,6 @@ class Application{
 private:
     GLFWwindow *window;
     std::shared_ptr<IScreenApi> mScreenApi;
-    std::shared_ptr<purple::TextureImage> mScreenImage;
 
     uint8_t* mScreenImagePixel = nullptr;
 
@@ -137,6 +136,8 @@ public:
     float mThumbPreviewSize = 64.0f;
 
     GLFWcursor *mMoveCursor = nullptr;
+
+    std::shared_ptr<purple::TextureImage> mScreenImage;
 
     purple::Paint mMaskZonePaint;
     purple::Paint mMaskZoneBorderPaint;

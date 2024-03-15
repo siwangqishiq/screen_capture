@@ -7,12 +7,15 @@
 class MosaicEditor : public BaseEditor{
 public:
     MosaicEditor(Application *_app) : BaseEditor(_app){
-        // mPaint.color = color;
-        // mPaint.fillStyle = purple::FillStyle::Stroken;
-        // mPaint.stokenWidth = size; 
+        //init params
+        mShader = purple::ShaderManager::getInstance()
+            ->loadAssetShader("mosaic_tex_shader","custom/mosaic.vert","custom/mosaic.frag");
     }
 
     virtual void renderEditorContent() override;
     
     virtual void endPaint();
+private:
+    std::shared_ptr<purple::TextureInfo> mMosaicTex = nullptr;
+    purple::Shader mShader;
 };
