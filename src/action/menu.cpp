@@ -4,6 +4,7 @@
 #include "action/action_confirm.h"
 #include "action/action_cancel.h"
 #include "action/action_edit.h"
+#include "action/action_mosaic.h"
 #include "editor/editor.h"
 
 ActionMenu::ActionMenu(Application *_app){
@@ -30,6 +31,10 @@ void ActionMenu::addMenuItems(){
     std::shared_ptr<MenuItem> edPencilItem = std::make_shared<EditPaintPencilMenuItem>(this->mApp);
     mMenuItems.push_back(edPencilItem);
     edPencilItem->mEditSetting = std::make_shared<EditPaintSetting>(edPencilItem.get());
+
+    // mosaic
+    std::shared_ptr<MenuItem> mosaicItem = std::make_shared<MosaicMenuItem>(this->mApp);
+    mMenuItems.push_back(mosaicItem);
 
     // confirm item
     std::shared_ptr<MenuItem> confirmItem = std::make_shared<ConfirmMenuItem>(this->mApp);

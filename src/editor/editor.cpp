@@ -16,6 +16,10 @@ void BaseEditor::limitInRect(purple::Rect &rect , float &x , float &y){
     }
 }
 
+bool BaseEditor::isVisible(){
+    return mVisible;
+}
+
 bool BaseEditor::dispatchEventAction(EventAction action , float x , float y){
     std::vector<float> results = mApp->calClipPoints();
     float left = results[0];

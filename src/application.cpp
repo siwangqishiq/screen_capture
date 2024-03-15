@@ -836,9 +836,9 @@ bool Application::onMouseDoubleClick(){
 }
 
 void Application::moveEditorToList(std::shared_ptr<IEditor> editor){
-    if(editor == nullptr){
+    if(editor == nullptr || !editor->isVisible()){
         return;
     }
-
+    
     mEditorList.push_back(editor);
 }
