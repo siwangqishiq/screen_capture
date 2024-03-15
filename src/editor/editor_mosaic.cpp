@@ -12,7 +12,10 @@ void MosaicEditor::renderEditorContent(){
                     , dstRect
                     , mApp->mScreenImage->getTextureId(), 
                     [this](){
-                        mShader.setUniformInt("uMosaicSize", 200);
+                        mShader.setUniformFloat("uMosaicSize", 100.0f);
+                        mShader.setUniformVec2("uTexSize" ,
+                        (float)(mApp->mScreenWidth),(float)(mApp->mScreenHeight));
+                        // purple::Log::e("MosaicEditor","setUniform %f , %f" , (float)(mApp->mScreenWidth),(float)(mApp->mScreenHeight));
                     }
                 );
             });

@@ -814,7 +814,7 @@ namespace purple{
         glVertexAttribPointer(1 , 2 , GL_FLOAT , GL_FALSE , attrCount_ * sizeof(float) , 
             reinterpret_cast<void *>(vboOffset_ + 3 * sizeof(float)));
         glDrawArrays(GL_TRIANGLE_FAN , 0 , vertexCount_);
-
+        
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER , 0);

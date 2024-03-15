@@ -175,6 +175,11 @@ namespace purple{
         glUniform2f(loc , x , y);
     }
 
+    void Shader::setUniformIVec2(std::string key , int x , int y){
+        GLint loc = findUniformLocation(key);
+        glUniform2i(loc , x,  y);
+    }
+
     void Shader::setUniformBool(std::string key , bool value){
         GLint loc = findUniformLocation(key);
         glUniform1i(loc , value);
