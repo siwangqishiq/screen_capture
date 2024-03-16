@@ -84,7 +84,7 @@ void Application::execute(){
             if(event == GLFW_PRESS){
                 bool isCost = false;
                 double currentTime = glfwGetTime();
-                if(currentTime - app_->mLastClickTime < 0.2f){
+                if(currentTime - app_->mLastClickTime < 0.15f){
                     isCost = app_->onMouseDoubleClick();
                 }
                 app_->mLastClickTime = currentTime;
