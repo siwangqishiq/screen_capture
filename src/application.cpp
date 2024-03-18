@@ -85,7 +85,7 @@ void Application::execute(){
                 bool isCost = false;
                 double currentTime = glfwGetTime();
                 float deltaTime = currentTime - app_->mLastClickTime;
-                purple::Log::e("event" , "deltaTime = %f" , deltaTime);
+                purple::Log::w("event" , "deltaTime = %f" , deltaTime);
                 if(deltaTime < 0.15f){
                     isCost = app_->onMouseDoubleClick();
                 }
