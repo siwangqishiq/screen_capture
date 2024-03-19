@@ -45,7 +45,7 @@ public:
     virtual void endPaint();
 
     virtual void setColor(glm::vec4 color);
-
+    
     virtual void setStrokenWidth(float width);
 };
 

@@ -41,6 +41,11 @@ enum ResizeType{
     LeftVmid = 8
 };
 
+enum CursorType{
+    Normal = 0,
+    Cross = 1
+};
+
 class Application{
 private:
     GLFWwindow *window;
@@ -72,6 +77,8 @@ private:
     float mLastY;
 
     std::shared_ptr<purple::TextureInfo> mVirtualTexture;
+
+    CursorType mCursorType = CursorType::Normal;
 public:
     static bool isDebug;
     static bool isWindows;
@@ -120,6 +127,8 @@ public:
 
     void adjustMoveCaptureZone(float dx , float dy);
 
+    void updateCursor(CursorType newCursorType);
+
     //计算裁剪点坐标 
     std::vector<float> calClipPoints();
 
@@ -149,4 +158,7 @@ public:
     std::shared_ptr<IEditor> mCurrentEditor = nullptr;
 
     std::vector<purple::Rect> mControlButtonRects; //resize control buttonsrect
+
+    //cursor
+    GLFWcursor *mCrossCursor = nullptr;
 };

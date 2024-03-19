@@ -148,6 +148,10 @@ void Application::execute(){
 
 void Application::dispose(){
     // std::cout << "Application::dispose..." << std::endl;
+    if(mCrossCursor == nullptr){
+        glfwDestroyCursor(mCrossCursor);
+    }
+
     if(mMoveCursor != nullptr){
         glfwDestroyCursor(mMoveCursor);
     }
@@ -843,4 +847,26 @@ void Application::moveEditorToList(std::shared_ptr<IEditor> editor){
     }
     
     mEditorList.push_back(editor);
+}
+
+void Application::updateCursor(CursorType newCursorType){
+    if(mCursorType == newCursorType){
+        return;
+    }
+
+    mCursorType = newCursorType;
+    if(mCursorType == CursorType::Normal){
+        glfwSetCursor(window , nullptr);
+    }else{
+        switch(mCursorType){
+            case Cross:
+                if(mCrossCursor == nullptr){
+                    mCrossCursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+                }
+                glfwSetCursor(window , mCrossCursor);
+                break;
+            default:
+                break;
+        }//end switch
+    }
 }
