@@ -5,6 +5,7 @@
 #include "action/action_cancel.h"
 #include "action/action_edit.h"
 #include "action/action_mosaic.h"
+#include "action/action_text.h"
 #include "editor/editor.h"
 
 ActionMenu::ActionMenu(Application *_app){
@@ -35,6 +36,11 @@ void ActionMenu::addMenuItems(){
     // mosaic
     std::shared_ptr<MenuItem> mosaicItem = std::make_shared<MosaicMenuItem>(this->mApp);
     mMenuItems.push_back(mosaicItem);
+
+    //text add
+    std::shared_ptr<MenuItem> textItem = std::make_shared<EditTextMenuItem>(this->mApp);
+    mMenuItems.push_back(textItem);
+    textItem->mEditSetting = std::make_shared<EditPaintSetting>(textItem.get());
 
     // confirm item
     std::shared_ptr<MenuItem> confirmItem = std::make_shared<ConfirmMenuItem>(this->mApp);
