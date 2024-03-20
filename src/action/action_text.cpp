@@ -1,5 +1,6 @@
 
 #include "action/action_text.h"
+#include "editor/editor_text.h"
 
 std::string EditTextMenuItem::Name = "text";
 
@@ -9,19 +10,16 @@ void EditTextMenuItem::onItemClick(){
     isSelected = !isSelected;
     if(isSelected){ //文本按钮被选中
         clearOtherMenuItemSelectState();
-
-        if(this->mEditSetting != nullptr){
-            this->mEditSetting->isVisible = true;
-            // mApp->setCurrentEditor(std::make_shared<CircleEditor>(mApp
-            //     ,mEditSetting->getSelectedColor()
-            //     ,mEditSetting->getSelectedSize()));
+        
+        if(mEditSetting != nullptr){
+            mEditSetting->isVisible = true;
+            mApp->setCurrentEditor(std::make_shared<TextEditor>(mApp,mEditSetting->getSelectedColor()));
         }
+        mApp->updateCursor(CursorType::Normal);
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
-        // mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
-
-         if(this->mEditSetting != nullptr){
-            this->mEditSetting->isVisible = false;
+         if(mEditSetting != nullptr){
+            mEditSetting->isVisible = false;
         }
-    }
+    }//end if
 }

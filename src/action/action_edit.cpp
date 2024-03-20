@@ -22,6 +22,7 @@ void EditPaintRectMenuItem::onItemClick(){
                 mEditSetting->getSelectedColor(),
                 mEditSetting->getSelectedSize()));
         }
+        mApp->updateCursor(CursorType::Normal);
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
@@ -48,6 +49,8 @@ void EditPaintCircleMenuItem::onItemClick(){
                 ,mEditSetting->getSelectedColor()
                 ,mEditSetting->getSelectedSize()));
         }
+
+        mApp->updateCursor(CursorType::Normal);
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
@@ -74,6 +77,8 @@ void EditPaintPencilMenuItem::onItemClick(){
                 ,mEditSetting->getSelectedColor()
                 ,mEditSetting->getSelectedSize()));
         }
+        
+        mApp->updateCursor(CursorType::Normal);
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
