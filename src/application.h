@@ -85,6 +85,8 @@ public:
     static bool isMac;
     static bool isLinux;
 
+    bool mAntiAliasing = true; //是否开启反锯齿
+
     std::wstring mInputContent;
 
     std::string mOutputFilePath = "test_screen.png";

@@ -11,7 +11,7 @@ public:
         mTextColor = color;
         mPaint.fillStyle = purple::FillStyle::Stroken;
         mPaint.color = glm::vec4(0.0f , 0.0f ,0.0f , 1.0f);
-        mPaint.stokenWidth = 1.0f;
+        mPaint.stokenWidth = 2.0f;
 
         mDstRect.width = 2.0f * mPadding;
         mDstRect.height = mTextHeight + 2.0f * mPadding;

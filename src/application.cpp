@@ -30,6 +30,10 @@ void Application::execute(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
 
+    if(mAntiAliasing){
+        glfwWindowHint(GLFW_SAMPLES, 4);
+    }
+
     // glfwWindowHint(GLFW_SAMPLES, 4);
     // glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
@@ -128,6 +132,10 @@ void Application::execute(){
     
     //紫电引擎初始化
     purple::Engine::init(mScreenWidth , mScreenHeight);
+
+    if(mAntiAliasing){
+        glEnable(GL_MULTISAMPLE);
+    }
 
     //应用初始化
     init();
