@@ -40,7 +40,7 @@ void ActionMenu::addMenuItems(){
     //text add
     std::shared_ptr<MenuItem> textItem = std::make_shared<EditTextMenuItem>(this->mApp);
     mMenuItems.push_back(textItem);
-    textItem->mEditSetting = std::make_shared<EditPaintSetting>(textItem.get());
+    textItem->mEditSetting = std::make_shared<EditPaintSetting>(textItem.get() , false);
 
     // confirm item
     std::shared_ptr<MenuItem> confirmItem = std::make_shared<ConfirmMenuItem>(this->mApp);

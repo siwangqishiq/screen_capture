@@ -23,6 +23,8 @@ public:
         mDstRect.left = cx;
         mDstRect.top = cy;
     }
+
+    virtual void setStrokenWidth(float width) override;
     
     virtual void renderEditorContent() override;
     

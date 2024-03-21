@@ -45,12 +45,12 @@ float stokeRect(vec2 pos){
     // if(vRect.y - vRect.w <= pos.y && vRect.y - vRect.w + stokenWidth >= pos.y){
     //     bottom = 1.0f;
     // }
-
+    
     float left = step(vRect.x , pos.x) * (1.0f - step(vRect.x + stokenWidth , pos.x));
     float right = (1.0f - step(vRect.x + vRect.z , pos.x)) * step(vRect.x + vRect.z - stokenWidth, pos.x);
     float top = (1.0f - step(vRect.y , pos.y)) * step(vRect.y - stokenWidth , pos.y);
     float bottom = step(vRect.y - vRect.w , pos.y) * (1.0f - step(vRect.y - vRect.w + stokenWidth , pos.y));
-    return min(1.0f , left + right + top + bottom);
+    return min(1.5f , left + right + top + bottom);
 }
 
 float renderRect(vec2 pos){

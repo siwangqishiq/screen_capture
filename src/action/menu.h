@@ -42,6 +42,12 @@ private:
 
     int findActionIndex(float x , float y);
 public:
+    EditPaintSetting(MenuItem *_item , bool hasSize) : mMenuItem(_item){
+        if(!hasSize){
+            mSizes.clear();
+        }
+    }
+    
     EditPaintSetting(MenuItem *_item) : mMenuItem(_item){}
 
     purple::Rect genWrapRect(){

@@ -7,6 +7,10 @@ void TextEditor::renderEditorContent() {
     shapeBatch->renderRect(mDstRect , mPaint);
     shapeBatch->end();
 }
+
+void TextEditor::setStrokenWidth(float width){
+    //do nothing
+}
     
 void TextEditor::endPaint() {
     
@@ -37,7 +41,7 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
             return false;
         }
 
-        limitInRect(captureContentRect , x , y);
+        // limitInRect(captureContentRect , x , y);
 
         if(action == EventAction::ActionMove){
             mEndX = x;
@@ -45,7 +49,7 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
         }else if(action == EventAction::ActionUp){
             mEndX = x;
             mEndY = y;
-
+            
             endPaint();
         }//end if
         return true;

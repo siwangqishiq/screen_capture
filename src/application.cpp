@@ -581,6 +581,8 @@ void Application::onResize(int w , int h){
 void Application::onEventAction(EventAction action , float x , float y){
     // mEventX = x;
     // mEventY = y;
+    // purple::Log::e("onEventAction" , "mState = %d , mEditorList size = %d" 
+    //     ,mState, mEditorList.size());
 
     if(mActionMenu->dispatchEventAction(action , x , y)){
         return;
@@ -812,7 +814,7 @@ bool Application::setCurrentEditor(std::shared_ptr<IEditor> editor){
     // if(mState != CAPTURE_ZONE_GETTED || editor == nullptr){
     //     return false;
     // }
-
+    
     if(mCurrentEditor != nullptr){
         moveEditorToList(mCurrentEditor);
     }

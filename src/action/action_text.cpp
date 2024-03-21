@@ -18,7 +18,7 @@ void EditTextMenuItem::onItemClick(){
         mApp->updateCursor(CursorType::Normal);
     }else{ //取消选中
         mApp->setCurrentEditor(nullptr);
-         if(mEditSetting != nullptr){
+        if(mEditSetting != nullptr){
             mEditSetting->isVisible = false;
         }
     }//end if
