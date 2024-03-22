@@ -453,11 +453,11 @@ void Application::renderMaskZone(){
     txtPaint.setTextSize(textSize);
 
     if(top + textSize + padding >= mScreenHeight){
-        txtPaint.textColor = App::COLOR_BLACK;
+        txtPaint.textColor = Constants::COLOR_BLACK;
         purple::Engine::getRenderEngine()->renderText(clipSizeStr , 
             left + padding , top - textSize - padding , txtPaint);
     }else{
-        txtPaint.textColor = App::COLOR_WHITE;
+        txtPaint.textColor = Constants::COLOR_WHITE;
         purple::Engine::getRenderEngine()->renderText(clipSizeStr , 
             left + padding , top + padding , txtPaint);
     }
@@ -530,7 +530,7 @@ void Application::renderSubThumbPreview(){
     lines[6] = dstRect.left + dstRect.width / 2.0f;
     lines[7] = dstRect.getBottom();
     purple::Paint linesPaint;
-    linesPaint.color = App::COLOR_GREEN;
+    linesPaint.color = Constants::COLOR_GREEN;
     linesPaint.stokenWidth = 1.0f;
     purple::Engine::getRenderEngine()->renderLines(lines , linesPaint);
 
@@ -561,7 +561,7 @@ void Application::renderSubThumbPreview(){
         infoRect , txtPaint , &warpRect);
     shapeBatch->begin();
     purple::Paint txtWrapPaint;
-    txtWrapPaint.color = App::COLOR_BLACK;
+    txtWrapPaint.color = Constants::COLOR_BLACK;
     if(infoRect.width < warpRect.width){
         infoRect.width = warpRect.width;
     }

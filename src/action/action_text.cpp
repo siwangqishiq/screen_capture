@@ -21,5 +21,7 @@ void EditTextMenuItem::onItemClick(){
         if(mEditSetting != nullptr){
             mEditSetting->isVisible = false;
         }
+        
+        mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
     }//end if
 }

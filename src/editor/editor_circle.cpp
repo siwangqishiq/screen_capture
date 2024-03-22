@@ -11,6 +11,7 @@ void CircleEditor::renderEditorContent(){
     float bottom = mStartY > mEndY?mEndY:mStartY;//bottom
 
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    // mPaint.fillStyle = purple::FillStyle::Filled;
     shapeBatch->begin();
     purple::Rect renderRect(left , top , right - left , top - bottom);
     shapeBatch->renderOval(renderRect , mPaint);

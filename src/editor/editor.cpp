@@ -57,7 +57,7 @@ bool BaseEditor::dispatchEventAction(EventAction action , float x , float y){
         }//end if
         return true;
     }
-
+    
     return false;
 }
 
