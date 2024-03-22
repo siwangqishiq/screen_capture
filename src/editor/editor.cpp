@@ -72,3 +72,6 @@ void BaseEditor::setColor(glm::vec4 color){
 void BaseEditor::setStrokenWidth(float width){
     mPaint.stokenWidth = width;
 }
+
+void BaseEditor::onInputContentChange(std::wstring content){
+}

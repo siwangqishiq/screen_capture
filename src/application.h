@@ -131,6 +131,10 @@ public:
 
     void updateCursor(CursorType newCursorType);
 
+    void onInputContentChange(std::wstring newContent);
+
+    void onDeleteKeyPressed();
+
     //计算裁剪点坐标 
     std::vector<float> calClipPoints();
 

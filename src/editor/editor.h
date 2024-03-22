@@ -18,6 +18,8 @@ public:
     virtual void renderEditorContent() = 0; //渲染编辑内容
     
     virtual bool dispatchEventAction(EventAction action , float x , float y) = 0; //路由事件处理
+
+    virtual void onInputContentChange(std::wstring content) = 0;
 };//end inerface
 
 class BaseEditor : public IEditor{
@@ -47,5 +49,7 @@ public:
     virtual void setColor(glm::vec4 color);
     
     virtual void setStrokenWidth(float width);
+
+    virtual void onInputContentChange(std::wstring content);
 };
 

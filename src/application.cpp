@@ -72,8 +72,13 @@ void Application::execute(){
     glfwSetWindowAttrib(window , GLFW_DECORATED , GLFW_FALSE);
 
     glfwSetKeyCallback(window , [](GLFWwindow* windows_,int key,int scancode,int action,int mods){
+        Application* app_ = static_cast<Application *>(glfwGetWindowUserPointer(windows_));
+        // purple::Log::w("Application" , "key = %d" , key);
         if(glfwGetKey(windows_, GLFW_KEY_ESCAPE) == GLFW_PRESS){
             glfwSetWindowShouldClose(windows_, true);
+        }else if(glfwGetKey(windows_, GLFW_KEY_DELETE) == GLFW_PRESS 
+            || glfwGetKey(windows_, GLFW_KEY_BACKSPACE) == GLFW_PRESS){
+            app_->onDeleteKeyPressed();
         }
     });
     
@@ -121,10 +126,13 @@ void Application::execute(){
     });
 
     glfwSetCharCallback(window , [](GLFWwindow* windows_ , unsigned int codepoint){
-        // Application* app_ = static_cast<Application *>(glfwGetWindowUserPointer(windows_));
-        // // app_->mInputContent += std::to_wstring(codepoint);
-        // wchar_t ch = codepoint;
-        // app_->mInputContent += ch;                
+        Application* app_ = static_cast<Application *>(glfwGetWindowUserPointer(windows_));
+        // app_->mInputContent += std::to_wstring(codepoint);
+        wchar_t ch = codepoint;
+        std::cout << "codepoint : " << codepoint << std::endl;
+
+        app_->mInputContent += ch;
+        app_->onInputContentChange(app_->mInputContent);            
     });
 
     // mMoveCursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
@@ -250,11 +258,13 @@ void Application::tick(){
 
         purple::TextPaint fpsPaint;
         fpsPaint.setTextSize(50.0f);
+        fpsPaint.textColor = glm::vec4(0.0f , 1.0f , 0.0f , 1.0f);
+        fpsPaint.textGravity = purple::TextGravity::TopRight;
 
-        purple::Engine::getRenderEngine()->renderText(mInputContent , 
-            0.0f , mScreenHeight - 50.0f,
-            fpsPaint);
-        
+        purple::Rect fpsRect(0.0f , 0.0f , 100.0f , 100.0f);
+        fpsRect.left = mScreenWidth - fpsRect.width;
+        fpsRect.top = mScreenHeight;
+
         renderTimes++;
         std::wstring fpsStr = L"" + std::to_wstring(fps);
         purple::Engine::getRenderEngine()->renderText(fpsStr , 
@@ -879,4 +889,21 @@ void Application::updateCursor(CursorType newCursorType){
                 break;
         }//end switch
     }
+}
+
+void Application::onInputContentChange(std::wstring newContent){
+    if(mCurrentEditor != nullptr){
+        mCurrentEditor->onInputContentChange(mInputContent);
+    }
+}
+
+void Application::onDeleteKeyPressed(){
+    purple::Log::e("Application" , "onDeleteKeyPressed");
+
+    if(mInputContent.empty()){
+        return;
+    }
+    
+    mInputContent = std::wstring(mInputContent.begin() , mInputContent.end() - 1);
+    onInputContentChange(mInputContent);
 }
