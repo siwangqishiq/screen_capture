@@ -19,6 +19,11 @@ public:
         mPaint.color = glm::vec4(0.0f , 0.0f ,0.0f , 1.0f);
         mPaint.stokenWidth = 2.0f;
 
+        mTextWrapRect.left = 0.0f;
+        mTextWrapRect.top = 0.0f;
+        mTextWrapRect.width = 1.0f;
+        mTextWrapRect.height = 1.0f;
+
         // std::vector<float> results = mApp->calClipPoints();
         // float cx = (results[0] +  results[1]) / 2.0f;
         // float cy = (results[2] +  results[3]) / 2.0f;

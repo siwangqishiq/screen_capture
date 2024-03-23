@@ -2,6 +2,8 @@
 #include "editor/editor_text.h"
 
 void TextEditor::renderEditorContent() {
+    // purple::Log::e("rect" , "renderEditorContent mVisible = %d mTextEditorState = %d" 
+    //     , mVisible , mTextEditorState);
     if(!mVisible || mTextEditorState == WaitInputPosition){
         return;
     }
@@ -30,11 +32,14 @@ void TextEditor::renderEditorContent() {
 
     //render control box
     purple::Rect controlRect;
-    float offset = 8.0f;
+    float offset = 15.0f;
     controlRect.left = mDstRect.left - offset;
     controlRect.top = mDstRect.top + offset;
     controlRect.width = mDstRect.width + 2.0f * offset;
     controlRect.height = mDstRect.height + 2.0f * offset;
+
+    // purple::Log::e("rect" , "controlRect %f , %f , %f , %f", 
+    //     controlRect.left,controlRect.top , controlRect.width , controlRect.height);
 
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
     shapeBatch->begin();
