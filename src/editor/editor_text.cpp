@@ -2,26 +2,44 @@
 #include "editor/editor_text.h"
 
 void TextEditor::renderEditorContent() {
-    if(mCharsTex != nullptr){
+    if(!mVisible || mTextEditorState == WaitInputPosition){
+        return;
+    }
+
+    //输入模式 or 调整模式
+    float ratio = mTextWrapRect.width / mTextWrapRect.height;
+    mTextBoxWidth = ratio * mTextBoxHeight;
+
+    mDstRect.left = mTextBoxLeft;
+    mDstRect.top = mTextBoxTop;
+    mDstRect.height = mTextBoxHeight;
+    mDstRect.width = mTextBoxWidth;
+
+    if(mCharsTex != nullptr){ //render text content
         auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
         spriteBatch->begin();
         purple::TextureImage image(mCharsTex);
-        float ratio = mTextWrapRect.width / mTextWrapRect.height;
-        mTextBoxWidth = ratio * mTextBoxHeight;
-
-        mDstRect.left = mTextBoxLeft;
-        mDstRect.top = mTextBoxTop;
-        mDstRect.height = mTextBoxHeight;
-        mDstRect.width = mTextBoxWidth;
-
         spriteBatch->renderImage(image , mTextWrapRect , mDstRect);
         spriteBatch->end();
     }
 
-    // auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
-    // shapeBatch->begin();
-    // shapeBatch->renderRect(mDstRect , mPaint);
-    // shapeBatch->end();
+   
+    if(mApp->isReadPixelMode){
+       return; 
+    }
+
+    //render control box
+    purple::Rect controlRect;
+    float offset = 8.0f;
+    controlRect.left = mDstRect.left - offset;
+    controlRect.top = mDstRect.top + offset;
+    controlRect.width = mDstRect.width + 2.0f * offset;
+    controlRect.height = mDstRect.height + 2.0f * offset;
+
+    auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
+    shapeBatch->begin();
+    shapeBatch->renderRect(controlRect , mPaint);
+    shapeBatch->end();
 }
 
 void TextEditor::setStrokenWidth(float width){
@@ -30,8 +48,6 @@ void TextEditor::setStrokenWidth(float width){
 
 void TextEditor::setColor(glm::vec4 color) {
     mTextColor = color;
-    // purple::Log::e("textEidtor" , "TextEditor::setColor (%f , %f , %f)" , 
-    //     mTextColor[0],mTextColor[1],mTextColor[2]);
     rebuildCharsTexture();
 }
     
@@ -56,6 +72,9 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
             mEndY = y;
 
             mVisible = true;
+            mWaitingUpAction = true;
+
+
             return true;
         }
     }else{
@@ -67,17 +86,26 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
         // limitInRect(captureContentRect , x , y);
 
         if(action == EventAction::ActionMove){
-            mEndX = x;
-            mEndY = y;
         }else if(action == EventAction::ActionUp){
-            mEndX = x;
-            mEndY = y;
-            
-            endPaint();
+          if(mWaitingUpAction){
+            mWaitingUpAction = false;
+            if(mTextEditorState == WaitInputPosition){
+                mTextEditorState = InputMode;
+            }
+            confirmInputTextPosition(x , y);
+          }
         }//end if
         return true;
     }
     return false;
+}
+
+void TextEditor::confirmInputTextPosition(float x , float y){
+    mApp->mInputContent = L"";
+    mInputContent = L"";
+    
+    mTextBoxLeft = x;
+    mTextBoxTop = y;
 }
 
 //输入文本改变 需要重新生成动态纹理
