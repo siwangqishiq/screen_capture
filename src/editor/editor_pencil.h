@@ -17,11 +17,13 @@ public:
 
     virtual void renderEditorContent() override;
     
-    virtual void endPaint();
+    virtual void endPaint() override;
 
     virtual bool dispatchEventAction(EventAction action , float x , float y) override;
 
     virtual void setStrokenWidth(float width);
+
+    virtual int editorType() override;
 private:
     float mMinDistance = 2.0f;
     std::vector<glm::vec2> mPoints;

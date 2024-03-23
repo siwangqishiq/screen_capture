@@ -38,11 +38,13 @@ public:
     
     virtual void renderEditorContent() override;
     
-    virtual void endPaint();
+    virtual void endPaint() override;
 
     virtual bool dispatchEventAction(EventAction action , float x , float y) override;
 
     virtual void onInputContentChange(std::wstring content) override;
+
+    virtual int editorType();
 private:
     TextEditorState mTextEditorState = TextEditorState::WaitInputPosition;
     bool mWaitingUpAction = false;

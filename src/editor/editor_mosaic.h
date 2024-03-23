@@ -23,7 +23,9 @@ public:
     
     virtual void updateMosaicRect();
 
-    virtual void endPaint();
+    virtual void endPaint() override;
+
+    virtual int editorType() override;
 private:
     bool isPainting = false;
 

@@ -98,3 +98,7 @@ void MosaicEditor::endPaint(){
     mApp->setCurrentEditor(std::make_shared<MosaicEditor>(mApp));
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
+
+int MosaicEditor::editorType(){
+    return EditorType::DrawMosaic;
+}

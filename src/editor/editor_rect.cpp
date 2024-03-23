@@ -24,3 +24,7 @@ void RectEditor::endPaint(){
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
 
+int RectEditor::editorType(){
+    return EditorType::DrawRect;
+}
+

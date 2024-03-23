@@ -96,3 +96,7 @@ void PencilEditor::setStrokenWidth(float width){
     // mPencilStokenWidth = width / 2.0f;
     mPaint.stokenWidth = width;
 }
+
+int PencilEditor::editorType(){
+    return EditorType::DrawFree;
+}

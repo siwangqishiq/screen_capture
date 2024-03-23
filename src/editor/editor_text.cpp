@@ -56,10 +56,11 @@ void TextEditor::renderEditorContent() {
 
     auto scaleImageRect = mScaleImage->getRect();
     purple::Rect scaleDstRect;
-    scaleDstRect.left = controlRect.getRight();
-    scaleDstRect.top = controlRect.getBottom();
     scaleDstRect.width = btnSize;
     scaleDstRect.height = btnSize;
+    scaleDstRect.left = controlRect.getRight() - btnSize / 2.0f;
+    scaleDstRect.top = controlRect.getBottom() + btnSize / 2.0f;
+ 
 
     spriteBatch->renderImage(mDelImage , delImageRect , delDstRect);
     spriteBatch->renderImage(mScaleImage , scaleImageRect , scaleDstRect);
@@ -74,6 +75,10 @@ void TextEditor::setStrokenWidth(float width){
 void TextEditor::setColor(glm::vec4 color) {
     mTextColor = color;
     rebuildCharsTexture();
+}
+
+int TextEditor::editorType() {
+    return EditorType::DrawText;
 }
     
 void TextEditor::endPaint() {

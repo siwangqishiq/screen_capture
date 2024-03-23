@@ -20,6 +20,10 @@ bool BaseEditor::isVisible(){
     return mVisible;
 }
 
+int BaseEditor::editorType(){
+    return EditorType::NoneType;
+}
+
 bool BaseEditor::dispatchEventAction(EventAction action , float x , float y){
     std::vector<float> results = mApp->calClipPoints();
     float left = results[0];

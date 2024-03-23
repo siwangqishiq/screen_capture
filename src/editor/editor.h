@@ -4,6 +4,15 @@
 
 class Application;
 
+enum EditorType{
+    NoneType = -1,
+    DrawRect = 1,
+    DrawOval = 2,
+    DrawFree = 3,
+    DrawMosaic = 4,
+    DrawText = 5
+};
+
 // 编辑接口 
 class IEditor{
 public:
@@ -20,6 +29,8 @@ public:
     virtual bool dispatchEventAction(EventAction action , float x , float y) = 0; //路由事件处理
 
     virtual void onInputContentChange(std::wstring content) = 0;
+
+    virtual int editorType() = 0;
 };//end inerface
 
 class BaseEditor : public IEditor{
@@ -51,5 +62,7 @@ public:
     virtual void setStrokenWidth(float width);
 
     virtual void onInputContentChange(std::wstring content);
+
+    virtual int editorType();
 };
 

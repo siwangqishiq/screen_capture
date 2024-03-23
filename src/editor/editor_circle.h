@@ -14,5 +14,7 @@ public:
 
     virtual void renderEditorContent() override;
     
-    virtual void endPaint();
+    virtual void endPaint() override;
+
+    virtual int editorType() override;
 };
