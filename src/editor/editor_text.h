@@ -27,6 +27,9 @@ public:
         // std::vector<float> results = mApp->calClipPoints();
         // float cx = (results[0] +  results[1]) / 2.0f;
         // float cy = (results[2] +  results[3]) / 2.0f;
+
+        mDelImage = purple::BuildImageByAsset("ic_del.png");
+        mScaleImage = purple::BuildImageByAsset("ic_scale.png");
     }
 
     virtual void setStrokenWidth(float width) override;
@@ -53,6 +56,8 @@ private:
     float mTextBoxLeft = 0.0f;
     float mTextBoxTop = 0.0f;
 
+    bool isShowControlButton = false;
+
     std::wstring mInputContent = L"";
 
     std::shared_ptr<purple::TextureInfo> mCharsTex = nullptr;
@@ -64,4 +69,7 @@ private:
     void doRenderCharsTex(int texWidth , int texHeight);
 
     void confirmInputTextPosition(float x , float y);
+
+    std::shared_ptr<purple::TextureImage> mDelImage;//删除图标
+    std::shared_ptr<purple::TextureImage> mScaleImage;//缩放图标
 };

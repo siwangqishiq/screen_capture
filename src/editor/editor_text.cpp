@@ -1,5 +1,6 @@
 
 #include "editor/editor_text.h"
+#include "config/constants.h"
 
 void TextEditor::renderEditorContent() {
     // purple::Log::e("rect" , "renderEditorContent mVisible = %d mTextEditorState = %d" 
@@ -24,15 +25,14 @@ void TextEditor::renderEditorContent() {
         spriteBatch->renderImage(image , mTextWrapRect , mDstRect);
         spriteBatch->end();
     }
-
    
-    if(mApp->isReadPixelMode){
+    if(mApp->isReadPixelMode || !isShowControlButton){
        return; 
     }
 
     //render control box
     purple::Rect controlRect;
-    float offset = 15.0f;
+    const float offset = 15.0f;
     controlRect.left = mDstRect.left - offset;
     controlRect.top = mDstRect.top + offset;
     controlRect.width = mDstRect.width + 2.0f * offset;
@@ -45,6 +45,19 @@ void TextEditor::renderEditorContent() {
     shapeBatch->begin();
     shapeBatch->renderRect(controlRect , mPaint);
     shapeBatch->end();
+
+    //btn  del and scale  rotate????
+    float btnSize = controlRect.height / 3.0f;
+    auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
+    spriteBatch->begin();
+    auto delImageRect = mDelImage->getRect();
+    purple::Rect delDstRect;
+    delDstRect.left = controlRect.getRight();
+    delDstRect.top = controlRect.getTop();
+    delDstRect.width = btnSize;
+    delDstRect.height = btnSize;
+    spriteBatch->renderImage(mDelImage , delImageRect , delDstRect);
+    spriteBatch->end();
 }
 
 void TextEditor::setStrokenWidth(float width){
@@ -79,7 +92,6 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
             mVisible = true;
             mWaitingUpAction = true;
 
-
             return true;
         }
     }else{
@@ -111,6 +123,8 @@ void TextEditor::confirmInputTextPosition(float x , float y){
     
     mTextBoxLeft = x;
     mTextBoxTop = y;
+
+    isShowControlButton = true;
 }
 
 //输入文本改变 需要重新生成动态纹理
