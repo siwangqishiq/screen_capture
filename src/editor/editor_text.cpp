@@ -32,14 +32,11 @@ void TextEditor::renderEditorContent() {
 
     //render control box
     purple::Rect controlRect;
-    const float offset = 15.0f;
+    const float offset = 12.0f;
     controlRect.left = mDstRect.left - offset;
     controlRect.top = mDstRect.top + offset;
     controlRect.width = mDstRect.width + 2.0f * offset;
     controlRect.height = mDstRect.height + 2.0f * offset;
-
-    // purple::Log::e("rect" , "controlRect %f , %f , %f , %f", 
-    //     controlRect.left,controlRect.top , controlRect.width , controlRect.height);
 
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
     shapeBatch->begin();
@@ -52,11 +49,21 @@ void TextEditor::renderEditorContent() {
     spriteBatch->begin();
     auto delImageRect = mDelImage->getRect();
     purple::Rect delDstRect;
-    delDstRect.left = controlRect.getRight();
-    delDstRect.top = controlRect.getTop();
     delDstRect.width = btnSize;
     delDstRect.height = btnSize;
+    delDstRect.left = controlRect.getRight() - delDstRect.width / 2.0f;
+    delDstRect.top = controlRect.getTop() + delDstRect.height / 2.0f;
+
+    auto scaleImageRect = mScaleImage->getRect();
+    purple::Rect scaleDstRect;
+    scaleDstRect.left = controlRect.getRight();
+    scaleDstRect.top = controlRect.getBottom();
+    scaleDstRect.width = btnSize;
+    scaleDstRect.height = btnSize;
+
     spriteBatch->renderImage(mDelImage , delImageRect , delDstRect);
+    spriteBatch->renderImage(mScaleImage , scaleImageRect , scaleDstRect);
+
     spriteBatch->end();
 }
 
