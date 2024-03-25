@@ -53,7 +53,7 @@ void TextEditor::renderEditorContent() {
     delDstRect.height = btnSize;
     delDstRect.left = controlRect.getRight() - delDstRect.width / 2.0f;
     delDstRect.top = controlRect.getTop() + delDstRect.height / 2.0f;
-
+    
     auto scaleImageRect = mScaleImage->getRect();
     purple::Rect scaleDstRect;
     scaleDstRect.width = btnSize;
