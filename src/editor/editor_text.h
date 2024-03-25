@@ -28,6 +28,8 @@ public:
         // float cx = (results[0] +  results[1]) / 2.0f;
         // float cy = (results[2] +  results[3]) / 2.0f;
 
+        mBtnSize = mTextBoxHeight / 1.5f;
+
         mDelImage = purple::BuildImageByAsset("ic_del.png");
         mScaleImage = purple::BuildImageByAsset("ic_scale.png");
     }
@@ -48,6 +50,7 @@ public:
 private:
     TextEditorState mTextEditorState = TextEditorState::WaitInputPosition;
     bool mWaitingUpAction = false;
+    bool mWaitDelButtonClicked = false;
 
     glm::vec4 mTextColor = glm::vec4(0.0f , 0.0f ,0.0f ,1.0f);
     purple::Rect mDstRect;
@@ -57,6 +60,8 @@ private:
 
     float mTextBoxLeft = 0.0f;
     float mTextBoxTop = 0.0f;
+
+    float mBtnSize = 16.0f;
 
     bool isShowControlButton = false;
 
@@ -72,6 +77,11 @@ private:
 
     void confirmInputTextPosition(float x , float y);
 
+    void onClickDelButton();
+
     std::shared_ptr<purple::TextureImage> mDelImage;//删除图标
     std::shared_ptr<purple::TextureImage> mScaleImage;//缩放图标
+
+    purple::Rect mDelDstRect;
+    purple::Rect mScaleDstRect;
 };

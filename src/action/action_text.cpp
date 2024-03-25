@@ -17,12 +17,13 @@ void EditTextMenuItem::onItemClick(){
         }
         mApp->updateCursor(CursorType::Normal);
     }else{ //取消选中
-        mApp->setCurrentEditor(nullptr);
+        // mApp->setCurrentEditor(nullptr);
+        
         if(mEditSetting != nullptr){
             mEditSetting->isVisible = false;
         }
 
-        
+        mApp->mCurrentEditor = nullptr;
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
     }//end if
 }

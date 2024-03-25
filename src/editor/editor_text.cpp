@@ -44,26 +44,25 @@ void TextEditor::renderEditorContent() {
     shapeBatch->end();
 
     //btn  del and scale  rotate????
-    float btnSize = controlRect.height / 3.0f;
+    
     auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
     spriteBatch->begin();
     auto delImageRect = mDelImage->getRect();
-    purple::Rect delDstRect;
-    delDstRect.width = btnSize;
-    delDstRect.height = btnSize;
-    delDstRect.left = controlRect.getRight() - delDstRect.width / 2.0f;
-    delDstRect.top = controlRect.getTop() + delDstRect.height / 2.0f;
-    
+  
+    mDelDstRect.width = mBtnSize;
+    mDelDstRect.height = mBtnSize;
+    mDelDstRect.left = controlRect.getRight() - mBtnSize / 2.0f;
+    mDelDstRect.top = controlRect.getTop() + mBtnSize / 2.0f;
+
     auto scaleImageRect = mScaleImage->getRect();
     purple::Rect scaleDstRect;
-    scaleDstRect.width = btnSize;
-    scaleDstRect.height = btnSize;
-    scaleDstRect.left = controlRect.getRight() - btnSize / 2.0f;
-    scaleDstRect.top = controlRect.getBottom() + btnSize / 2.0f;
- 
+    mScaleDstRect.width = mBtnSize;
+    mScaleDstRect.height = mBtnSize;
+    mScaleDstRect.left = controlRect.getRight() - mBtnSize / 2.0f;
+    mScaleDstRect.top = controlRect.getBottom() + mBtnSize / 2.0f;
 
-    spriteBatch->renderImage(mDelImage , delImageRect , delDstRect);
-    spriteBatch->renderImage(mScaleImage , scaleImageRect , scaleDstRect);
+    spriteBatch->renderImage(mDelImage , delImageRect , mDelDstRect);
+    spriteBatch->renderImage(mScaleImage , scaleImageRect , mScaleDstRect);
 
     spriteBatch->end();
 }
@@ -95,16 +94,24 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
     purple::Rect captureContentRect(left , top , right - left , top - bottom);
 
     if(action == EventAction::ActionDown){
-        if(purple::isPointInRect(captureContentRect , x , y)){
-            mStartX = x;
-            mStartY = y;
-            mEndX = x;
-            mEndY = y;
+        if(mTextEditorState == WaitInputPosition){
+            if(purple::isPointInRect(captureContentRect , x , y)){
+                mStartX = x;
+                mStartY = y;
+                mEndX = x;
+                mEndY = y;
 
-            mVisible = true;
-            mWaitingUpAction = true;
+                mVisible = true;
+                mWaitingUpAction = true;
 
-            return true;
+                return true;
+            }
+        }else if(mTextEditorState == InputMode){
+            if(purple::isPointInRect(mDelDstRect , x , y) && isShowControlButton){
+                mWaitDelButtonClicked = true;
+                return true;
+            }
+        }else{
         }
     }else{
         // purple::Log::e("eidtor" , "action move or up  action = %d" , action);
@@ -116,13 +123,18 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
 
         if(action == EventAction::ActionMove){
         }else if(action == EventAction::ActionUp){
-          if(mWaitingUpAction){
-            mWaitingUpAction = false;
+          if(mWaitDelButtonClicked && purple::isPointInRect(mDelDstRect , x , y)){ //点击删除按钮
+            onClickDelButton();
+          }else if(mWaitingUpAction){ //确定文本插入位置
             if(mTextEditorState == WaitInputPosition){
                 mTextEditorState = InputMode;
             }
             confirmInputTextPosition(x , y);
-          }
+          }//end if
+
+
+          mWaitingUpAction = false;
+          mWaitDelButtonClicked = false;
         }//end if
         return true;
     }
@@ -137,6 +149,23 @@ void TextEditor::confirmInputTextPosition(float x , float y){
     mTextBoxTop = y;
 
     isShowControlButton = true;
+}
+
+void TextEditor::onClickDelButton(){
+    // purple::Log::e("TextEditor" , "onClickDelButton!!!!");
+    if(mApp->mCurrentEditor!= nullptr && mApp->mCurrentEditor.get() == this){
+        purple::Log::e("TextEditor" , "onClickDelButton this eidtor current not added in list");
+        
+        mTextEditorState = TextEditorState::WaitInputPosition; 
+        mVisible = false;
+        isShowControlButton = false;
+
+        mApp->mInputContent = L"";
+        onInputContentChange(L"");
+
+    }else{
+        //search in editor list
+    }
 }
 
 //输入文本改变 需要重新生成动态纹理
@@ -172,6 +201,12 @@ void TextEditor::doRenderCharsTex(int texWidth , int texHeight){
 
     purple::Engine::getRenderEngine()->renderTextWithRect(mInputContent,
         inputRect ,paint , &mTextWrapRect);
+        purple::Log::e("textEidtor" , "mInputContent = %s,  mTextWrapRect (%f , %f , %f ,%f)" 
+        , mInputContent.c_str()
+        , mTextWrapRect.left
+        , mTextWrapRect.top
+        , mTextWrapRect.width
+        , mTextWrapRect.height);
 
     // purple::Log::e("textEidtor" , "rebuildCharsTexture color (%f , %f , %f)" , 
     //     mTextColor[0],mTextColor[1],mTextColor[2]);
