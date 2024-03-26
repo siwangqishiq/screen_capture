@@ -109,7 +109,7 @@ namespace purple{
         
         glBindTexture(GL_TEXTURE_2D_ARRAY , textureId);
         // glPixelStorei(GL_UNPACK_ALIGNMENT , 4);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MIN_FILTER , GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
@@ -118,7 +118,7 @@ namespace purple{
                     convertChanelToInternalFormat(format),
                     texWidth,
             texHeight, textureFiles.size(),
-            0,format, GL_UNSIGNED_BYTE , nullptr);
+            0, format, GL_UNSIGNED_BYTE , nullptr);
         // Log::i("debug" , "3333load texture before %d" , glGetError());
 
         for(int i = 0 ; i < textureFiles.size() ;i++){
@@ -133,6 +133,7 @@ namespace purple{
             glTexSubImage3D(GL_TEXTURE_2D_ARRAY , 0 , 0 , 0, i, texWidth,
                 texHeight , 1 , format, GL_UNSIGNED_BYTE, pTexData.get());
         }//end for i
+        glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
         glBindTexture(GL_TEXTURE_2D_ARRAY , 0);
     //  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -165,7 +166,7 @@ namespace purple{
         }
 
         glBindTexture(GL_TEXTURE_2D , tId);
-        glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
@@ -175,6 +176,8 @@ namespace purple{
             width, 
             height, 0, 
             format, GL_UNSIGNED_BYTE, pixelData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        
         glBindTexture(GL_TEXTURE_2D , 0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
@@ -236,6 +239,7 @@ namespace purple{
             width, 
             height, 0, 
             format, GL_UNSIGNED_BYTE, nullptr);
+        
         glBindTexture(GL_TEXTURE_2D , 0);
         // glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
