@@ -666,6 +666,10 @@ namespace purple{
 
         renderFn(viewWidth , viewHeight); // user custom render function callback
 
+        glBindTexture(GL_TEXTURE_2D , ret->textureId);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D , 0);
+
         glBindFramebuffer(GL_FRAMEBUFFER , 0);
         onScreenResize();
         return ret;
@@ -731,6 +735,10 @@ namespace purple{
         resetNormalMat(viewWidth , viewHeight);
 
         renderFn(viewWidth , viewHeight); // user custom render function callback
+        
+        glBindTexture(GL_TEXTURE_2D , texInfo->textureId);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D , 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER , 0);
         onScreenResize();
