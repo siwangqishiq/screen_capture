@@ -28,29 +28,12 @@ bool floatEqual(float v1 , float v2){
 
 float stokeRect(vec2 pos){
     float stokenWidth = vShape.z;
-
-    // float left = 0.0f;
-    // float right = 0.0f;
-    // float top = 0.0f;
-    // float bottom = 0.0f;
-    // if(vRect.x <= pos.x && vRect.x + stokenWidth >= pos.x){
-    //     left = 1.0f;
-    // }
-    // if(vRect.x + vRect.z >= pos.x && vRect.x + vRect.z - stokenWidth <= pos.x){
-    //     right = 1.0f;
-    // }
-    // if(vRect.y >= pos.y && vRect.y - stokenWidth <= pos.y){
-    //     top = 1.0f;
-    // }
-    // if(vRect.y - vRect.w <= pos.y && vRect.y - vRect.w + stokenWidth >= pos.y){
-    //     bottom = 1.0f;
-    // }
-
+    
     float left = step(vRect.x , pos.x) * (1.0f - step(vRect.x + stokenWidth , pos.x));
     float right = (1.0f - step(vRect.x + vRect.z , pos.x)) * step(vRect.x + vRect.z - stokenWidth, pos.x);
     float top = (1.0f - step(vRect.y , pos.y)) * step(vRect.y - stokenWidth , pos.y);
     float bottom = step(vRect.y - vRect.w , pos.y) * (1.0f - step(vRect.y - vRect.w + stokenWidth , pos.y));
-    return min(1.0f , left + right + top + bottom);
+    return min(1.5f , left + right + top + bottom);
 }
 
 float renderRect(vec2 pos){
@@ -63,7 +46,9 @@ float renderRect(vec2 pos){
 float stokenCircle(vec2 pos , vec2 center , float radius){
     float stokenWidth = vShape.z;
     float innerRadius = radius - stokenWidth;
-    float value = (1.0f - step(radius , distance(pos , center))) *(step(innerRadius , distance(pos , center)));
+    float edge = 1.0f;
+    float value = (1.0f - smoothstep(radius - edge , radius + edge , distance(pos , center)))
+        *(smoothstep(innerRadius - edge , innerRadius + edge , distance(pos , center)));
     return min(1.0f , value);
 }
 
@@ -73,7 +58,8 @@ float renderCircle(vec2 pos){
     if(floatEqual(vShape.y , mode_stoken)){
         return stokenCircle(pos , center , radius);
     }
-    return 1.0f - step(radius , distance(pos , center));
+    float edge = 0.5f;
+    return 1.0f - smoothstep(radius - edge , radius + edge , distance(pos , center));
 }
 
 float renderCircleBlur(vec2 pos , float blur){
@@ -87,17 +73,17 @@ float stokenOval(vec2 pos , vec2 center , float stokenWidth){
     float ra = vRect.z / 2.0f;
     float rb = vRect.w / 2.0f;
 
-    float raInner = max(ra - 2.0f * stokenWidth , 0.0f);
-    float rbInner = max(rb - 2.0f * stokenWidth , 0.0f);
+    float raInner = max(ra - stokenWidth , 0.0f);
+    float rbInner = max(rb - stokenWidth , 0.0f);
 
     float xa = pos.x - center.x;
     float xb = pos.y - center.y;
 
-    if(pow(xa , 2.0f) / pow(ra , 2.0f) + (pow(xb , 2.0f)) / pow(rb , 2.0f) <= 1.0f
-        && pow(xa , 2.0f) / pow(raInner , 2.0f) + (pow(xb , 2.0f)) / pow(rbInner , 2.0f) >= 1.0f){
-        return one;
-    }
-    return zero;
+    float outterValue = pow(xa , 2.0f) / pow(ra , 2.0f) + (pow(xb , 2.0f)) / pow(rb , 2.0f);
+    float innerValue = pow(xa , 2.0f) / pow(raInner , 2.0f) + (pow(xb , 2.0f)) / pow(rbInner , 2.0f);
+    const float edge = 0.02f;
+    return (1.0f - smoothstep(1.0f - edge , 1.0f + edge , outterValue)) 
+        * smoothstep(1.0f - edge , 1.0f + edge , innerValue);
 }
 
 //render a oval
@@ -114,7 +100,9 @@ float renderOval(vec2 pos){
     float xa = pos.x - center.x;
     float xb = pos.y - center.y;
     // (pos.x - center.x) * (pos.x - center.x)
-    return 1.0f - step(1.0f , (pow(xa , 2.0f) / pow(ra , 2.0f) + (pow(xb , 2.0f)) / pow(rb , 2.0f)));
+    float stepValueX = pow(xa , 2.0f) / pow(ra , 2.0f) + pow(xb , 2.0f) / pow(rb , 2.0f);
+    float edge = 0.02f;
+    return 1.0f - smoothstep(1.0f - edge , 1.0f, stepValueX);
 }
 
 bool isPointInRect(vec4 rect , vec2 p){
