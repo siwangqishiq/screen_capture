@@ -162,7 +162,6 @@ void TextEditor::onClickDelButton(){
 
         mApp->mInputContent = L"";
         onInputContentChange(L"");
-
     }else{
         //search in editor list
     }
@@ -180,7 +179,7 @@ void TextEditor::rebuildCharsTexture(){
     // purple::Log::e("TextEditor" , "rebuildCharsTexture mInputContent size = %d" , mInputContent.size());
     if(mCharsTex == nullptr){
         mCharsTex = purple::Engine::getRenderEngine()->buildVirtualTexture(
-        "chars_texs" , 1024, purple::FONT_DEFAULT_SIZE,
+        "chars_texs" , 2 * 1024, purple::FONT_DEFAULT_SIZE,
         [this](int w, int h){
             doRenderCharsTex(w , h);
         });
@@ -201,8 +200,9 @@ void TextEditor::doRenderCharsTex(int texWidth , int texHeight){
 
     purple::Engine::getRenderEngine()->renderTextWithRect(mInputContent,
         inputRect ,paint , &mTextWrapRect);
-        purple::Log::e("textEidtor" , "mInputContent = %s,  mTextWrapRect (%f , %f , %f ,%f)" 
-        , mInputContent.c_str()
+
+    purple::Log::e("textEidtor" , "mInputContent size = %d  mTextWrapRect (%f , %f , %f ,%f)" 
+        , mInputContent.size()
         , mTextWrapRect.left
         , mTextWrapRect.top
         , mTextWrapRect.width

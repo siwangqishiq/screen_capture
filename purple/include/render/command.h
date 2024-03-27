@@ -92,6 +92,8 @@ namespace purple{
         float calTextStyleItalicOffset(std::shared_ptr<CharInfo> charInfo , TextPaint &paint);
 
         unsigned int allocatorVRamForText(int textLength);
+
+        Rect createEmptyWrapRect(Rect &limitRect , TextPaint &paint);
     };
 
     //自定义shader渲染命令

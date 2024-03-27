@@ -72,6 +72,15 @@ namespace purple{
         return vbo_;
     }
 
+    Rect TextRenderCommand::createEmptyWrapRect(Rect &limitRect , TextPaint &paint){
+        Rect outRect;
+        outRect.left = limitRect.left;
+        outRect.top = limitRect.top;
+        outRect.width = 0.0f;
+        outRect.height =(FONT_DEFAULT_SIZE + paint.gapSize) * paint.textSizeScale;
+        return outRect;
+    }
+
     void TextRenderCommand::putParams(std::wstring text 
             ,float left , float bottom
             ,TextPaint &paint){
@@ -117,6 +126,9 @@ namespace purple{
                 Rect *wrapContentRect,
                 TextPaint &paint){
         if(text.empty()){
+            if(wrapContentRect != nullptr){ //empty input to fill out rect
+                *wrapContentRect = createEmptyWrapRect(limitRect , paint);
+            }
             return;
         }
 
