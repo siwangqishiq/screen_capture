@@ -645,8 +645,20 @@ void Application::onEventAction(EventAction action , float x , float y){
         }//end switch
     }else if(mState == CAPTURE_ZONE_EDIT){//编辑模式
         // purple::Log::i("onEventAction" , "action: %d , x = %f , y = %f" ,action, x , y);
-        if(mCurrentEditor != nullptr){
-            mCurrentEditor->dispatchEventAction(action , x , y);
+        if(mCurrentEditor != nullptr && !mCurrentEditor->dispatchEventAction(action , x , y)){
+            switch (action){
+                case ActionDown:
+                    // purple::Log::e("debug" , "Down...");
+                    break;
+                case ActionMove:
+                    // purple::Log::e("debug" , "Move...");
+                    break;
+                case ActionUp:
+                    // purple::Log::e("debug" , "UP...");
+                    break;
+                default:
+                    break;
+            }//end switch
         }
     }else if(mState == RESIZE_CAPTURE_ZONE){ //调整选区
         switch (action){

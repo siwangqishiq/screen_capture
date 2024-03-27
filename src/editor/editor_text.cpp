@@ -111,33 +111,32 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
                 mWaitDelButtonClicked = true;
                 return true;
             }
-        }else{
         }
-    }else{
-        // purple::Log::e("eidtor" , "action move or up  action = %d" , action);
+    }else if(action == EventAction::ActionMove){
+        return false;
+    }else if(action == EventAction::ActionUp){
+        bool ret = false;
         if(!mVisible){
-            return false;
+            return ret;
         }
 
-        // limitInRect(captureContentRect , x , y);
-
-        if(action == EventAction::ActionMove){
-        }else if(action == EventAction::ActionUp){
-          if(mWaitDelButtonClicked && purple::isPointInRect(mDelDstRect , x , y)){ //点击删除按钮
+        if(mWaitDelButtonClicked && purple::isPointInRect(mDelDstRect , x , y)){ //点击删除按钮
             onClickDelButton();
-          }else if(mWaitingUpAction){ //确定文本插入位置
+            ret = true;
+        }else if(mWaitingUpAction){ //确定文本插入位置
             if(mTextEditorState == WaitInputPosition){
                 mTextEditorState = InputMode;
             }
             confirmInputTextPosition(x , y);
-          }//end if
-
-
-          mWaitingUpAction = false;
-          mWaitDelButtonClicked = false;
+            ret = true;
         }//end if
-        return true;
-    }
+
+
+        mWaitingUpAction = false;
+        mWaitDelButtonClicked = false;
+        
+        return ret;
+    }//end if
     return false;
 }
 
