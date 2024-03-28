@@ -8,6 +8,7 @@
 
 #include "purple.h"
 #include <vector>
+#include "common.h"
 
 class IScreenApi;
 class ActionMenu;
@@ -23,11 +24,7 @@ enum ScreenState{
     CAPTURE_ZONE_EDIT //截取区域编辑
 };
 
-enum EventAction{
-    ActionDown,
-    ActionMove,
-    ActionUp
-};
+
 
 enum ResizeType{
     None = 0,
@@ -167,4 +164,6 @@ public:
 
     //cursor
     GLFWcursor *mCrossCursor = nullptr;
+    
+    std::shared_ptr<ITouch> mGrapTouchEntity = nullptr;
 };

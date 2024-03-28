@@ -6,6 +6,7 @@
 #include "action/menu.h"
 #include "editor/editor.h"
 #include "action/action_confirm.h"
+#include "editor/editor_text.h"
 
 bool Application::isDebug = true;
 
@@ -602,6 +603,16 @@ void Application::onEventAction(EventAction action , float x , float y){
     // purple::Log::e("onEventAction" , "mState = %d , mEditorList size = %d" 
     //     ,mState, mEditorList.size());
 
+    if(mGrapTouchEntity != nullptr){
+        bool ret = mGrapTouchEntity->onTouchEvent(action , x , y);
+        if(action == EventAction::ActionUp){
+            mGrapTouchEntity = nullptr;
+        }
+        if(ret){
+            return;
+        }
+    }//end if
+
     if(mActionMenu->dispatchEventAction(action , x , y)){
         return;
     }
@@ -649,6 +660,11 @@ void Application::onEventAction(EventAction action , float x , float y){
             switch (action){
                 case ActionDown:
                     // purple::Log::e("debug" , "Down...");
+                    if(mCurrentEditor->editorType() == EditorType::DrawText){
+                        auto editor = dynamic_cast<TextEditor *>(mCurrentEditor.get());
+                        editor->isShowControlButton = false;
+                        this->setCurrentEditor(std::make_shared<TextEditor>(this , editor->getTextColor()));
+                    }
                     break;
                 case ActionMove:
                     // purple::Log::e("debug" , "Move...");

@@ -43,7 +43,7 @@ void TextEditor::renderEditorContent() {
     shapeBatch->renderRect(controlRect , mPaint);
     shapeBatch->end();
 
-    //btn  del and scale  rotate????
+    //btn del and scale  rotate????
     
     auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
     spriteBatch->begin();
@@ -84,6 +84,10 @@ void TextEditor::endPaint() {
     
 }
 
+bool TextEditor::onTouchEvent(EventAction action , float x , float y){
+    return dispatchEventAction(action , x ,y);
+}
+
 bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
     std::vector<float> results = mApp->calClipPoints();
     float left = results[0];
@@ -92,7 +96,7 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
     float bottom = results[3];
 
     purple::Rect captureContentRect(left , top , right - left , top - bottom);
-
+    
     if(action == EventAction::ActionDown){
         if(mTextEditorState == WaitInputPosition){
             if(purple::isPointInRect(captureContentRect , x , y)){

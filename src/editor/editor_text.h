@@ -11,7 +11,7 @@ enum TextEditorState{
     Adjust//调整模式
 };
 
-class TextEditor : public BaseEditor{
+class TextEditor : public BaseEditor , ITouch {
 public:
     TextEditor(Application *_app , glm::vec4 color) : BaseEditor(_app){
         mTextColor = color;
@@ -44,9 +44,17 @@ public:
 
     virtual bool dispatchEventAction(EventAction action , float x , float y) override;
 
+    virtual bool onTouchEvent(EventAction action , float x , float y) override;
+
     virtual void onInputContentChange(std::wstring content) override;
 
     virtual int editorType();
+
+    bool isShowControlButton = false;
+
+    glm::vec4 getTextColor(){
+        return mTextColor;
+    }
 private:
     TextEditorState mTextEditorState = TextEditorState::WaitInputPosition;
     bool mWaitingUpAction = false;
@@ -63,7 +71,6 @@ private:
 
     float mBtnSize = 16.0f;
 
-    bool isShowControlButton = false;
 
     std::wstring mInputContent = L"";
 
