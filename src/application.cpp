@@ -660,17 +660,18 @@ void Application::onEventAction(EventAction action , float x , float y){
             switch (action){
                 case ActionDown:
                     // purple::Log::e("debug" , "Down...");
-                    if(mCurrentEditor->editorType() == EditorType::DrawText){
-                        auto editor = dynamic_cast<TextEditor *>(mCurrentEditor.get());
-                        editor->isShowControlButton = false;
-                        this->setCurrentEditor(std::make_shared<TextEditor>(this , editor->getTextColor()));
-                    }
                     break;
                 case ActionMove:
                     // purple::Log::e("debug" , "Move...");
                     break;
                 case ActionUp:
                     // purple::Log::e("debug" , "UP...");
+                    if(mCurrentEditor->editorType() == EditorType::DrawText){
+                        auto editor = std::dynamic_pointer_cast<TextEditor>(mCurrentEditor);
+                        // auto editor = dynamic_cast<TextEditor *>(mCurrentEditor.get());
+                        editor->isShowControlButton = false;
+                        this->setCurrentEditor(std::make_shared<TextEditor>(this , editor->getTextColor()));
+                    }
                     break;
                 default:
                     break;
