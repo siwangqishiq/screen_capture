@@ -658,9 +658,17 @@ void Application::onEventAction(EventAction action , float x , float y){
         // purple::Log::i("onEventAction" , "action: %d , x = %f , y = %f" ,action, x , y);
         if(mCurrentEditor != nullptr && !mCurrentEditor->dispatchEventAction(action , x , y)){
             switch (action){
-                case ActionDown:
-                    // purple::Log::e("debug" , "Down...");
+                case ActionDown:{
+                    std::shared_ptr<TextEditor> selectOtherTextEditor = findActionPointInTextEditor(x , y);
+                    if(selectOtherTextEditor != nullptr){
+                        if(mCurrentEditor->editorType() == EditorType::DrawText){
+
+                        }
+                        purple::Log::e("debug" , "found!!! selectOtherTextEditor");
+                        selectOtherTextEditor->isShowControlButton = true;
+                    }
                     break;
+                }
                 case ActionMove:
                     // purple::Log::e("debug" , "Move...");
                     break;
@@ -740,6 +748,20 @@ void Application::onEventAction(EventAction action , float x , float y){
     }//end if
 
     // purple::Log::i("onEventAction" , "action = %d ,(%f , %f)" , action , x , y);
+}
+
+std::shared_ptr<TextEditor> Application::findActionPointInTextEditor(float x , float y){
+    std::shared_ptr<TextEditor> selectOtherTextEditor = nullptr;
+    for(auto &editor : mEditorList){
+        if(editor->editorType() == EditorType::DrawText){
+            std::shared_ptr<TextEditor> textEditor = std::dynamic_pointer_cast<TextEditor>(editor);
+            if(purple::isPointInRect(textEditor->mControlRect , x , y)){
+                selectOtherTextEditor = textEditor;
+                break;
+            }
+        }
+    } //end for each
+    return selectOtherTextEditor;
 }
 
 void Application::resizeUpdate(EventAction action , float x , float y){

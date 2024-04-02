@@ -25,22 +25,23 @@ void TextEditor::renderEditorContent() {
         spriteBatch->renderImage(image , mTextWrapRect , mDstRect);
         spriteBatch->end();
     }
+
+        
+    const float offset = 12.0f;
+    mControlRect.left = mDstRect.left - offset;
+    mControlRect.top = mDstRect.top + offset;
+    mControlRect.width = mDstRect.width + 2.0f * offset;
+    mControlRect.height = mDstRect.height + 2.0f * offset;
    
     if(mApp->isReadPixelMode || !isShowControlButton){
        return; 
     }
 
     //render control box
-    purple::Rect controlRect;
-    const float offset = 12.0f;
-    controlRect.left = mDstRect.left - offset;
-    controlRect.top = mDstRect.top + offset;
-    controlRect.width = mDstRect.width + 2.0f * offset;
-    controlRect.height = mDstRect.height + 2.0f * offset;
 
     auto shapeBatch = purple::Engine::getRenderEngine()->getShapeBatch();
     shapeBatch->begin();
-    shapeBatch->renderRect(controlRect , mPaint);
+    shapeBatch->renderRect(mControlRect , mPaint);
     shapeBatch->end();
 
     //btn del and scale  rotate????
@@ -51,15 +52,15 @@ void TextEditor::renderEditorContent() {
   
     mDelDstRect.width = mBtnSize;
     mDelDstRect.height = mBtnSize;
-    mDelDstRect.left = controlRect.getRight() - mBtnSize / 2.0f;
-    mDelDstRect.top = controlRect.getTop() + mBtnSize / 2.0f;
+    mDelDstRect.left = mControlRect.getRight() - mBtnSize / 2.0f;
+    mDelDstRect.top = mControlRect.getTop() + mBtnSize / 2.0f;
 
     auto scaleImageRect = mScaleImage->getRect();
     purple::Rect scaleDstRect;
     mScaleDstRect.width = mBtnSize;
     mScaleDstRect.height = mBtnSize;
-    mScaleDstRect.left = controlRect.getRight() - mBtnSize / 2.0f;
-    mScaleDstRect.top = controlRect.getBottom() + mBtnSize / 2.0f;
+    mScaleDstRect.left = mControlRect.getRight() - mBtnSize / 2.0f;
+    mScaleDstRect.top = mControlRect.getBottom() + mBtnSize / 2.0f;
 
     spriteBatch->renderImage(mDelImage , delImageRect , mDelDstRect);
     spriteBatch->renderImage(mScaleImage , scaleImageRect , mScaleDstRect);

@@ -14,6 +14,7 @@ class IScreenApi;
 class ActionMenu;
 class IEditor;
 class TextureInfo;
+class TextEditor;
 
 enum ScreenState{
     Idle,
@@ -166,4 +167,6 @@ public:
     GLFWcursor *mCrossCursor = nullptr;
     
     std::shared_ptr<ITouch> mGrapTouchEntity = nullptr;
+
+    std::shared_ptr<TextEditor> findActionPointInTextEditor(float x , float y);
 };

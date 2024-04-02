@@ -52,6 +52,8 @@ public:
 
     bool isShowControlButton = false;
 
+    purple::Rect mControlRect;
+
     glm::vec4 getTextColor(){
         return mTextColor;
     }
