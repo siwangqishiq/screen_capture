@@ -168,7 +168,9 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
         
         return ret;
     }else if(action == EventAction::CursorMove){
-        if(mTextEditorState == InputMode && purple::isPointInRect(mControlRect , x , y)){
+        if(mTextEditorState == AdjustMoveMode){
+            mApp->updateCursor(CursorType::Move);
+        }else if(mTextEditorState == InputMode && purple::isPointInRect(mControlRect , x , y)){
             mApp->updateCursor(CursorType::Move);
         }else{
             mApp->updateCursor(CursorType::Normal);
@@ -202,6 +204,7 @@ void TextEditor::onClickConfirmButton(){
     this->isShowControlButton = false;
 
     mApp->setCurrentEditor(std::make_shared<TextEditor>(mApp , getTextColor()));
+    mApp->mState = CAPTURE_INSERT_TEXT;
 }
 
 void TextEditor::onClickDelButton(){

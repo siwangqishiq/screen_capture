@@ -71,13 +71,13 @@ namespace purple{
             int width , int height , int format);
 
         std::string allTextureInfos();
+
+        std::unique_ptr<uint8_t> readTextureFile(std::string &path ,bool needFlip
+            , int &format , int &width , int &height);
     private:
         static std::shared_ptr<TextureManager> instance_;
 
         std::unordered_map<std::string , std::shared_ptr<TextureInfo>> textureBank_;
-
-        std::unique_ptr<uint8_t> readTextureFile(std::string &path ,bool needFlip
-            , int &format , int &width , int &height);
     };
 
 }

@@ -169,5 +169,7 @@ public:
     
     std::shared_ptr<ITouch> mGrapTouchEntity = nullptr;
 
+    GLFWcursor* loadCursorResFromFile(std::string path);
+
     std::shared_ptr<TextEditor> findActionPointInTextEditor(float x , float y);
 };

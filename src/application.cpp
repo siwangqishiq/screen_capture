@@ -697,7 +697,7 @@ void Application::onEventAction(EventAction action , float x , float y){
             break;
         }//end switch
     }else if(mState == CAPTURE_INSERT_TEXT){ // 文本输入
-        // purple::Log::e("debug" , "action move CAPTURE_INSERT_TEXT");
+        purple::Log::e("debug" , "action move insert text");
         if(mCurrentEditor != nullptr && !mCurrentEditor->dispatchEventAction(action , x , y)){
             switch (action){
                 case ActionDown:
@@ -705,6 +705,7 @@ void Application::onEventAction(EventAction action , float x , float y){
                 case ActionMove:
                     break;
                 case ActionUp:{
+                    purple::Log::e("debug" , "action UP CAPTURE_INSERT_TEXT");
                     if(mCurrentEditor->editorType() == EditorType::DrawText){
                         auto textEd = std::dynamic_pointer_cast<TextEditor>(mCurrentEditor);
                         textEd->updatePosition(x , y);
@@ -951,7 +952,8 @@ void Application::updateCursor(CursorType newCursorType){
                 break;
             case Move:
                 if(mMoveCursor == nullptr){
-                    mMoveCursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+                    // mMoveCursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+                    mMoveCursor = loadCursorResFromFile("cursor_move.png");
                 }
                 glfwSetCursor(window , mMoveCursor);
                 break;
@@ -959,6 +961,20 @@ void Application::updateCursor(CursorType newCursorType){
                 break;
         }//end switch
     }//end if
+}
+
+GLFWcursor* Application::loadCursorResFromFile(std::string path){
+    int format = 0;
+    int width = 0;
+    int height = 0;
+    auto pixelData = purple::TextureManager::getInstance()->readTextureFile(path , false , 
+        format ,width, height);
+    GLFWimage image;
+    image.width = width;
+    image.height = height;
+    image.pixels = pixelData.get();
+
+    return glfwCreateCursor(&image, 0, 0);
 }
 
 void Application::onInputContentChange(std::wstring newContent){
