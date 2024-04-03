@@ -8,7 +8,7 @@ class Application;
 enum TextEditorState{
     WaitInputPosition,//等待确定文本输入位置
     InputMode,//输入模式
-    Adjust//调整模式
+    AdjustMoveMode//移动调整模式
 };
 
 class TextEditor : public BaseEditor , ITouch {
@@ -18,7 +18,7 @@ public:
         mPaint.fillStyle = purple::FillStyle::Stroken;
         mPaint.color = glm::vec4(0.0f , 0.0f ,0.0f , 1.0f);
         mPaint.stokenWidth = 2.0f;
-        
+
         mTextWrapRect.left = 0.0f;
         mTextWrapRect.top = 0.0f;
         mTextWrapRect.width = 1.0f;
@@ -57,6 +57,8 @@ public:
     glm::vec4 getTextColor(){
         return mTextColor;
     }
+
+    void updatePosition(float x , float y);
 private:
     TextEditorState mTextEditorState = TextEditorState::WaitInputPosition;
     bool mWaitingUpAction = false;
@@ -73,6 +75,9 @@ private:
     float mTextBoxTop = 0.0f;
 
     float mBtnSize = 16.0f;
+
+    float mMoveOffsetX = 0.0f;
+    float mMoveOffsetY = 0.0f;
 
 
     std::wstring mInputContent = L"";

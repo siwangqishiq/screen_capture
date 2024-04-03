@@ -85,8 +85,7 @@ void ActionMenu::update(){
 }
 
 void ActionMenu::render(){
-    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED && 
-        mApp->mState != ScreenState::CAPTURE_ZONE_EDIT ){
+    if(needIgnoreByState()){
         return;
     }
 
@@ -175,9 +174,14 @@ void ActionMenu::resetMenuItemsPosition(){
      return false;
  }
 
+ bool ActionMenu::needIgnoreByState(){
+    return mApp->mState != ScreenState::CAPTURE_ZONE_GETTED 
+    && mApp->mState != ScreenState::CAPTURE_ZONE_EDIT
+    && mApp->mState != ScreenState::CAPTURE_INSERT_TEXT;
+}
+
 bool ActionMenu::dispatchEventAction(EventAction action, float x , float y){
-    if(mApp->mState != ScreenState::CAPTURE_ZONE_GETTED 
-        && mApp->mState != ScreenState::CAPTURE_ZONE_EDIT){
+    if(needIgnoreByState()){
         return false;
     }
 

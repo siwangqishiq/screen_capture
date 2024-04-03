@@ -98,6 +98,7 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
 
     purple::Rect captureContentRect(left , top , right - left , top - bottom);
     
+    // purple::Log::e("debug" , "dispatchEventAction action = %d" , action);
     if(action == EventAction::ActionDown){
         if(mTextEditorState == WaitInputPosition){
             if(purple::isPointInRect(captureContentRect , x , y)){
@@ -109,7 +110,7 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
                 mVisible = true;
                 mWaitingUpAction = true;
 
-                return true;
+                return true;    
             }
         }else if(mTextEditorState == InputMode){
             if(isShowControlButton){
@@ -119,21 +120,35 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
                 }else if(purple::isPointInRect(mConfirmDstRect , x , y)){
                     mWaitConfirmButtonClicked = true;
                     return true;
+                }else if(purple::isPointInRect(mControlRect , x , y)){ //进入移动模式
+                    mTextEditorState = AdjustMoveMode;
+                    mMoveOffsetX = mTextBoxLeft - x;
+                    mMoveOffsetY = mTextBoxTop - y;
+                    return true;
                 }
             }
-        }
+        }//end if
 
         mWaitDelButtonClicked = false;
         mWaitConfirmButtonClicked = false;
     }else if(action == EventAction::ActionMove){
-        return false;
+        if(mTextEditorState == AdjustMoveMode){ //移动模式
+
+            mTextBoxLeft = x + mMoveOffsetX;
+            mTextBoxTop = y + mMoveOffsetY;
+        }
     }else if(action == EventAction::ActionUp){
         bool ret = false;
         if(!mVisible){
             return ret;
         }
 
-        if(mWaitDelButtonClicked && purple::isPointInRect(mDelDstRect , x , y)){ //点击删除按钮
+        if(mTextEditorState == AdjustMoveMode){
+            mTextEditorState = InputMode;
+            mMoveOffsetX = 0.0f;
+            mMoveOffsetY = 0.0f;
+            ret = true;
+        }else if(mWaitDelButtonClicked && purple::isPointInRect(mDelDstRect , x , y)){ //点击删除按钮
             onClickDelButton();
             ret = true;
         }else if(mWaitConfirmButtonClicked && purple::isPointInRect(mConfirmDstRect , x , y)){
@@ -152,7 +167,14 @@ bool TextEditor::dispatchEventAction(EventAction action , float x , float y){
         mWaitConfirmButtonClicked = false;
         
         return ret;
-    }//end if
+    }else if(action == EventAction::CursorMove){
+        if(mTextEditorState == InputMode && purple::isPointInRect(mControlRect , x , y)){
+            mApp->updateCursor(CursorType::Move);
+        }else{
+            mApp->updateCursor(CursorType::Normal);
+        }
+    }
+    //end if
     return false;
 }
 
@@ -160,6 +182,10 @@ void TextEditor::confirmInputTextPosition(float x , float y){
     mApp->mInputContent = L"";
     mInputContent = L"";
     
+    updatePosition(x , y);
+}
+
+void TextEditor::updatePosition(float x , float y){
     mTextBoxLeft = x;
     mTextBoxTop = y;
 

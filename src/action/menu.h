@@ -157,6 +157,8 @@ public:
     std::vector<std::shared_ptr<MenuItem>> getMenuItems() const{
         return mMenuItems;
     }
+
+    bool needIgnoreByState();
 private:
     Application *mApp;
     glm::vec4 mBgColor = glm::vec4(0.75f , 0.75f , 0.75f ,1.0f);

@@ -22,6 +22,7 @@ enum ScreenState{
     RESIZE_CAPTURE_ZONE,//截取区域调整
     MOVE_CAPTURE_ZONE,//移动截取区域
     CAPTURE_ZONE_GETTED,//取得截取区域
+    CAPTURE_INSERT_TEXT,//截取区域 插入文本
     CAPTURE_ZONE_EDIT //截取区域编辑
 };
 
@@ -41,7 +42,8 @@ enum ResizeType{
 
 enum CursorType{
     Normal = 0,
-    Cross = 1
+    Cross = 1,
+    Move = 2
 };
 
 class Application{
@@ -148,8 +150,6 @@ public:
     float mScaleThumbFactor = 3.0f;//子略缩图 放大倍数
     float mThumbPreviewSize = 64.0f;
 
-    GLFWcursor *mMoveCursor = nullptr;
-
     std::shared_ptr<purple::TextureImage> mScreenImage;
 
     purple::Paint mMaskZonePaint;
@@ -165,6 +165,7 @@ public:
 
     //cursor
     GLFWcursor *mCrossCursor = nullptr;
+    GLFWcursor *mMoveCursor = nullptr;
     
     std::shared_ptr<ITouch> mGrapTouchEntity = nullptr;
 

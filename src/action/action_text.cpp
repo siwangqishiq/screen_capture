@@ -15,14 +15,15 @@ void EditTextMenuItem::onItemClick(){
             mEditSetting->isVisible = true;
             mApp->setCurrentEditor(std::make_shared<TextEditor>(mApp,mEditSetting->getSelectedColor()));
         }
-        mApp->updateCursor(CursorType::Normal);
+        // mApp->updateCursor(CursorType::Move);
+        mApp->mState = ScreenState::CAPTURE_INSERT_TEXT;
     }else{ //取消选中
         // mApp->setCurrentEditor(nullptr);
         
         if(mEditSetting != nullptr){
             mEditSetting->isVisible = false;
         }
-
+        
         mApp->mCurrentEditor = nullptr;
         mApp->mState = ScreenState::CAPTURE_ZONE_GETTED;
     }//end if

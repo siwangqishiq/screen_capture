@@ -119,6 +119,11 @@ void Application::execute(){
         Application* app_ = static_cast<Application *>(glfwGetWindowUserPointer(windows_));
         app_->mEventX = x;
         app_->mEventY = y;
+
+        app_->onEventAction(CursorMove 
+                , app_->mEventX 
+                , app_->mScreenHeight - app_->mEventY);
+
         if(app_->mMouseActionDown){
             app_->onEventAction(ActionMove , app_->mEventX 
                 , app_->mScreenHeight - app_->mEventY);
@@ -635,51 +640,40 @@ void Application::onEventAction(EventAction action , float x , float y){
         }//end switch
     }else if(mState == DRAW_CAPTURE_ZONE){
         // purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
-        switch (action){
-        case ActionDown:
-            mCaptureStartX = x;
-            mCaptureStartY = y;
-            break;
-        case ActionMove:
-            mCaptureEndX = x;
-            mCaptureEndY = y;
-            break;
-        case ActionUp:
-            mCaptureEndX = x;
-            mCaptureEndY = y;
-            purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
-            std::vector<float> ps = calClipPoints();
-            const int width = static_cast<int>(ps[1] - ps[0]);
-            const int height = static_cast<int>(ps[2] - ps[3]);
-            mState = (width <= 0 || height <= 0)?Idle:CAPTURE_ZONE_GETTED;
-            break;
+        switch (action) {
+            case ActionDown:{
+                mCaptureStartX = x;
+                mCaptureStartY = y;
+                break;
+            }
+            case ActionMove:{
+                mCaptureEndX = x;
+                mCaptureEndY = y;
+                break;
+            }
+            case ActionUp:{
+                mCaptureEndX = x;
+                mCaptureEndY = y;
+                purple::Log::i("onEventAction" , "x = %f , y = %f" , x , y);
+                std::vector<float> ps = calClipPoints();
+                const int width = static_cast<int>(ps[1] - ps[0]);
+                const int height = static_cast<int>(ps[2] - ps[3]);
+                mState = (width <= 0 || height <= 0)?Idle:CAPTURE_ZONE_GETTED;
+                break;
+            }
+            default:
+                break;
         }//end switch
     }else if(mState == CAPTURE_ZONE_EDIT){//编辑模式
         // purple::Log::i("onEventAction" , "action: %d , x = %f , y = %f" ,action, x , y);
         if(mCurrentEditor != nullptr && !mCurrentEditor->dispatchEventAction(action , x , y)){
             switch (action){
-                case ActionDown:{
-                    // std::shared_ptr<TextEditor> selectOtherTextEditor = findActionPointInTextEditor(x , y);
-                    // if(selectOtherTextEditor != nullptr){
-                    //     if(mCurrentEditor->editorType() == EditorType::DrawText){
-
-                    //     }
-                    //     purple::Log::e("debug" , "found!!! selectOtherTextEditor");
-                    //     selectOtherTextEditor->isShowControlButton = true;
-                    // }
+                case ActionDown:
                     break;
-                }
                 case ActionMove:
                     // purple::Log::e("debug" , "Move...");
                     break;
                 case ActionUp:
-                    // purple::Log::e("debug" , "UP...");
-                    // if(mCurrentEditor->editorType() == EditorType::DrawText){
-                    //     auto editor = std::dynamic_pointer_cast<TextEditor>(mCurrentEditor);
-                    //     // auto editor = dynamic_cast<TextEditor *>(mCurrentEditor.get());
-                    //     editor->isShowControlButton = false;
-                    //     this->setCurrentEditor(std::make_shared<TextEditor>(this , editor->getTextColor()));
-                    // }
                     break;
                 default:
                     break;
@@ -702,7 +696,26 @@ void Application::onEventAction(EventAction action , float x , float y){
         default:
             break;
         }//end switch
-    }else if(mState == MOVE_CAPTURE_ZONE){ //move capture zone
+    }else if(mState == CAPTURE_INSERT_TEXT){ // 文本输入
+        // purple::Log::e("debug" , "action move CAPTURE_INSERT_TEXT");
+        if(mCurrentEditor != nullptr && !mCurrentEditor->dispatchEventAction(action , x , y)){
+            switch (action){
+                case ActionDown:
+                    break;
+                case ActionMove:
+                    break;
+                case ActionUp:{
+                    if(mCurrentEditor->editorType() == EditorType::DrawText){
+                        auto textEd = std::dynamic_pointer_cast<TextEditor>(mCurrentEditor);
+                        textEd->updatePosition(x , y);
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }//end switch
+        }
+    } else if(mState == MOVE_CAPTURE_ZONE){ //move capture zone
         switch (action){
         case ActionMove:
             moveCaptureZone(action , x , y);
@@ -936,10 +949,16 @@ void Application::updateCursor(CursorType newCursorType){
                 }
                 glfwSetCursor(window , mCrossCursor);
                 break;
+            case Move:
+                if(mMoveCursor == nullptr){
+                    mMoveCursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+                }
+                glfwSetCursor(window , mMoveCursor);
+                break;
             default:
                 break;
         }//end switch
-    }
+    }//end if
 }
 
 void Application::onInputContentChange(std::wstring newContent){
