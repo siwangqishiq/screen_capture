@@ -659,14 +659,14 @@ void Application::onEventAction(EventAction action , float x , float y){
         if(mCurrentEditor != nullptr && !mCurrentEditor->dispatchEventAction(action , x , y)){
             switch (action){
                 case ActionDown:{
-                    std::shared_ptr<TextEditor> selectOtherTextEditor = findActionPointInTextEditor(x , y);
-                    if(selectOtherTextEditor != nullptr){
-                        if(mCurrentEditor->editorType() == EditorType::DrawText){
+                    // std::shared_ptr<TextEditor> selectOtherTextEditor = findActionPointInTextEditor(x , y);
+                    // if(selectOtherTextEditor != nullptr){
+                    //     if(mCurrentEditor->editorType() == EditorType::DrawText){
 
-                        }
-                        purple::Log::e("debug" , "found!!! selectOtherTextEditor");
-                        selectOtherTextEditor->isShowControlButton = true;
-                    }
+                    //     }
+                    //     purple::Log::e("debug" , "found!!! selectOtherTextEditor");
+                    //     selectOtherTextEditor->isShowControlButton = true;
+                    // }
                     break;
                 }
                 case ActionMove:
@@ -674,12 +674,12 @@ void Application::onEventAction(EventAction action , float x , float y){
                     break;
                 case ActionUp:
                     // purple::Log::e("debug" , "UP...");
-                    if(mCurrentEditor->editorType() == EditorType::DrawText){
-                        auto editor = std::dynamic_pointer_cast<TextEditor>(mCurrentEditor);
-                        // auto editor = dynamic_cast<TextEditor *>(mCurrentEditor.get());
-                        editor->isShowControlButton = false;
-                        this->setCurrentEditor(std::make_shared<TextEditor>(this , editor->getTextColor()));
-                    }
+                    // if(mCurrentEditor->editorType() == EditorType::DrawText){
+                    //     auto editor = std::dynamic_pointer_cast<TextEditor>(mCurrentEditor);
+                    //     // auto editor = dynamic_cast<TextEditor *>(mCurrentEditor.get());
+                    //     editor->isShowControlButton = false;
+                    //     this->setCurrentEditor(std::make_shared<TextEditor>(this , editor->getTextColor()));
+                    // }
                     break;
                 default:
                     break;

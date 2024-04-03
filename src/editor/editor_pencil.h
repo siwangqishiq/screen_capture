@@ -12,7 +12,7 @@ public:
         mPaint.stokenWidth = size;
         // mPencilStokenWidth = size / 2.0f;
     }
-
+    
     void addPoints(float x , float y);
 
     virtual void renderEditorContent() override;
@@ -23,7 +23,7 @@ public:
 
     virtual void setStrokenWidth(float width);
 
-    virtual int editorType() override;
+    virtual int editorType() override;  
 private:
     float mMinDistance = 2.0f;
     std::vector<glm::vec2> mPoints;

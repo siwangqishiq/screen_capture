@@ -18,7 +18,7 @@ public:
         mPaint.fillStyle = purple::FillStyle::Stroken;
         mPaint.color = glm::vec4(0.0f , 0.0f ,0.0f , 1.0f);
         mPaint.stokenWidth = 2.0f;
-
+        
         mTextWrapRect.left = 0.0f;
         mTextWrapRect.top = 0.0f;
         mTextWrapRect.width = 1.0f;
@@ -31,7 +31,7 @@ public:
         mBtnSize = mTextBoxHeight / 1.5f;
 
         mDelImage = purple::BuildImageByAsset("ic_del.png");
-        mScaleImage = purple::BuildImageByAsset("ic_scale.png");
+        mConfirmImage = purple::BuildImageByAsset("ic_confirm.png");
     }
 
     virtual void setStrokenWidth(float width) override;
@@ -61,6 +61,7 @@ private:
     TextEditorState mTextEditorState = TextEditorState::WaitInputPosition;
     bool mWaitingUpAction = false;
     bool mWaitDelButtonClicked = false;
+    bool mWaitConfirmButtonClicked = false;
 
     glm::vec4 mTextColor = glm::vec4(0.0f , 0.0f ,0.0f ,1.0f);
     purple::Rect mDstRect;
@@ -88,9 +89,11 @@ private:
 
     void onClickDelButton();
 
+    void onClickConfirmButton();
+
     std::shared_ptr<purple::TextureImage> mDelImage;//删除图标
-    std::shared_ptr<purple::TextureImage> mScaleImage;//缩放图标
+    std::shared_ptr<purple::TextureImage> mConfirmImage;//确认图标
 
     purple::Rect mDelDstRect;
-    purple::Rect mScaleDstRect;
+    purple::Rect mConfirmDstRect;
 };
