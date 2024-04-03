@@ -74,9 +74,19 @@ bool MosaicEditor::dispatchEventAction(EventAction action , float x , float y){
             mEndY = y;
             updateMosaicRect();
             endPaint();
-        }//end if
+        }else if(action == EventAction::CursorMove){
+            if(purple::isPointInRect(captureContentRect , x , y)){
+                mApp->updateCursor(CursorType::Cross);
+            }
+        } //end if
+        
+        //change cursor
+   
+        
         return true;
     }
+
+  
 
     return false;
 }
@@ -96,6 +106,7 @@ void MosaicEditor::updateMosaicRect(){
 void MosaicEditor::endPaint(){
     isPainting = false;
     mApp->setCurrentEditor(std::make_shared<MosaicEditor>(mApp));
+    mApp->updateCursor(CursorType::Normal);
     purple::Log::w("eidtor" , "endPaint mEditorList size = %d" , mApp->mEditorList.size());
 }
 
