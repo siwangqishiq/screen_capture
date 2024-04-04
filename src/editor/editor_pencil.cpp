@@ -56,16 +56,15 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
         limitInRect(captureContentRect , x , y);
 
         if(action == EventAction::ActionMove){
-            addPoints(x , y);
-
-            mEndX = x;
-            mEndY = y;
+            if(glm::distance(glm::vec2(x , y) ,  glm::vec2(mEndX , mEndY)) >= mPaint.stokenWidth / 2.0f){
+                addPoints(x , y);
+                mEndX = x;
+                mEndY = y;
+            }
         }else if(action == EventAction::ActionUp){
             addPoints(x , y);
-
             mEndX = x;
             mEndY = y;
-
             mPoints.push_back(glm::vec2(mEndX , mEndY));
             endPaint();
         }//end if
