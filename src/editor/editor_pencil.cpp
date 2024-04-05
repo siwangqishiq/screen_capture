@@ -12,8 +12,9 @@ void PencilEditor::renderEditorContent(){
     //     shapeBatch->renderCircle(p[0] , p[1] , mPencilStokenWidth , mPaint);
     // }//end for each
     // shapeBatch->end();
+    // purple::Engine::getRenderEngine()->renderLines(mPaintPoints , mPaint);
 
-    purple::Engine::getRenderEngine()->renderLines(mPaintPoints , mPaint);
+    purple::Engine::getRenderEngine()->renderSmoothLines(mPaintPoints , mPaint);
 }
 
 void PencilEditor::endPaint(){
@@ -43,7 +44,7 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
             mPaintPoints.push_back(mStartY);
             mPaintPoints.push_back(mEndX);
             mPaintPoints.push_back(mEndY);
-
+            
             mVisible = true;
             return true;
         }

@@ -80,6 +80,9 @@ namespace purple{
         //画单色直线
         void renderLines(std::vector<float> &points , Paint &paint);
 
+        //绘制更加平滑的直线
+        void renderSmoothLines(std::vector<float> &points , Paint &paint);
+
         //三角形绘制
         void renderTriangle(
                         float p1x,  float p1y, 

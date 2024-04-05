@@ -98,6 +98,9 @@ namespace purple{
         // GL_LINES 方式画线
         ShaderManager::getInstance()->loadAssetShader("primitive_lines" , 
             "shader/primitive_lines_vert.glsl", "shader/primitive_lines_frag.glsl");
+        //render smooth lines
+        ShaderManager::getInstance()->loadAssetShader("primitive_lines_smooth" , 
+            "shader/primitive_smooth_lines_vert.glsl", "shader/primitive_smooth_lines_frag.glsl");
 
         //arc
         ShaderManager::getInstance()->loadAssetShader("primitive_arc" , 
@@ -552,6 +555,18 @@ namespace purple{
         cmd.putParams(shader , points , paint);
         cmd.runCommands();
     }
+
+    void RenderEngine::renderSmoothLines(std::vector<float> &points , Paint &paint){
+        if(paint.stokenWidth < 1.0f){
+            return;
+        }
+
+        LinesSmoothRenderCommand cmd(this);
+        Shader shader = ShaderManager::getInstance()->getShaderByName("primitive_lines_smooth");
+        cmd.putParams(shader , points , paint);
+        cmd.runCommands();
+    }
+
 
     //三角形绘制
     void RenderEngine::renderTriangle(
