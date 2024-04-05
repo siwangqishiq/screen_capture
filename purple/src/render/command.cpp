@@ -537,15 +537,25 @@ namespace purple{
         shader_.useShader();
         shader_.setUniformMat3("transMat" , engine_->normalMatrix_);
         shader_.setUniformVec4("uColor" , paint_.color);
+        shader_.setUniformFloat("uRadius" , paint_.stokenWidth / 2.0f);
 
-        glLineWidth(paint_.stokenWidth);
+        uint32_t attrCountPerVertex = 3 + 2 + 2;
 
         glBindVertexArray(vao_);
         glBindBuffer(GL_ARRAY_BUFFER , vbo_);
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
         glVertexAttribPointer(0 , 3 , GL_FLOAT , GL_FALSE , 
-            3 * sizeof(float) , 
+            attrCountPerVertex * sizeof(float), 
             reinterpret_cast<void *>(vboOffset_));
+        glVertexAttribPointer(1 , 2 , GL_FLOAT , GL_FALSE , 
+            attrCountPerVertex * sizeof(float) , 
+            reinterpret_cast<void *>(vboOffset_ + 3 * sizeof(float)));
+        glVertexAttribPointer(2 , 2 , GL_FLOAT , GL_FALSE , 
+            attrCountPerVertex * sizeof(float) , 
+            reinterpret_cast<void *>(vboOffset_ + (3 + 2) * sizeof(float)));
+
         glDrawArrays(GL_TRIANGLES , 0 , vertexCount_);
         glBindBuffer(GL_ARRAY_BUFFER , 0);
         glBindVertexArray(0);
@@ -556,9 +566,8 @@ namespace purple{
             return;
         }
 
-        // vertexCount_ = (points.size()/2 - 1) * 4;
         vertexCount_ = 3 * points.size();
-        attrCount_ = 3;
+        attrCount_ = 3 + 2 + 2;
 
         const float depth = engine_->getAndChangeDepthValue();
 
@@ -566,7 +575,7 @@ namespace purple{
         int allocateSize = 0;
         allocatorVRam(requestSize , allocateSize);
         if(allocateSize < requestSize){
-            Log::i("LinesRenderCommand" , "LinesRenderCommand renderByRects can not request vram buffer.");
+            Log::i("SmoothLinesRenderCommand" , "SmoothLinesRenderCommand renderByRects can not request vram buffer.");
             return;
         }
 
@@ -615,34 +624,56 @@ namespace purple{
             vertexBuf[bufIdx++] = p1[0];
             vertexBuf[bufIdx++] = p1[1];
             vertexBuf[bufIdx++] = depth;
+            vertexBuf[bufIdx++] = startPoint[0];
+            vertexBuf[bufIdx++] = startPoint[1];
+            vertexBuf[bufIdx++] = endPoint[0];
+            vertexBuf[bufIdx++] = endPoint[1];
 
             vertexBuf[bufIdx++] = p4[0];
             vertexBuf[bufIdx++] = p4[1];
             vertexBuf[bufIdx++] = depth;
+            vertexBuf[bufIdx++] = startPoint[0];
+            vertexBuf[bufIdx++] = startPoint[1];
+            vertexBuf[bufIdx++] = endPoint[0];
+            vertexBuf[bufIdx++] = endPoint[1];
 
             vertexBuf[bufIdx++] = p2[0];
             vertexBuf[bufIdx++] = p2[1];
             vertexBuf[bufIdx++] = depth;
+            vertexBuf[bufIdx++] = startPoint[0];
+            vertexBuf[bufIdx++] = startPoint[1];
+            vertexBuf[bufIdx++] = endPoint[0];
+            vertexBuf[bufIdx++] = endPoint[1];
 
             vertexBuf[bufIdx++] = p4[0];
             vertexBuf[bufIdx++] = p4[1];
             vertexBuf[bufIdx++] = depth;
+            vertexBuf[bufIdx++] = startPoint[0];
+            vertexBuf[bufIdx++] = startPoint[1];
+            vertexBuf[bufIdx++] = endPoint[0];
+            vertexBuf[bufIdx++] = endPoint[1];
 
             vertexBuf[bufIdx++] = p3[0];
             vertexBuf[bufIdx++] = p3[1];
             vertexBuf[bufIdx++] = depth;
+            vertexBuf[bufIdx++] = startPoint[0];
+            vertexBuf[bufIdx++] = startPoint[1];
+            vertexBuf[bufIdx++] = endPoint[0];
+            vertexBuf[bufIdx++] = endPoint[1];
 
             vertexBuf[bufIdx++] = p2[0];
             vertexBuf[bufIdx++] = p2[1];
             vertexBuf[bufIdx++] = depth;
+            vertexBuf[bufIdx++] = startPoint[0];
+            vertexBuf[bufIdx++] = startPoint[1];
+            vertexBuf[bufIdx++] = endPoint[0];
+            vertexBuf[bufIdx++] = endPoint[1];
 
             index += 4;
         }//end while
 
         buildGlCommands(vertexBuf);
     }
-
-
 
     void LinesRenderCommand::putParams(Shader shader,std::vector<float> &points, Paint &paint){
         shader_ = shader;

@@ -1,6 +1,10 @@
 precision highp float;
 
 uniform vec4 uColor;
+uniform float uRadius;
+
+in vec2 startPoint;
+in vec2 endPoint;
 
 out vec4 fragColor;
 
