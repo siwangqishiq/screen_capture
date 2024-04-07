@@ -6,6 +6,8 @@
 namespace purple{
     void Batch::allocatorMemory(){
         vramManager_ = std::make_shared<VRamManager>();
+        // vramManager_ = VRamManager::getInstance();
+
         int requestSize = vertexMaxCount_ * attrCountPerVertex_ * sizeof(float);
 
         vertexBuffer_ = std::vector<float>(vertexMaxCount_ * attrCountPerVertex_);

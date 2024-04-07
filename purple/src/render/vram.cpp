@@ -3,6 +3,16 @@
 #include "glheader.h"
 
 namespace purple{
+    // std::shared_ptr<VRamManager> VRamManager::instance_ = nullptr;
+
+    // std::shared_ptr<VRamManager> VRamManager::getInstance(){
+    //     // static std::shared_ptr<VRamManager> instance_;
+    //     if(instance_ == nullptr){
+    //         instance_ = std::make_shared<VRamManager>();
+    //     }
+    //     return instance_;
+    // }
+
     VRamManager::VRamManager(){
         Log::i(TAG , "vram manager construct");
         allocator_ = std::make_shared<VRamAllcator>();
@@ -43,6 +53,8 @@ namespace purple{
         std::shared_ptr<MemoryAllocatorInfo> mInfo = nullptr;
         
         bool haveFit = false;
+        int bufIndex = 0;
+        
         while(currentBufferIdIndex_ < allocatedList_.size()) {
             mInfo = allocatedList_[currentBufferIdIndex_];
             if(mInfo->offset + requestSize <= mInfo->size){
@@ -53,9 +65,12 @@ namespace purple{
         } //end while
 
         if(!haveFit || mInfo == nullptr){
+            Log::i("allocator" , "requestSize = %d haveFit = %d" , requestSize , haveFit);
             createNewBuffer();
             currentBufferIdIndex_ = allocatedList_.size() - 1;
             mInfo = allocatedList_[currentBufferIdIndex_];
+        }else{
+            // Log::i("allocator" , "find can user buffer %d" , mInfo->bufferId);
         }
         
         bufferId = mInfo->bufferId;
@@ -78,7 +93,7 @@ namespace purple{
         info->offset = 0;
         
         allocatedList_.push_back(info);
-        Log::i("allocator" , "create new buffer");
+        Log::i("allocator" , "create new buffer size = %d , id = %d", info->size , info->bufferId);
     }
 
     void VRamAllcator::recycleAllMemory(){

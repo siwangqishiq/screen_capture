@@ -555,7 +555,7 @@ namespace purple{
         glVertexAttribPointer(2 , 2 , GL_FLOAT , GL_FALSE , 
             attrCountPerVertex * sizeof(float) , 
             reinterpret_cast<void *>(vboOffset_ + (3 + 2) * sizeof(float)));
-
+        
         glDrawArrays(GL_TRIANGLES , 0 , vertexCount_);
         glBindBuffer(GL_ARRAY_BUFFER , 0);
         glBindVertexArray(0);
@@ -591,15 +591,15 @@ namespace purple{
 
         uint32_t bufIdx = 0;
         while(index < points.size()){
-            startPoint = glm::vec2(points[index + 0], points[index + 1]);
-            endPoint = glm::vec2(points[index + 2] , points[index + 3]);
+            glm::vec2 realStartPoint = glm::vec2(points[index + 0], points[index + 1]);
+            glm::vec2 realEndPoint = glm::vec2(points[index + 2] , points[index + 3]);
 
-            glm::vec2 dir = glm::normalize(endPoint - startPoint);
+            glm::vec2 dir = glm::normalize(realEndPoint - realStartPoint);
             
             //起始点 需要考虑线段宽度 再偏移一段距离
             const glm::vec2 adjustVec = lineHalfWidth * dir;
-            startPoint += -1.0f * adjustVec;
-            endPoint += adjustVec;
+            startPoint = realStartPoint -1.0f * adjustVec;
+            endPoint = realEndPoint + adjustVec;
 
             glm::vec2 topDir(
                 glm::cos(angle90)* dir[0] + glm::sin(angle90) * dir[1],
@@ -620,54 +620,54 @@ namespace purple{
             glm::vec2 p2 = endPoint + topDir * lineHalfWidth;
             glm::vec2 p3 = endPoint + downDir * lineHalfWidth;
             glm::vec2 p4 = startPoint + downDir * lineHalfWidth;
-
+            
             vertexBuf[bufIdx++] = p1[0];
             vertexBuf[bufIdx++] = p1[1];
             vertexBuf[bufIdx++] = depth;
-            vertexBuf[bufIdx++] = startPoint[0];
-            vertexBuf[bufIdx++] = startPoint[1];
-            vertexBuf[bufIdx++] = endPoint[0];
-            vertexBuf[bufIdx++] = endPoint[1];
+            vertexBuf[bufIdx++] = realStartPoint[0];
+            vertexBuf[bufIdx++] = realStartPoint[1];
+            vertexBuf[bufIdx++] = realEndPoint[0];
+            vertexBuf[bufIdx++] = realEndPoint[1];
 
             vertexBuf[bufIdx++] = p4[0];
             vertexBuf[bufIdx++] = p4[1];
             vertexBuf[bufIdx++] = depth;
-            vertexBuf[bufIdx++] = startPoint[0];
-            vertexBuf[bufIdx++] = startPoint[1];
-            vertexBuf[bufIdx++] = endPoint[0];
-            vertexBuf[bufIdx++] = endPoint[1];
+            vertexBuf[bufIdx++] = realStartPoint[0];
+            vertexBuf[bufIdx++] = realStartPoint[1];
+            vertexBuf[bufIdx++] = realEndPoint[0];
+            vertexBuf[bufIdx++] = realEndPoint[1];
 
             vertexBuf[bufIdx++] = p2[0];
             vertexBuf[bufIdx++] = p2[1];
             vertexBuf[bufIdx++] = depth;
-            vertexBuf[bufIdx++] = startPoint[0];
-            vertexBuf[bufIdx++] = startPoint[1];
-            vertexBuf[bufIdx++] = endPoint[0];
-            vertexBuf[bufIdx++] = endPoint[1];
+            vertexBuf[bufIdx++] = realStartPoint[0];
+            vertexBuf[bufIdx++] = realStartPoint[1];
+            vertexBuf[bufIdx++] = realEndPoint[0];
+            vertexBuf[bufIdx++] = realEndPoint[1];
 
             vertexBuf[bufIdx++] = p4[0];
             vertexBuf[bufIdx++] = p4[1];
             vertexBuf[bufIdx++] = depth;
-            vertexBuf[bufIdx++] = startPoint[0];
-            vertexBuf[bufIdx++] = startPoint[1];
-            vertexBuf[bufIdx++] = endPoint[0];
-            vertexBuf[bufIdx++] = endPoint[1];
+            vertexBuf[bufIdx++] = realStartPoint[0];
+            vertexBuf[bufIdx++] = realStartPoint[1];
+            vertexBuf[bufIdx++] = realEndPoint[0];
+            vertexBuf[bufIdx++] = realEndPoint[1];
 
             vertexBuf[bufIdx++] = p3[0];
             vertexBuf[bufIdx++] = p3[1];
             vertexBuf[bufIdx++] = depth;
-            vertexBuf[bufIdx++] = startPoint[0];
-            vertexBuf[bufIdx++] = startPoint[1];
-            vertexBuf[bufIdx++] = endPoint[0];
-            vertexBuf[bufIdx++] = endPoint[1];
+            vertexBuf[bufIdx++] = realStartPoint[0];
+            vertexBuf[bufIdx++] = realStartPoint[1];
+            vertexBuf[bufIdx++] = realEndPoint[0];
+            vertexBuf[bufIdx++] = realEndPoint[1];
 
             vertexBuf[bufIdx++] = p2[0];
             vertexBuf[bufIdx++] = p2[1];
             vertexBuf[bufIdx++] = depth;
-            vertexBuf[bufIdx++] = startPoint[0];
-            vertexBuf[bufIdx++] = startPoint[1];
-            vertexBuf[bufIdx++] = endPoint[0];
-            vertexBuf[bufIdx++] = endPoint[1];
+            vertexBuf[bufIdx++] = realStartPoint[0];
+            vertexBuf[bufIdx++] = realStartPoint[1];
+            vertexBuf[bufIdx++] = realEndPoint[0];
+            vertexBuf[bufIdx++] = realEndPoint[1];
 
             index += 4;
         }//end while

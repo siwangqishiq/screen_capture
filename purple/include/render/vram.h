@@ -24,6 +24,8 @@ namespace purple{
 
         void createNewBuffer();
     public:
+        VRamAllcator(){}
+
         const int ALLOCATOR_SIZE = 4 * 1024 * 1024;//一次分配4M缓存
 
         int fetchVideoMemory(int requestSize ,
@@ -43,13 +45,7 @@ namespace purple{
         // static std::shared_ptr<VRamManager> getInstance();
         
         // static std::shared_ptr<VRamManager> instance_;
-
-        VRamManager();
-
-        ~VRamManager(){
-            Log::i(TAG , "~VRamManager deconstruct");
-        }
-
+        
         void onPostRender();
 
         void clear();
@@ -59,8 +55,15 @@ namespace purple{
                 unsigned int &bufferId , 
                 unsigned int &vao,
                 int &offset , int &size);
+        
+        ~VRamManager(){
+            Log::i(TAG , "~VRamManager deconstruct");
+        }
+        
+        VRamManager();
     private:
-        std::shared_ptr<VRamAllcator> allocator_;
+        std::shared_ptr<VRamAllcator> allocator_ = nullptr;
+
     };
 }
 

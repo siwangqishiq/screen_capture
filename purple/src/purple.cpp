@@ -50,6 +50,12 @@ namespace purple{
         if(timer_ != nullptr){
             timer_->trick();
         }
+
+        if(renderEngine_->vramManager_ != nullptr){ //显存缓存清空
+            renderEngine_->vramManager_->onPostRender();
+            renderEngine_->getShapeBatch()->getVRamManager()->onPostRender();
+            renderEngine_->getSpriteBatch()->getVRamManager()->onPostRender();
+        }
     }
 
     void Engine::dispose(){

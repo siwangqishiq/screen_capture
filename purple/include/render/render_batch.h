@@ -23,6 +23,10 @@ namespace purple{
 
         virtual void allocatorMemory();
 
+        std::shared_ptr<VRamManager> getVRamManager(){
+            return vramManager_;
+        }
+
         // ~Batch();
     protected:
         bool isDrawing_ = false;
