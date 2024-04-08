@@ -13,7 +13,8 @@ void PencilEditor::renderEditorContent(){
     // }//end for each
     // shapeBatch->end();
     // purple::Engine::getRenderEngine()->renderLines(mPaintPoints , mPaint);
-
+    // mPaint.stokenWidth = 100.0f;
+    // mPaint.color = glm::vec4(0.0f , 1.0f , 0.0f ,0.5f);
     purple::Engine::getRenderEngine()->renderSmoothLines(mPaintPoints , mPaint);
 }
 
@@ -57,14 +58,14 @@ bool PencilEditor::dispatchEventAction(EventAction action , float x , float y) {
         limitInRect(captureContentRect , x , y);
 
         if(action == EventAction::ActionMove){
-            // if(glm::distance(glm::vec2(x , y) ,  glm::vec2(mEndX , mEndY)) >= mPaint.stokenWidth / 2.0f){
-            //     addPoints(x , y);
-            //     mEndX = x;
-            //     mEndY = y;
-            // }
-            addPoints(x , y);
-            mEndX = x;
-            mEndY = y;
+            if(glm::distance(glm::vec2(x , y) ,  glm::vec2(mEndX , mEndY)) >= mPaint.stokenWidth / 4.0f){
+                addPoints(x , y);
+                mEndX = x;
+                mEndY = y;
+            }
+            // addPoints(x , y);
+            // mEndX = x;
+            // mEndY = y;
         }else if(action == EventAction::ActionUp){
             addPoints(x , y);
             mEndX = x;

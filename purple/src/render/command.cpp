@@ -569,8 +569,6 @@ namespace purple{
         vertexCount_ = 3 * points.size();
         attrCount_ = 3 + 2 + 2;
 
-        const float depth = engine_->getAndChangeDepthValue();
-
         int requestSize = vertexCount_ * attrCount_ * sizeof(float);
         int allocateSize = 0;
         allocatorVRam(requestSize , allocateSize);
@@ -615,6 +613,8 @@ namespace purple{
 
             // glm::vec2 topDir(0.0f , 1.0f);
             // glm::vec2 downDir(0.0f , -1.0f);
+
+            const float depth = engine_->getAndChangeDepthValue();
             
             glm::vec2 p1 = startPoint + topDir * lineHalfWidth;
             glm::vec2 p2 = endPoint + topDir * lineHalfWidth;

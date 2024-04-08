@@ -9,16 +9,31 @@ in vec2 endPoint;
 out vec4 fragColor;
 
 float renderRoundConnerLine(vec2 pos){
-    if(distance(pos , startPoint) <= uRadius){
-        return 1.0f;
-    }else if(distance(pos , endPoint) <= uRadius){
-        return 1.0f;
+    vec2 dir = normalize(endPoint - startPoint);
+    vec2 upDir = vec2(-dir.y , dir.x);
+    mat2 vecMat;
+
+    float distanceFromStart = distance(pos , startPoint);
+    float distanceFromEnd = distance(pos , endPoint);
+
+    float aaSize = uRadius / 20.0f;
+    // const float aaSize = 0.0f;
+    if(distanceFromStart <= distanceFromEnd){
+        vecMat = mat2(upDir , vec2(pos - startPoint)); //
+        float judgeValue = step(0.0f, determinant(vecMat));
+        return judgeValue * smoothstep(distance(pos , startPoint) - aaSize
+                ,distance(pos , startPoint), uRadius) 
+            + (1.0f - judgeValue);
+    }else{
+        vecMat = mat2(upDir , vec2(pos - endPoint)); //
+        float judgeValue = step(0.0f , determinant(vecMat));
+        return (1.0f - judgeValue) * smoothstep(distance(pos , endPoint) - aaSize
+                , distance(pos , endPoint),uRadius) 
+                + judgeValue;
     }
-    return 1.0f;
 }
 
 void main(){
     vec2 pos = gl_FragCoord.xy;
-    fragColor = vec4(uColor.rgb , renderRoundConnerLine(pos));
-    // fragColor = vec4(0.0f , 1.0f ,0.0f ,1.0f);
+    fragColor = vec4(uColor.rgb , uColor.a * renderRoundConnerLine(pos));
 }
