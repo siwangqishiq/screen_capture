@@ -289,31 +289,35 @@ float renderBlurRoundRect(vec2 pos , float blur){
     return zero;
 }
 
+vec4 alphaBendToColor(vec4 originColor , float alphaValue){
+    return vec4(originColor.rgb , originColor.a * alphaValue);
+}
+
 void main(){
     float value = 0.0f;
     vec2 pos = gl_FragCoord.xy;
     if(floatEqual(vShape.x , shape_rect)){//draw rect
         value = renderRect(pos);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }else if(floatEqual(vShape.x , shape_circle)){
         value = renderCircle(pos);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }else if(floatEqual(vShape.x , shape_oval)){
         value = renderOval(pos);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }else if(floatEqual(vShape.x ,shape_round_rect)){
         value = renderRoundRect(pos);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }else if(floatEqual(vShape.x ,shape_blur_circle)){
         value = renderCircleBlur(pos , vShape.z);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }else if(floatEqual(vShape.x ,shape_linear_gradient)){//直接取顶点颜色
         fragColor = vColor;
     }else if(floatEqual(vShape.x ,shape_blur_rect)){
         value = renderBlurRect(pos , vShape.z);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }else if(floatEqual(vShape.x , shape_blur_round_rect)){
         value = renderBlurRoundRect(pos , vShape.z);
-        fragColor = vColor * value;
+        fragColor = alphaBendToColor(vColor , value);
     }
 }
