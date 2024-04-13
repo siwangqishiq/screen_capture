@@ -32,7 +32,7 @@ add_library(${PROJECT_NAME}
                 ${SRC_WIDGET}
                 ${SRC_RENDER})
 
-target_link_libraries(${PROJECT_NAME} glfw)
+# target_link_libraries(${PROJECT_NAME} glfw)
 
 
 
