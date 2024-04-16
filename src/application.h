@@ -160,7 +160,7 @@ public:
     std::vector<std::shared_ptr<IEditor>> mEditorList; //编辑操作列表
 
     std::shared_ptr<IEditor> mCurrentEditor = nullptr;
-
+    
     std::vector<purple::Rect> mControlButtonRects; //resize control buttonsrect
 
     //cursor

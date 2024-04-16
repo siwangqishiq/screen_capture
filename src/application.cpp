@@ -8,7 +8,7 @@
 #include "action/action_confirm.h"
 #include "editor/editor_text.h"
 
-bool Application::isDebug = true;
+bool Application::isDebug = false;
 
 void Application::appInit(){
     mScreenApi = std::make_shared<ScreenApi>(this);
@@ -622,6 +622,8 @@ void Application::onEventAction(EventAction action , float x , float y){
         return;
     }
 
+
+    // std::cout << "mState = " << mState << std::endl;
     if(mState == Idle){ // idle空闲状态
         if(!canResetClipZone()){ //已经确定选区的情况下 有编辑内容 这时不能重置选区
             return;
@@ -644,6 +646,8 @@ void Application::onEventAction(EventAction action , float x , float y){
             case ActionDown:{
                 mCaptureStartX = x;
                 mCaptureStartY = y;
+                mCaptureEndX = x;
+                mCaptureEndY = y;
                 break;
             }
             case ActionMove:{
