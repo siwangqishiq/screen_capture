@@ -9,15 +9,16 @@
  * 
  */
 #pragma once
+
 #include <memory>
 #include <string>
 #include <vector>
 #include "glm/matrix.hpp"
 #include "render/shader.h"
 #include <unordered_map>
-#include "render/common.h"
 #include "log.h"
 #include <functional>
+#include "render/common.h"
 
 namespace purple{
     class RenderCommand;
@@ -30,6 +31,7 @@ namespace purple{
     class ShapeBatch;
     class SpriteBatch;
     class TextureInfo;
+    class TextRender;
 
     class RenderEngine{
     public:
@@ -48,8 +50,6 @@ namespace purple{
         void clearRenderCommands();
 
         void submitRenderCommand(std::shared_ptr<RenderCommand> cmd);
-
-        void render();
 
         void free();
 
@@ -106,31 +106,24 @@ namespace purple{
         //绘制单独的一个矩形
         void renderRect(Rect &rect , glm::mat4 &transMat , Paint &paint);
 
-        //绘制单独的一个矩形
-        // void renderRect(Rect &rect , glm::mat4 &&transMat , Paint &paint);
-
-        //绘制单独的一个矩形
-        // void renderRect(Rect &&rect , glm::mat4 &&transMat , Paint &paint);
-
         //绘制文字
         void renderText(std::wstring &text , float left , float bottom , TextPaint &paint);
 
-        // //绘制文字
-        // void renderText(std::wstring &&text , float left , float bottom , TextPaint &paint){
-        //     renderText(text , left , bottom , paint);
-        // }
-
+        //绘制文字
         void renderText(const wchar_t *text , float left , float bottom , TextPaint &paint){
             auto str = std::wstring(text);
             renderText(str, left , bottom , paint);
         }
 
         //绘制文字  但是将文字限定在一个矩形框内 放不下的文字 直接舍弃 
-        void renderTextWithRect(std::wstring &text , Rect &showRect , 
+        void renderTextWithRect(std::wstring &text , 
+                Rect &showRect , 
                 TextPaint &paint , 
                 Rect *wrapContentRect);//
         
-        void renderTextWithRect(std::wstring &&text , Rect &showRect , 
+        //绘制文字  但是将文字限定在一个矩形框内 放不下的文字 直接舍弃 
+        void renderTextWithRect(std::wstring &&text , 
+                Rect &showRect , 
                 TextPaint &paint , 
                 Rect *wrapContentRect){
             renderTextWithRect(text , showRect , paint ,wrapContentRect);
@@ -163,6 +156,10 @@ namespace purple{
 
         std::shared_ptr<SpriteBatch> getSpriteBatch();
 
+        std::shared_ptr<TextRender> getTextRender(){
+            return getTextRenderByName(DEFAULT_TEXT_RENDER_NAME);
+        }
+
         float getAndChangeDepthValue();
         
         void resetDepth();
@@ -177,6 +174,10 @@ namespace purple{
 
         void resetNormalMat(float w , float h);
 
+        std::shared_ptr<TextRender> getTextRenderByName(std::string name);
+
+        bool loadTextRender(std::string assetFontFile);
+
         int textCommandIndex;
         std::vector<std::shared_ptr<TextRenderCommand>> textCommandPool;
 
@@ -190,7 +191,6 @@ namespace purple{
 
         //batch render
         std::shared_ptr<ShapeBatch> shapeBatch_;
-
         std::shared_ptr<SpriteBatch> spriteBatch_;
 
         float depthValue = 1.0f;
@@ -199,22 +199,11 @@ namespace purple{
         int viewHeight_;
 
         int createFrameBufferForVirtualTexture(std::shared_ptr<TextureInfo> texInfo);
-    };
+        
+        const std::string DEFAULT_TEXT_RENDER_NAME = "default_text_render";
 
-    //字符信息
-    struct CharInfo{
-        std::wstring value; 
-        float width;
-        float height;
-        float bearingX;
-        float bearingY;
-        float textureCoords[5];
-        unsigned int textureId;
+        std::map<std::string , std::shared_ptr<TextRender>> textRenderMap_;
     };
-
-    //字符默认高度
-    static const float CHAR_DEFAULT_HEIGHT = 64.0f;
-    static const float SPACE_WIDTH = 16.0f;
 
     class TextRenderHelper{
     public:

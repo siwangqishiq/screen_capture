@@ -45,6 +45,20 @@ namespace purple{
         long endTime = currentTimeMillis();
         Log::w(TAG , "purple engine start time : %ld ms" , endTime - startTime);
     }
+    
+    void Engine::resize(int w , int h){
+        if(ScreenWidth == w && ScreenHeight == h){
+            return;
+        }
+
+        ScreenWidth = w;
+        ScreenHeight = h;
+        Log::w(TAG , "scren resize %d x %d" , w , h);
+        if(renderEngine_ == nullptr){
+            renderEngine_ = std::make_shared<RenderEngine>();
+        }
+        renderEngine_->onScreenResize();
+    }
 
     void Engine::tick(){
         if(timer_ != nullptr){
@@ -57,6 +71,7 @@ namespace purple{
             renderEngine_->getSpriteBatch()->getVRamManager()->onPostRender();
         }
     }
+
 
     void Engine::dispose(){
         Log::w(TAG,"engine dispose");

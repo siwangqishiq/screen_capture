@@ -160,6 +160,11 @@ namespace purple{
         glUniform4fv(loc , 1 ,  (float *)(&vec[0]));
     }
 
+    void Shader::setUniformVec2(std::string key , glm::vec2 vec){
+        GLint loc = findUniformLocation(key);
+        glUniform2fv(loc , 1 ,  (float *)(&vec[0]));
+    }
+
     void Shader::setUniformVec3(std::string key , float x , float y , float z){
         GLint loc = findUniformLocation(key);
         glUniform3f(loc , x , y , z);

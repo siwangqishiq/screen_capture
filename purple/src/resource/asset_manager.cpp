@@ -25,6 +25,36 @@ namespace purple{
         return readFileAsWstring(filePath.c_str());
     }
 
+    unsigned char* AssetManager::readFileAsBinRaw(std::string path , int &length){
+        std::string filePath = assetRootDir() + path;
+        Log::i("asset" , "read file path %s" , filePath.c_str());
+
+        try{
+            std::ifstream binFile(filePath, std::ios::binary);
+            // Logi("asset" , "readBinaryFile is good? %d" , binFile.good);
+            
+            if(!binFile.is_open()){
+                Log::i("asset" , "readBinaryFile is not existed!");
+                return nullptr;
+            }
+
+            binFile.seekg(0 , std::ios::end);
+            
+            length = binFile.tellg();
+            binFile.seekg(0 , std::ios::beg);
+
+            Log::i("asset" , "readFileAsBin size %d" , length);
+
+            unsigned char *pData = new unsigned char[length];
+            binFile.read((char *)pData , length);
+            binFile.close();
+            return pData;
+        }catch(std::exception &e){
+            Log::e("error" , "readBinaryFile code %s" , e.what());
+        }
+        return nullptr;
+    }
+
     std::unique_ptr<uint8_t[]> AssetManager::readFileAsBin(std::string path , int &length){
         std::string filePath = assetRootDir() + path;
         Log::i("asset" , "read file path %s" , filePath.c_str());

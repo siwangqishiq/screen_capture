@@ -9,7 +9,6 @@
 #include "widget/timer.h"
 #include "render/texture.h"
 #include "render/sprite.h"
-#include "render/common.h"
 #include "json.h"
 
 
@@ -27,6 +26,8 @@ namespace purple{
         static void dispose();
 
         static void tick();
+
+        static void resize(int w , int h);
 
         static std::shared_ptr<RenderEngine> getRenderEngine();
 

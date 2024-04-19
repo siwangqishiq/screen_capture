@@ -53,6 +53,8 @@ namespace purple{
         //设置二维向量
         void setUniformVec2(std::string key , float x , float y);
 
+        void setUniformVec2(std::string key , glm::vec2 vec);
+
         void setUniformIVec2(std::string key , int x , int y);
 
         //设置三维向量

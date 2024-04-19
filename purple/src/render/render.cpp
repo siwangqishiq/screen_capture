@@ -1,6 +1,5 @@
 #include "render/render.h"
 #include "log.h"
-#include "render/command.h"
 #include "render/vram.h"
 #include "render/texture.h"
 #include "resource/asset_manager.h"
@@ -9,6 +8,20 @@
 #include "render/render_batch.h"
 #include "render/vram.h"
 #include "purple.h"
+#include "render/render.h"
+#include "render/text_render.h"
+
+#include "render/cmd/command.h"
+#include "render/cmd/cmd_arc.h"
+#include "render/cmd/cmd_custom_shader.h"
+#include "render/cmd/cmd_custom_texture_shader.h"
+#include "render/cmd/cmd_lines_smooth.h"
+#include "render/cmd/cmd_lines.h"
+#include "render/cmd/cmd_rect.h"
+#include "render/cmd/cmd_shape.h"
+#include "render/cmd/cmd_text.h"
+#include "render/cmd/cmd_triangles.h"
+
 
 namespace purple{
     std::unordered_map<wchar_t , wchar_t> SymbolMap;
@@ -59,9 +72,6 @@ namespace purple{
         vramManager_ = std::make_shared<VRamManager>();
         // vramManager_ = VRamManager::getInstance();
 
-        loadTextRenderResource();//text render init
-        // Logi(TAG , "render engine init end");
-        
         loadShapeShader();
         shapeBatch_ = std::make_shared<ShapeBatch>(this);//std::shared_ptr<RenderEngine>(this)
         shapeBatch_->init();
@@ -70,6 +80,9 @@ namespace purple{
         spriteBatch_->init();
 
         clearRenderCommands();
+
+        loadTextRenderResource();//text render init
+        // Logi(TAG , "render engine init end");
     }
 
     void RenderEngine::loadTextRenderResource(){
@@ -78,20 +91,14 @@ namespace purple{
         textRenderHelper_->loadRes(*this);
 
         TextRenderHelper::loadSymbolMap();
+
+        //new add text render
+        loadTextRender("text/heiti.ttf");
     }
 
     void RenderEngine::loadShapeShader(){
         Log::i(TAG , "render init loadShapeShader");
         
-        // ShaderManager::getInstance()->loadAssetShader("shape_rect" , 
-        //     "shader/shape_vert.glsl", "shader/shape_rect_frag.glsl");
-        // ShaderManager::getInstance()->loadAssetShader("shape_circle" , 
-        //     "shader/shape_vert.glsl", "shader/shape_circle_frag.glsl");
-        // ShaderManager::getInstance()->loadAssetShader("shape_oval" , 
-        //     "shader/shape_vert.glsl", "shader/shape_oval_frag.glsl");
-        // ShaderManager::getInstance()->loadAssetShader("shape_round_rect" , 
-        //     "shader/shape_vert.glsl", "shader/shape_round_rect_frag.glsl");
-
         //实心矩形
         ShaderManager::getInstance()->loadAssetShader("primitive_rect" , 
             "shader/primitive_vert.glsl", "shader/primitive_rect_frag.glsl");
@@ -127,7 +134,27 @@ namespace purple{
         normalMatrix_[2][2] =  1.0f;
     }
 
-    void RenderEngine::submitRenderCommand(std::shared_ptr<RenderCommand> cmd){
+    std::shared_ptr<TextRender> RenderEngine::getTextRenderByName(std::string name){
+        std::shared_ptr<TextRender> result = textRenderMap_[name];
+        if(result == nullptr){
+            result = textRenderMap_[DEFAULT_TEXT_RENDER_NAME];
+        }
+        return result;
+    }
+
+    bool RenderEngine::loadTextRender(std::string assetFontFile){
+        std::shared_ptr<TextRender> defaultTextRender = std::make_shared<TextRender>(this);
+        int ret = defaultTextRender->loadFontRes(DEFAULT_TEXT_RENDER_NAME,assetFontFile);
+        if(ret){
+            textRenderMap_[DEFAULT_TEXT_RENDER_NAME] = defaultTextRender;
+            return true;
+        }
+        return false;
+    }
+
+
+    void RenderEngine::submitRenderCommand(std::shared_ptr<RenderCommand> cmd)
+    {
         renderCommandList_.push_back(cmd);
     }
 
@@ -447,7 +474,7 @@ namespace purple{
 
                 outRect.height += (FONT_DEFAULT_SIZE + paint.gapSize) * paint.textSizeScale;
                 lineWidth = 0.0f;
-
+                
                 if(ch == L'\n'){
                     index++;
                 }
@@ -510,15 +537,6 @@ namespace purple{
             renderCmd->updateVertexPositionData(buf , i , translateX , translateY);
         }//end for i
     }
-
-    // //绘制单独的一个矩形
-    // void RenderEngine::renderRect(Rect &rect , glm::mat4 &&transMat , Paint &paint){
-    //     renderRect(rect , transMat , paint);
-    // }
-
-    // void RenderEngine::renderRect(Rect &&rect , glm::mat4 &&transMat , Paint &paint){
-    //     renderRect(rect , transMat , paint);
-    // }
 
     void RenderEngine::renderRect(Rect &rect , glm::mat4 &transMat , 
             Paint &paint){
