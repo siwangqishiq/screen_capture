@@ -14,6 +14,10 @@ namespace purple{
         
     const std::string TAG_SHADER = "shader";
 
+    const std::string SHADER_CACHE_DIR = "shadercache/";
+
+    const std::string SUFFIX_BINARY_FILE = ".bin";
+
     // //读取asset 文本文件
     // std::string ReadAssetTextFile(std::string filename);
 
@@ -28,11 +32,15 @@ namespace purple{
     //读取文本文件
     std::string ReadFileAsText(std::string path);
 
+    bool IsFileExists(std::string &name);
+
     class Shader{
     public:
         static Shader buildGPUProgram(std::string vtxSrc , std::string frgSrc);
 
         static Shader buildGPUProgramAssetFile(std::string vtxSrc , std::string frgSrc);
+
+        static Shader buildGPUProgramFromBinaryFile(std::string shaderName);
 
         //使用shader
         void useShader();
@@ -67,7 +75,7 @@ namespace purple{
 
         int findUniformLocation(std::string key);
 
-        unsigned int programId;
+        unsigned int programId = 0;
     protected:
         std::unordered_map<std::string , int> unifromLocs; //unifrom变量loccation
     };
@@ -86,11 +94,15 @@ namespace purple{
 
         Shader loadShader(std::string shaderName , std::string vertexSrc , std::string frgSrc);
 
-        Shader loadShaderByPath(std::string shaderName , std::string vertexPath , std::string fragPath);
+        // Shader loadShaderByPath(std::string shaderName , std::string vertexPath , std::string fragPath);
 
         Shader getShaderByName(std::string shaderName);
 
+        void cacheShaderProgram(GLuint programId ,std::string shaderName);
+
         void clear();
+
+        static std::string ensureShaderCacheDir();
     };
 }
 

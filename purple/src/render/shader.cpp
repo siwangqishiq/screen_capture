@@ -7,6 +7,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "log.h"
 #include "resource/asset_manager.h"
+#include "purple.h"
 
 namespace purple{
     std::string ReadAssetTextFile(std::string filename) {
@@ -62,6 +63,11 @@ namespace purple{
         return program;
     }
 
+    bool IsFileExists(std::string& name){
+        std::ifstream f(name.c_str());
+        return f.good();
+    }
+
     //读取文本文件
     std::string ReadFileAsText(std::string path){
         std::string content;
@@ -98,6 +104,60 @@ namespace purple{
         Shader shader;
         auto  pid = CreateGPUProgramByAsset(vtxPath , frgPath);
         shader.programId = pid;
+        return shader;
+    }
+
+    Shader Shader::buildGPUProgramFromBinaryFile(std::string shaderName){
+        Shader shader;
+        if(isDebug){
+            return shader;
+        }
+
+        GLint programBinaryFormats = GL_NONE;
+        glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &programBinaryFormats);
+        if(programBinaryFormats <= GL_NONE) {
+            Log::e("Shader" , "GL_NUM_PROGRAM_BINARY_FORMATS = %d" , programBinaryFormats);
+            return shader;
+        }
+
+        GLint binaryFormat = GL_NONE;
+        glGetIntegerv(GL_PROGRAM_BINARY_FORMATS , &binaryFormat);
+        if(binaryFormat <= GL_NONE){
+            Log::e("Shader" , "GL_PROGRAM_BINARY_FORMATS = %d" , binaryFormat);
+            return shader;
+        }
+        Log::w("Shader" , "Shader Program binary format : %d" , binaryFormat); 
+
+        std::string cacheDir = ShaderManager::ensureShaderCacheDir();
+        std::string binFile = cacheDir + shaderName + SUFFIX_BINARY_FILE;
+        Log::i("Shader" , "load binary shader file : %s" , binFile.c_str());
+
+        if(!IsFileExists(binFile)){
+            Log::e("Shader" , "load binary shader %s file Not exist" , binFile.c_str());
+            return shader;
+        }
+
+        int fileLength = 0;
+        auto dataBuf = AssetManager::getInstance()->readFileAsBinRaw(binFile.c_str() , fileLength);
+        if(dataBuf != nullptr && fileLength > 0){
+            GLuint program = glCreateProgram();
+            glProgramBinary(program , binaryFormat, dataBuf , fileLength);
+
+            GLint linkResult;
+            glGetProgramiv(program, GL_LINK_STATUS, &linkResult);
+            if(!linkResult){
+                char szLog[1024] = { 0 };
+                GLsizei logLen = 0;
+                glGetProgramInfoLog(program, 1024, &logLen, szLog);
+                Log::e(TAG_SHADER, "Compile program fail error log: %s" , szLog);
+                glDeleteShader(program);
+                program = 0;
+            }
+
+            Log::i("Shader" , "load program from binary success id = %d" , program);
+            //success
+            shader.programId = program;
+        }
         return shader;
     }
 
@@ -207,36 +267,83 @@ namespace purple{
             std::string vtxSrc , std::string frgSrc) {
         if(shaderMap.find(shaderName) == shaderMap.end()){//not found shader create a new shader
             Log::i("Shader" , "create a new shader %s " , shaderName.c_str());
-            Shader shader = Shader::buildGPUProgram(vtxSrc , frgSrc);
-            shaderMap[shaderName] = shader;
-        }
+            //build shader from binary cache
+            Shader shader = Shader::buildGPUProgramFromBinaryFile(shaderName);
+            if(shader.programId == 0){
+                shader = Shader::buildGPUProgram(vtxSrc , frgSrc);
+                cacheShaderProgram(shader.programId , shaderName);
+            }else{
+                Log::w("Shader" , "create a new shader %s from cache" , shaderName.c_str());
+            }
 
+            if(shader.programId > 0){
+                shaderMap[shaderName] = shader;
+            }
+        }
         return shaderMap[shaderName];
     }
 
     //获取 或 创建出一个shader
-    Shader ShaderManager::loadShaderByPath(std::string shaderName , std::string vertexPath , std::string fragPath) {
-        if(shaderMap.find(shaderName) == shaderMap.end()){//not found shader create a new shader
-            Log::i("no found %s , create a new shader" , shaderName.c_str());
-            Shader shader = Shader::buildGPUProgramAssetFile(vertexPath , fragPath);
-            shaderMap[shaderName] = shader;
-        }else{
-            Log::i("has found %s , reuse shader" , shaderName.c_str());
-        }
-        return shaderMap[shaderName];
-    }
+    // Shader ShaderManager::loadShaderByPath(std::string shaderName , std::string vertexPath , std::string fragPath) {
+    //     if(shaderMap.find(shaderName) == shaderMap.end()){//not found shader create a new shader
+    //         Log::i("no found %s , create a new shader" , shaderName.c_str());
+    //         Shader shader = Shader::buildGPUProgramAssetFile(vertexPath , fragPath);
+    //         shaderMap[shaderName] = shader;
+    //         cacheShaderProgram(shader.programId , shaderName);
+    //     }else{
+    //         Log::i("has found %s , reuse shader" , shaderName.c_str());
+    //     }
+    //     return shaderMap[shaderName];
+    // }
 
     Shader ShaderManager::getShaderByName(std::string shaderName){
         return shaderMap[shaderName];
     }
+    
+    //缓存已编译好的二进制shader程序
+    void ShaderManager::cacheShaderProgram(GLuint programId , std::string shaderName){
+        const int BinBufSize = 512 * 1024;
+        int size;
+        GLenum binaryFormat;
+        // uint8_t *buf = new uint8_t[BinBufSize];
+        std::vector<uint8_t> buf(BinBufSize);
+        glGetProgramBinary(programId , BinBufSize ,&size , &binaryFormat , buf.data());
+        Log::w("cache_shader" , "Get binary shader size : %d , binaryFormat : %d  , name : %s" , 
+            size , binaryFormat, shaderName.c_str());
+        
+        std::string shaderCacheDir = ensureShaderCacheDir();
+        Log::w("cache_shader" , "shaderCacheDir : %s" , shaderCacheDir.c_str());
+
+        if(size <= 0){
+            return;
+        }
+        
+        std::string cacheFilePath = shaderCacheDir + shaderName + SUFFIX_BINARY_FILE;
+        long writeSize = AssetManager::getInstance()->writeFileWithBin(cacheFilePath , 
+                                size , buf.data());
+        Log::w("cache_shader" , "cachefile %s writeSize : %ld" 
+                    ,cacheFilePath.c_str() 
+                    ,writeSize);
+    }
+
+    std::string ShaderManager::ensureShaderCacheDir(){
+        std::string cacheDir = AssetManager::getInstance()->ensureCacheDir();
+        std::string shaderCacheDir = cacheDir + SHADER_CACHE_DIR;
+        AssetManager::getInstance()->makedir(shaderCacheDir);
+        return shaderCacheDir;
+    }
 
     void ShaderManager::clear() {
         Log::i(TAG_SHADER , "shader manager clear");
-
         for(auto pair : shaderMap){
             Shader shader = pair.second;
-            glDeleteShader(shader.programId);
+            if(glIsProgram(shader.programId)){
+               glDeleteProgram(shader.programId);
+            }else{
+                Log::e(TAG_SHADER ,"%d is not a shader" , shader.programId);
+            }
         }
+        // std::cout << "shader clear glGetError -> "<< glGetError() << std::endl;
 
         Log::i(TAG_SHADER ,"shader map size %d" , shaderMap.size());
         shaderMap.clear();
@@ -267,12 +374,15 @@ namespace purple{
         "#version 330 core\n";
         #endif
         
-        auto shaderBodySrc = AssetManager::getInstance()->readTextFileAsString(shaderPath);
+        auto shaderBodySrc = AssetManager::getInstance()->readAssetTextFileAsString(shaderPath);
         return shadrHeadSrc + shaderBodySrc;
     }
 
     Shader ShaderManager::loadAssetShader(std::string shaderName , 
                 std::string vertexPath , std::string frgPath){
+        if(shaderMap.find(shaderName) != shaderMap.end()){ //found shader by shader name direct return
+            return shaderMap[shaderName];
+        }
         return loadShader(shaderName , readShaderSrc(vertexPath) , readShaderSrc(frgPath));
     }
 }

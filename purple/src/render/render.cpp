@@ -5,12 +5,12 @@
 #include "resource/asset_manager.h"
 #include "json.h"
 #include "glheader.h"
+#include "purple.h"
+
 #include "render/render_batch.h"
 #include "render/vram.h"
-#include "purple.h"
 #include "render/render.h"
 #include "render/text_render.h"
-
 #include "render/cmd/command.h"
 #include "render/cmd/cmd_arc.h"
 #include "render/cmd/cmd_custom_shader.h"
@@ -47,11 +47,10 @@ namespace purple{
         if(shapeBatch_ != nullptr){
             shapeBatch_->dispose();
         }
-
         // VRamManager::getInstance()->clear();
         vramManager_->clear();
-        ShaderManager::getInstance()->clear();
         TextureManager::getInstance()->clear();
+        ShaderManager::getInstance()->clear();
     }
 
     void RenderEngine::clearRenderCommands(){
@@ -64,6 +63,10 @@ namespace purple{
     //    viewHeight_ = appContext_->viewHeight_;
         resetNormalMat(purple::Engine::ScreenWidth , purple::Engine::ScreenHeight);
         glViewport(0 , 0 , purple::Engine::ScreenWidth , purple::Engine::ScreenHeight);
+        
+        //打开混合模式 文字有透明度
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
     }
 
     void RenderEngine::init(){
@@ -144,7 +147,7 @@ namespace purple{
 
     bool RenderEngine::loadTextRender(std::string assetFontFile){
         std::shared_ptr<TextRender> defaultTextRender = std::make_shared<TextRender>(this);
-        int ret = defaultTextRender->loadFontRes(DEFAULT_TEXT_RENDER_NAME,assetFontFile);
+        int ret = defaultTextRender->loadFontRes(DEFAULT_TEXT_RENDER_NAME,assetFontFile , true);
         if(ret){
             textRenderMap_[DEFAULT_TEXT_RENDER_NAME] = defaultTextRender;
             return true;
@@ -153,8 +156,7 @@ namespace purple{
     }
 
 
-    void RenderEngine::submitRenderCommand(std::shared_ptr<RenderCommand> cmd)
-    {
+    void RenderEngine::submitRenderCommand(std::shared_ptr<RenderCommand> cmd) {
         renderCommandList_.push_back(cmd);
     }
 
@@ -233,7 +235,11 @@ namespace purple{
         
         std::string fontFoldName = "font1/";
 
-        std::wstring charConfigStr = AssetManager::getInstance()->readTextFile("text/"+ fontFoldName +"char_config.json");
+        std::wstring charConfigStr = AssetManager::getInstance()->readAssetTextFile("text/"+ fontFoldName +"char_config.json");
+
+        if(charConfigStr.empty()){
+            return;
+        }
         
         JsonParser parser;
         auto configJson = parser.parseJsonObject(charConfigStr);
@@ -406,14 +412,47 @@ namespace purple{
         depthValue = 1.0f;
     }
 
+    //绘制文字
+    void RenderEngine::renderTextV2(
+        const wchar_t *text , 
+        float left , 
+        float bottom , 
+        TextPaint &paint) {
+        auto textRender = getTextRenderByName(paint.fontName);
+        if(textRender != nullptr){
+            auto str = std::wstring(text);
+            textRender->renderText(str , left , bottom , paint);
+        }
+    }
+
+    void RenderEngine::renderTextV2(
+            std::wstring &text , 
+            float left , 
+            float bottom , 
+            TextPaint &paint){
+        auto textRender = getTextRenderByName(paint.fontName);
+        if(textRender != nullptr){
+            textRender->renderText(text , left , bottom , paint);
+        }
+    }
+
+    void RenderEngine::renderTextWithRectV2(std::wstring &text, 
+            Rect &showRect, 
+            TextPaint &paint, 
+            TextRenderOutInfo *outInfo) {
+        auto textRender = getTextRenderByName(paint.fontName);
+        if(textRender != nullptr){
+            textRender->renderTextWithRect(text , showRect , paint , outInfo);
+        }
+    } 
     /**
-    * @brief  text layout calculate
-    * 
-    * @param content 
-    * @param renderCmd 
-    * @param outRect 
-    * @param buf 
-    */
+     * @brief  text layout calculate
+     *
+     * @param content
+     * @param renderCmd
+     * @param outRect
+     * @param buf
+     */
     void TextRenderHelper::layoutText(std::wstring &content, 
             TextRenderCommand *renderCmd,
             Rect &outRect,
@@ -487,7 +526,7 @@ namespace purple{
 
         float translateX = limitRect.left - outRect.left;
         float translateY = -maxBaselineY;
-
+        
         switch(paint.textGravity){
             case TopLeft:
                 break;
@@ -776,6 +815,31 @@ namespace purple{
 
         glBindFramebuffer(GL_FRAMEBUFFER , 0);
         onScreenResize();
+    }
+
+    /**
+     * @brief  载入字体 
+     * 
+     * @param fontName  字体名称  与TextPaint 中的名称对应
+     * @param fontPath  字体文件路径 
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool RenderEngine::loadTextFontRes(std::string fontName, std::string fontPath) {
+        std::shared_ptr<TextRender> result = textRenderMap_[fontName];
+        if(result != nullptr){
+            return true;
+        }
+
+        std::shared_ptr<TextRender> theNewTextRender = std::make_shared<TextRender>(this);
+        int ret = theNewTextRender->loadFontRes(fontName, fontPath , false);
+        if(ret >= 0){
+            textRenderMap_[fontName] = theNewTextRender;
+            return true;
+        }
+        Log::i(TAG , "load font file %s failed code: %d" , fontPath.c_str() , ret);
+        return false;
     }
 }
 

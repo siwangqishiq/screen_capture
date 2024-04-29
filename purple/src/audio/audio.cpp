@@ -1,13 +1,11 @@
 
+#define MINIAUDIO_IMPLEMENTATION
+#include "miniaudio.h"
+
 #include "audio/audio.h"
 #include "log.h"
 #include "resource/asset_manager.h"
 #include <functional>
-
-#ifndef MINIAUDIO
-#define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
-#endif
 
 namespace purple{
 

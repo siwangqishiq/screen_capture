@@ -1,7 +1,7 @@
 #include "render/cmd/cmd_text.h"
 
 namespace purple{
-     float TextRenderCommand::findCharMaxHeight(std::wstring &text , TextPaint &paint){
+    float TextRenderCommand::findCharMaxHeight(std::wstring &text , TextPaint &paint){
         auto textRenderHelper = engine_->textRenderHelper_;
         float maxHeight = 0.0f;
         for(int i = 0 ; i < text.length() ;i++){
@@ -123,12 +123,12 @@ namespace purple{
         }
         buildGlCommands(buf);
     }
-
+    
     void TextRenderCommand::updateVertexPositionData(std::vector<float> &buf, 
             int index, float translateX,float translateY){
         const int attrPerChar = attrCount_ * vertCountPerChar_;
         int offset = index * attrPerChar;
-
+        
         //v1
         buf[offset + 0] += translateX;
         buf[offset + 1] += translateY;
@@ -155,7 +155,10 @@ namespace purple{
     }
 
     void TextRenderCommand::putVertexDataToBuf(std::vector<float> &buf, 
-            int index,float x ,float y,float depthValue,
+            int index, 
+            float x,
+            float y,
+            float depthValue,
             std::shared_ptr<CharInfo> charInfoPtr ,
             TextPaint &paint){
         const int attrPerChar = attrCount_ * vertCountPerChar_;
@@ -167,14 +170,16 @@ namespace purple{
         float charRealHeight = charInfoPtr->height * sizeScale;
 
         float italicOffset = calTextStyleItalicOffset(charInfoPtr , paint_);
-        // Logi("text_render" , "x y %f %f charRealWidth %f , charRealHeight %f" ,
-        //     x, y ,charRealWidth,charRealHeight);
+        // Log::i("text_render" , "originw : %f  originh: %f , charRealWidth %f , charRealHeight %f  scale: %f" ,
+        //     charInfoPtr->width, charInfoPtr->height ,charRealWidth,charRealHeight , paint_.textSizeScale);
 
         float texLeft = charInfoPtr->textureCoords[0];
         float texTop = charInfoPtr->textureCoords[1];
         float texRight = charInfoPtr->textureCoords[2];
         float texBottom = charInfoPtr->textureCoords[3];
         float texW = charInfoPtr->textureCoords[4];
+
+        // Log::i("text_render" , "l t r b %f %f %f %f" , texLeft , texTop , texRight , texBottom);
 
         //eg: 一 need a offset in y ax
         float offsetX = 0.0f;
@@ -240,9 +245,9 @@ namespace purple{
             buf.size() * sizeof(float) , buf.data());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0 , 3 , GL_FLOAT , GL_FALSE , 6 * sizeof(float) , 
+        glVertexAttribPointer(0 , 3 , GL_FLOAT , GL_FALSE , attrCount_ * sizeof(float) , 
             reinterpret_cast<void *>(vboOffset_));
-        glVertexAttribPointer(1 , 3 , GL_FLOAT , GL_FALSE , 6 * sizeof(float) , 
+        glVertexAttribPointer(1 , 3 , GL_FLOAT , GL_FALSE , attrCount_ * sizeof(float) , 
             reinterpret_cast<void *>(vboOffset_ + 3 * sizeof(float)));
         glBindBuffer(GL_ARRAY_BUFFER , 0);
         glBindVertexArray(0);
@@ -257,7 +262,7 @@ namespace purple{
         //打开混合模式 文字有透明度
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
-
+        
         auto shader = engine_->textRenderHelper_->textRenderShader_;
         shader.useShader();
         shader.setUniformMat3("transMat" , engine_->normalMatrix_);
@@ -273,9 +278,9 @@ namespace purple{
         
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0 , 3 , GL_FLOAT , GL_FALSE , 6 * sizeof(float) , 
+        glVertexAttribPointer(0 , 3 , GL_FLOAT , GL_FALSE , attrCount_ * sizeof(float) , 
             reinterpret_cast<void *>(vboOffset_));
-        glVertexAttribPointer(1 , 3 , GL_FLOAT , GL_FALSE , 6 * sizeof(float) , 
+        glVertexAttribPointer(1 , 3 , GL_FLOAT , GL_FALSE , attrCount_ * sizeof(float) , 
             reinterpret_cast<void *>(vboOffset_ + 3 * sizeof(float)));
         glDrawArrays(GL_TRIANGLES , 0 , vertexCount_);
 
@@ -291,7 +296,7 @@ namespace purple{
 
         float x = left;
         float y = bottom;
-
+        
         vertexCount_ = 6 * text.length();
 
         for(int i = 0; i < text.size() ;i++) {

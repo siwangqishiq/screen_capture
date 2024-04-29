@@ -32,6 +32,7 @@ namespace purple{
     class SpriteBatch;
     class TextureInfo;
     class TextRender;
+    class TextRenderOutInfo;
 
     class RenderEngine{
     public:
@@ -107,10 +108,16 @@ namespace purple{
         void renderRect(Rect &rect , glm::mat4 &transMat , Paint &paint);
 
         //绘制文字
-        void renderText(std::wstring &text , float left , float bottom , TextPaint &paint);
+        void renderText(
+            std::wstring &text , 
+            float left , 
+            float bottom , 
+            TextPaint &paint
+        );
 
         //绘制文字
-        void renderText(const wchar_t *text , float left , float bottom , TextPaint &paint){
+        void renderText(const wchar_t *text , 
+            float left , float bottom , TextPaint &paint){
             auto str = std::wstring(text);
             renderText(str, left , bottom , paint);
         }
@@ -160,9 +167,49 @@ namespace purple{
             return getTextRenderByName(DEFAULT_TEXT_RENDER_NAME);
         }
 
+        //载入字体
+        bool loadTextFontRes(std::string fontName, std::string fontPath);
+
         float getAndChangeDepthValue();
         
         void resetDepth();
+
+
+        //绘制文字
+        void renderTextV2(
+            const wchar_t *text , 
+            float left , 
+            float bottom , 
+            TextPaint &paint);
+        
+        //rende text new sdf algorithm
+        void renderTextV2(
+            std::wstring &text , 
+            float left , 
+            float bottom , 
+            TextPaint &paint);
+
+        //绘制文字  但是将文字限定在一个矩形框内 放不下的文字 直接舍弃 
+        void renderTextWithRectV2(std::wstring &text , 
+                Rect &showRect , 
+                TextPaint &paint , 
+                TextRenderOutInfo *outInfo);//
+        
+        //绘制文字  但是将文字限定在一个矩形框内 放不下的文字 直接舍弃 
+        void renderTextWithRectV2(std::wstring &&text , 
+                Rect &showRect , 
+                TextPaint &paint , 
+                TextRenderOutInfo *outInfo){
+            renderTextWithRectV2(text , showRect , paint ,outInfo);
+        }
+        
+        void renderTextWithRectV2(const wchar_t *text , 
+                Rect &showRect , 
+                TextPaint &paint ,
+                TextRenderOutInfo *outInfo){
+            std::wstring textcopy = text;
+            renderTextWithRectV2(textcopy , showRect , paint ,outInfo);
+        }
 
         std::shared_ptr<VRamManager> vramManager_;
     private:

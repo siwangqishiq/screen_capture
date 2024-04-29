@@ -7,8 +7,10 @@
 #include "widget/timer.h"
 #include <algorithm>
 
+#ifndef __ANDROID__
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+#endif
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -28,13 +30,15 @@ namespace purple{
         ScreenHeight = height;
 
         Log::w(TAG,"init screen size: %d  , %d" , ScreenWidth , ScreenHeight);
-
+        
+        #ifndef __ANDROID__
         // glad: load all OpenGL function pointers
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
             Log::e(TAG , "Failed to initialize glad");
             return;
         }
         Log::w(TAG , "glad initialize success.");
+        #endif
 
         renderEngine_ = std::make_shared<RenderEngine>();
         renderEngine_->init();
@@ -103,7 +107,9 @@ namespace purple{
         }
 
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        #ifndef  __ANDROID__
         glReadBuffer(GL_BACK_LEFT);
+        #endif
         const int channel = 3;
         const int size = channel * width * height;
         std::vector<uint8_t> pixels(size);

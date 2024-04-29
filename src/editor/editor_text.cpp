@@ -10,7 +10,7 @@ void TextEditor::renderEditorContent() {
     }
 
     //输入模式 or 调整模式
-    float ratio = mTextWrapRect.width / mTextWrapRect.height;
+    float ratio = mTextOutInfo.outRect.width / mTextOutInfo.outRect.height;
     mTextBoxWidth = ratio * mTextBoxHeight;
 
     mDstRect.left = mTextBoxLeft;
@@ -22,11 +22,10 @@ void TextEditor::renderEditorContent() {
         auto spriteBatch = purple::Engine::getRenderEngine()->getSpriteBatch();
         spriteBatch->begin();
         purple::TextureImage image(mCharsTex);
-        spriteBatch->renderImage(image , mTextWrapRect , mDstRect);
+        spriteBatch->renderImage(image , mTextOutInfo.outRect , mDstRect);
         spriteBatch->end();
     }
-
-        
+    
     const float offset = 12.0f;
     mControlRect.left = mDstRect.left - offset;
     mControlRect.top = mDstRect.top + offset;
@@ -252,8 +251,11 @@ void TextEditor::doRenderCharsTex(int texWidth , int texHeight){
     paint.setTextSize(texHeight);
     paint.textColor = mTextColor;
 
-    purple::Engine::getRenderEngine()->renderTextWithRect(mInputContent,
-        inputRect ,paint , &mTextWrapRect);
+    purple::Engine::getRenderEngine()->renderTextWithRectV2(mInputContent,
+        inputRect , paint , &mTextOutInfo);
+
+    // purple::Engine::getRenderEngine()->renderTextWithRect(mInputContent,
+    //     inputRect ,paint , &mTextWrapRect);
 
     // purple::Log::e("textEidtor" , "mInputContent size = %d  mTextWrapRect (%f , %f , %f ,%f)" 
     //     , mInputContent.size()

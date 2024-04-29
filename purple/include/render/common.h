@@ -6,7 +6,7 @@
 
 namespace purple{
 
-    const float FONT_DEFAULT_SIZE = 128.0f;
+    const float FONT_DEFAULT_SIZE = 64.0f;
     
     //
     struct Point{
@@ -150,10 +150,11 @@ namespace purple{
     //文本绘制 配置
     struct TextPaint{
         float textSizeScale = 1.0f;
-        float gapSize = 9.0f;
+        float gapSize = 0.0f;
         glm::vec4 textColor = glm::vec4(1.0f , 1.0f , 1.0f , 1.0f);
         TextStyle textStyle = normal;
         TextGravity textGravity = TopLeft;
+        std::string fontName;
 
         inline void setTextSize(float size){
             textSizeScale = (size / FONT_DEFAULT_SIZE);
@@ -176,9 +177,6 @@ namespace purple{
              && y <= rect.top && y >= rect.getBottom();
     }
 
-
-    //字符默认高度
-    const float CHAR_DEFAULT_HEIGHT = 64.0f;
     const float SPACE_WIDTH = 16.0f;
 
     //字符信息

@@ -21,22 +21,22 @@ namespace purple{
     class RenderCommand{
     public:
         RenderEngine *engine_;
+        int vertexCount_;
+        int attrCount_;
+
         RenderCommand(RenderEngine *engine) : engine_(engine){}
 
         virtual void runCommands(){}
 
         bool used = false;
 
-        unsigned int allocatorVRam(int acquireSize , int &allocateSize);
-
-        int vertexCount_;
-        int attrCount_;
+        virtual unsigned int allocatorVRam(int acquireSize , int &allocateSize);
 
         virtual void buildGlCommands(std::vector<float> &buf);
+        
     protected:
         unsigned int vbo_;
         unsigned int vao_;
-
         int vboOffset_;
     };
 }

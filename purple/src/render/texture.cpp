@@ -10,7 +10,10 @@ namespace purple{
                 internalFormat = GL_R8;
                 break;
             case GL_RGB:
-                internalFormat = GL_RGB;
+                internalFormat = GL_RGB8;
+                break;
+            case GL_RGBA:
+                internalFormat = GL_RGBA8;
                 break;
         }//end switch
         return internalFormat;
@@ -41,10 +44,12 @@ namespace purple{
         for(auto pair : textureBank_){
             auto texInfoPtr= pair.second;
             Log::i("texture_manager" , "texture del %s" , (texInfoPtr->name).c_str());
-
+            
             if(texInfoPtr != nullptr){
-                glDeleteTextures(1 , &(texInfoPtr->textureId));
-                
+                if(texInfoPtr->type != TEXTURE_2D){
+                    glDeleteTextures(1 , &(texInfoPtr->textureId));
+                }
+
                 //visual texture delete
                 if(texInfoPtr->category == TextureCategory::VIRTUAL_TEX){
                     if(texInfoPtr->renderBufferId != 0){
@@ -67,19 +72,8 @@ namespace purple{
             bool needFlip, int &format,int &width , int &height){
         TextureFileConfig fileConfig;
         std::unique_ptr<uint8_t> data = AssetManager::getInstance()
-            ->readTextureFile(path ,fileConfig,needFlip);
-
-        format = GL_RGBA;
-        if(fileConfig.channel == TEXTURE_FILE_CHANNEL_RGB){
-            format = GL_RGB;
-        }else if(fileConfig.channel == TEXTURE_FILE_CHANNEL_ARGB){
-            format = GL_RGBA;
-        }else if(fileConfig.channel == TEXTURE_FILE_CHANNEL_RGBA){
-            format = GL_RGBA;
-        }else if(fileConfig.channel == TEXTURE_FILE_CHANNEL_R){
-            format = GL_RED;
-        }
-
+            ->readAssetTextureFile(path ,fileConfig,needFlip);
+        format = fileConfig.format;
         width = fileConfig.width;
         height = fileConfig.height;
 
@@ -103,24 +97,35 @@ namespace purple{
         int format = GL_RGBA;
         int texWidth = 0;
         int texHeight = 0;
-        std::unique_ptr<uint8_t> data = readTextureFile(firstFilePath , 
-            needFlip , format, 
-            texWidth , texHeight);
-        
+//        std::unique_ptr<uint8_t> data = readTextureFile(firstFilePath ,
+//            needFlip , format,
+//            texWidth , texHeight);
+        TextureFileConfig texFileConfig;
+        std::unique_ptr<uint8_t> data = AssetManager::getInstance()
+                ->readAssetTextureFile(firstFilePath , texFileConfig , needFlip);
+
+        format = texFileConfig.format;
+        texWidth = texFileConfig.width;
+        texHeight = texFileConfig.height;
+
         glBindTexture(GL_TEXTURE_2D_ARRAY , textureId);
-        // glPixelStorei(GL_UNPACK_ALIGNMENT , 4);
+        glPixelStorei(GL_UNPACK_ALIGNMENT , 1);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_R , GL_CLAMP_TO_EDGE);
 
+        // Log::i("android_read_asset" , "load texture before %d" , glGetError());
+        // Log::i("android_read_asset" , "format %d , texWidth %d , texHeight %d  textureFilessze %d"
+                // , format , texWidth , texHeight , textureFiles.size());
         glTexImage3D(GL_TEXTURE_2D_ARRAY, 0,
-                    convertChanelToInternalFormat(format),
+                     convertChanelToInternalFormat(format),
                     texWidth,
             texHeight, textureFiles.size(),
             0, format, GL_UNSIGNED_BYTE , nullptr);
-        // Log::i("debug" , "3333load texture before %d" , glGetError());
-
+         // Log::i("android_read_asset" , "load texture after %d" , glGetError());
+        
         for(int i = 0 ; i < textureFiles.size() ;i++){
             std::unique_ptr<uint8_t> pTexData = nullptr;
             int format = TEXTURE_FILE_CHANNEL_UNKNOW;
@@ -129,9 +134,12 @@ namespace purple{
             pTexData = readTextureFile(textureFiles[i] , 
                 needFlip , format, 
                 texWidth , texHeight);
-            
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY , 0 , 0 , 0, i, texWidth,
-                texHeight , 1 , format, GL_UNSIGNED_BYTE, pTexData.get());
+            Log::i("android_read_asset","read file %s , width %d  height %d  format: %d"
+                   ,textureFiles[i].c_str(), texWidth , texHeight , format);
+            glTexSubImage3D(GL_TEXTURE_2D_ARRAY , 0 , 
+                0 , 0, i, 
+                texWidth, texHeight , 1 , 
+                format, GL_UNSIGNED_BYTE, pTexData.get());
         }//end for i
         glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
@@ -166,11 +174,11 @@ namespace purple{
         }
 
         glBindTexture(GL_TEXTURE_2D , tId);
+        // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, 
             convertChanelToInternalFormat(format),
             width, 
@@ -179,7 +187,7 @@ namespace purple{
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glBindTexture(GL_TEXTURE_2D , 0);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        // glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         
         auto textureInfo = std::make_shared<TextureInfo>();
         textureInfo->name = texName;
@@ -260,6 +268,90 @@ namespace purple{
             textureInfo->height);
         
         return textureInfo;
+    }
+
+    std::shared_ptr<TextureInfo> TextureManager::createEmptyTexture2dArray(
+            std::string texName, 
+            int width , int height , int depth, int format){
+        
+        unsigned int tId = -1;
+        glGenTextures(1 , &tId);
+        if(tId <= 0 ){
+            return nullptr;
+        }
+
+        glBindTexture(GL_TEXTURE_2D_ARRAY , tId);
+        glPixelStorei(GL_UNPACK_ALIGNMENT , 1);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MAG_FILTER , GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_R , GL_CLAMP_TO_EDGE);
+        
+        // std::cout << "glTexImage3D ->" << std::endl;
+        uint8_t *data = new uint8_t[width * height *depth];
+        for(int i = 0 ; i < width * height *depth;i++){
+            data[i] = 255;
+        }
+        glTexImage3D(GL_TEXTURE_2D_ARRAY , 0, 
+            convertChanelToInternalFormat(format),
+            width , height , depth , 
+            0 , format , GL_UNSIGNED_BYTE , 
+            data);
+        delete[] data;
+
+        // std::cout << "glTexImage3D222 ->" << std::endl;
+        // glTextureStorage3D(tId, 0 , 
+        //     convertChanelToInternalFormat(format), 
+        //     width,height ,depth);
+        glBindTexture(GL_TEXTURE_2D_ARRAY , 0);
+        
+        auto textureInfo = std::make_shared<TextureInfo>();
+        textureInfo->name = texName;
+        textureInfo->textureId = tId;
+        textureInfo->width = width;
+        textureInfo->height = height;
+        textureInfo->depth = depth;
+        textureInfo->format = format;
+        textureInfo->type = TextureType::TEXTURE_2D_ARRAY;
+        
+        //add pool
+        textureBank_[textureInfo->name] = textureInfo;
+        
+        Log::i(TAG , 
+            "load texture2d array id : %d , width : %d , height : %d depth : %d" , 
+            textureInfo->textureId,
+            textureInfo->width,
+            textureInfo->height,
+            textureInfo->depth);
+        
+        return textureInfo;
+    }
+
+    int TextureManager::updateTexture2dArrayData(std::shared_ptr<TextureInfo> textureInfo,
+        int offsetX , 
+        int offsetY , 
+        int offsetZ , 
+        int w , 
+        int h ,
+        int depthSize ,
+        uint8_t *subData){
+        
+        if(textureInfo == nullptr){
+            return -1;
+        }
+
+        glBindTexture(GL_TEXTURE_2D_ARRAY , textureInfo->textureId);
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY , 0, 
+            offsetX , offsetY , offsetZ , 
+            w , h , depthSize , textureInfo->format,
+            GL_UNSIGNED_BYTE , subData);
+        // glTextureSubImage3D(textureInfo->textureId , 0 , offsetX, offsetY , offsetZ,
+        //     w , h , depthSize , textureInfo->format , GL_UNSIGNED_BYTE , subData);
+        // std::cout << "glERROR --> " << glGetError() << std::endl;
+        glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+        glBindTexture(GL_TEXTURE_2D_ARRAY , 0);
+        return 0;
     }
 
     std::string TextureManager::allTextureInfos(){

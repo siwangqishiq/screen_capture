@@ -7,6 +7,7 @@
 #include "editor/editor.h"
 #include "action/action_confirm.h"
 #include "editor/editor_text.h"
+#include "render/text_render.h"
 
 bool Application::isDebug = false;
 
@@ -572,9 +573,15 @@ void Application::renderSubThumbPreview(){
         }
     }
     
-    purple::Rect warpRect;
-    purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
-        infoRect , txtPaint , &warpRect);
+    // purple::Rect warpRect;
+    // purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
+    //     infoRect , txtPaint , &warpRect);
+    
+    purple::TextRenderOutInfo outInfo;
+    purple::Engine::getRenderEngine()->renderTextWithRectV2(infoStr,
+        infoRect , txtPaint , &outInfo);
+    
+    purple::Rect warpRect = outInfo.outRect;
     shapeBatch->begin();
     purple::Paint txtWrapPaint;
     txtWrapPaint.color = Constants::COLOR_BLACK;
@@ -583,7 +590,7 @@ void Application::renderSubThumbPreview(){
     }
     shapeBatch->renderRect(infoRect , txtWrapPaint);
     shapeBatch->end();
-    purple::Engine::getRenderEngine()->renderTextWithRect(infoStr , 
+    purple::Engine::getRenderEngine()->renderTextWithRectV2(infoStr , 
         infoRect , txtPaint , nullptr);
 }
 

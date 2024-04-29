@@ -14,6 +14,16 @@
 
 namespace purple{
     
+    const bool isDebug = true;
+
+    class IApp{
+    public:
+        virtual void onInit() = 0;
+        virtual void onTick() = 0;
+        virtual void onDispose() = 0;
+        virtual void onEvent(int action , float x , float y){}
+    };
+
     class RenderEngine;
     class Engine{
     public:

@@ -2,6 +2,7 @@
 
 #include "editor/editor.h"
 #include "purple.h"
+#include "render/text_render.h"
 
 class Application;
 
@@ -19,10 +20,10 @@ public:
         mPaint.color = glm::vec4(0.0f , 0.0f ,0.0f , 1.0f);
         mPaint.stokenWidth = 2.0f;
 
-        mTextWrapRect.left = 0.0f;
-        mTextWrapRect.top = 0.0f;
-        mTextWrapRect.width = 1.0f;
-        mTextWrapRect.height = 1.0f;
+        mTextOutInfo.outRect.left = 0.0f;
+        mTextOutInfo.outRect.top = 0.0f;
+        mTextOutInfo.outRect.width = 1.0f;
+        mTextOutInfo.outRect.height = 1.0f;
 
         // std::vector<float> results = mApp->calClipPoints();
         // float cx = (results[0] +  results[1]) / 2.0f;
@@ -84,7 +85,8 @@ private:
 
     std::shared_ptr<purple::TextureInfo> mCharsTex = nullptr;
 
-    purple::Rect mTextWrapRect;
+    // purple::Rect mTextWrapRect;
+    purple::TextRenderOutInfo mTextOutInfo;
 
     void rebuildCharsTexture();
 

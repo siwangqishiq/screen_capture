@@ -9,6 +9,7 @@
 #include <string>
 #include <memory>
 #include "log.h"
+#include "glheader.h"
 #include <fstream>
 #include <streambuf>
 #include <codecvt>
@@ -24,32 +25,41 @@ namespace purple{
     struct TextureFileConfig{
         int width = 0;
         int height = 0;
-        long dataSize = 0;
+        int dataSize = 0;
         int channel = TEXTURE_FILE_CHANNEL_UNKNOW;
+        int format = 0;
     };
+
+    void ConvertChannelToGLConfig(TextureFileConfig &textureFileConfig);
 
     class AssetManager{
     public:
         static std::shared_ptr<AssetManager> getInstance();
-
+        
         static std::shared_ptr<AssetManager> instance_;
 
         // read text file
-        virtual std::wstring readTextFile(std::string path);
+        virtual std::wstring readAssetTextFile(std::string path);
 
         // read png file 
-        virtual std::unique_ptr<uint8_t> readTextureFile(std::string path ,
-                    TextureFileConfig &fileConfig , bool needFlip = false);
+        virtual std::unique_ptr<uint8_t> readAssetTextureFile(
+                        std::string path ,
+                        TextureFileConfig &fileConfig ,
+                        bool needFlip = false);
         
         virtual int readBinaryFile(std::string path , std::vector<char> &dataVec);
 
         //二进制方式读取文件 
         virtual std::unique_ptr<uint8_t[]> readFileAsBin(std::string path , int &length);
         
+        virtual unsigned char* readAssetFileAsBinRaw(std::string path , int &length);
+
+        virtual long writeFileWithBin(std::string &path , long size , uint8_t *data);
+
         virtual unsigned char* readFileAsBinRaw(std::string path , int &length);
 
-        inline std::string readTextFileAsString(std::string path){
-            return toByteString(readTextFile(path));
+        inline std::string readAssetTextFileAsString(std::string path){
+            return toByteString(readAssetTextFile(path));
         }
 
         AssetManager(){
@@ -82,7 +92,39 @@ namespace purple{
                         std::istreambuf_iterator<char>());
             return toWideString(str);
         }
+
+    public:
+        virtual std::string cacheRootDir() const{
+            return "cache/";
+        }
+
+        std::string ensureCacheDir() const;
+
+        void makedir(std::string dir) const;
     };
 
+    #ifdef __ANDROID__
+    #include <android/bitmap.h>
+    #include <android/imagedecoder.h>
+    #include <android/asset_manager.h>
+    #include <android/asset_manager_jni.h>
+
+    class AndroidAssetManager : public AssetManager{
+    public:
+        static AAssetManager *AndroidAssetManagerInstance;
+
+        virtual std::wstring readAssetTextFile(std::string path) override;
+
+        virtual std::unique_ptr<uint8_t> readAssetTextureFile(std::string path ,
+                                                         TextureFileConfig &fileConfig ,
+                                                         bool needFlip = false) override;
+        //二进制方式读取文件
+        virtual unsigned char* readAssetFileAsBinRaw(std::string path ,
+                                                        int &length) override;
+    private:
+        std::unique_ptr<uint8_t> readAssetTextureFileByStbi(std::string path ,TextureFileConfig &fileConfig , bool needFlip);
+    };
+
+    #endif
 }
 
