@@ -126,22 +126,22 @@ namespace purple{
         void renderTextWithRect(std::wstring &text , 
                 Rect &showRect , 
                 TextPaint &paint , 
-                Rect *wrapContentRect);//
+                TextRenderOutInfo *wrapContentRect);//
         
         //绘制文字  但是将文字限定在一个矩形框内 放不下的文字 直接舍弃 
         void renderTextWithRect(std::wstring &&text , 
                 Rect &showRect , 
                 TextPaint &paint , 
-                Rect *wrapContentRect){
-            renderTextWithRect(text , showRect , paint ,wrapContentRect);
+                TextRenderOutInfo *wrapContentRect){
+            renderTextWithRectV2(text , showRect , paint ,wrapContentRect);
         }
         
         void renderTextWithRect(const wchar_t *text , 
                 Rect &showRect , 
                 TextPaint &paint ,
-                Rect *wrapContentRect){
+                TextRenderOutInfo *wrapContentRect){
             auto str = std::wstring(text);
-            renderTextWithRect(str , showRect , paint ,wrapContentRect);
+            renderTextWithRectV2(str , showRect , paint ,wrapContentRect);
         }
         
         //在指定矩形区域内绘制自定义shader

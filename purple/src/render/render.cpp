@@ -51,6 +51,8 @@ namespace purple{
         vramManager_->clear();
         TextureManager::getInstance()->clear();
         ShaderManager::getInstance()->clear();
+
+        AudioManager::getInstance()->dispose();
     }
 
     void RenderEngine::clearRenderCommands(){
@@ -90,10 +92,9 @@ namespace purple{
 
     void RenderEngine::loadTextRenderResource(){
         Log::i(TAG , "render init loadTextRenderResource");
-        textRenderHelper_ = std::make_shared<TextRenderHelper>();
-        textRenderHelper_->loadRes(*this);
-
-        TextRenderHelper::loadSymbolMap();
+        // textRenderHelper_ = std::make_shared<TextRenderHelper>();
+        // textRenderHelper_->loadRes(*this);
+        // TextRenderHelper::loadSymbolMap();
 
         //new add text render
         loadTextRender("text/heiti.ttf");
@@ -169,28 +170,16 @@ namespace purple{
         cmd->setPreRenderCallback(preRenderCallback);
 
         cmd->runCommands();
-        // submitRenderCommand(cmd);
     }
 
     void RenderEngine::renderText(std::wstring &text , 
             float left , float bottom , TextPaint &paint){
-        // auto cmd = fetchTextRenderCommand(this);
-        TextRenderCommand cmd(this);
-        cmd.putParams(text , left , bottom , paint);
-        cmd.runCommands();
-        // submitRenderCommand(cmd);
+        renderTextV2(text, left , bottom , paint);
     }
 
     void RenderEngine::renderTextWithRect(std::wstring &text , Rect &showRect , 
-            TextPaint &paint, Rect *wrapContentRect){
-        // auto cmd = fetchTextRenderCommand(this);
-        TextRenderCommand cmd(this);
-        cmd.limitRect_ = showRect;
-
-        cmd.putTextParamsByRectLimit(text , showRect ,wrapContentRect , paint);
-        cmd.runCommands();
-        
-        // submitRenderCommand(cmd);
+            TextPaint &paint, TextRenderOutInfo *wrapContentRect){
+        renderTextWithRectV2(text , showRect , paint , wrapContentRect);
     }
 
     std::shared_ptr<TextRenderCommand> RenderEngine::fetchTextRenderCommand(RenderEngine *engine){

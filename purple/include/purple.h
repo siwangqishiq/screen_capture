@@ -10,6 +10,7 @@
 #include "render/texture.h"
 #include "render/sprite.h"
 #include "json.h"
+#include "audio/audio.h"
 
 
 namespace purple{

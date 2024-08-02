@@ -66,7 +66,12 @@ namespace purple{
     }
 
     std::unique_ptr<uint8_t[]> AssetManager::readFileAsBin(std::string path , int &length){
-        std::string filePath = assetRootDir() + path;
+        std::string filePath;
+        if(path[0]=='/'){
+            filePath = std::string(path.begin() + 1 , path.end());
+        }else{
+            filePath = assetRootDir() + path;
+        }
         Log::i("asset" , "read file path %s" , filePath.c_str());
 
         try{
