@@ -5,39 +5,19 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include "render/common.h"
 
 namespace purple{
-    inline std::string date_time(std::time_t posix)
-    {
-        char buf[20]; // big enough for 2015-07-08 10:06:51\0
-        std::tm tp = *std::localtime(&posix);
-        return {buf, std::strftime(buf, sizeof(buf), "%F %T", &tp)};
-    }
-
-    inline long long currentTimeMillis(){
-        using namespace std;
-        using namespace std::chrono;
-
-        // get absolute wall time
-        auto now = system_clock::now();
-
-        // find the number of milliseconds
-        auto ms = duration_cast<milliseconds>(now.time_since_epoch());
-        return ms.count();
-    }
-
-    inline long long currentTimeMicro(){
-        using namespace std;
-        using namespace std::chrono;
-
-        auto now = system_clock::now();
-        
-        auto us = duration_cast<microseconds>(now.time_since_epoch());
-
-        return us.count();
-    }
-
     
+    std::string date_time(std::time_t posix);
+
+    long long currentTimeMillis();
+
+    long long currentTimeMicro();
+
+    void ScaleWithPoint(Point &point , float scale, Point center);
+
+    void Rotate(Point &point, float cx , float cy , float angle);
 }
 
 

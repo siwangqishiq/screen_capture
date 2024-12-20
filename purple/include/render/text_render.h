@@ -59,6 +59,11 @@ namespace purple{
             TextPaint &textPaint ,
             TextRenderOutInfo *outInfo);
 
+        void preCalTextRect(std::wstring text, 
+            TextPaint &textPaint ,
+            int maxWidth,
+            Rect &outInfo);
+
         std::shared_ptr<CharInfo> findCharInfo(wchar_t &ch , int index);
 
         stbtt_fontinfo* getFontInfo(){

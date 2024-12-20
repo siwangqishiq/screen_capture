@@ -168,12 +168,15 @@ namespace purple{
             glDeleteShader(shader);
             return 0;
         }
+
         const char* shaderCode = shaderSource;
         if (shaderCode == nullptr) {
             Log::e(TAG_SHADER , "load shader code from %s failed" , shaderSource);
             glDeleteShader(shader);
             return 0;
         }
+
+        std::cout << "glCreateShader Ended22222" << std::endl;
 
         glShaderSource(shader, 1, &shaderCode, nullptr);
         glCompileShader(shader);
@@ -188,6 +191,8 @@ namespace purple{
             glDeleteShader(shader);
             shader = 0;
         }
+
+        std::cout << "glCreateShader Ended" << std::endl;
         return shader;
     }
 

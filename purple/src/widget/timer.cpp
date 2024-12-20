@@ -2,6 +2,7 @@
 #include "log.h"
 #include <list>
 #include <vector>
+#include "utils.h"
 
 namespace purple{
         

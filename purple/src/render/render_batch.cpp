@@ -2,6 +2,7 @@
 #include "log.h"
 #include "render/render.h"
 #include "render/sprite.h"
+#include "utils.h"
 
 namespace purple{
     void Batch::allocatorMemory(){
@@ -47,7 +48,7 @@ namespace purple{
         glBindVertexArray(0);
         
         shader_ = ShaderManager::getInstance()->loadAssetShader("shape_batch_render",
-                        "shader/shape_batch_vertex.glsl", "shader/shape_batch_frag.glsl");
+                        "shader/shape/shape_batch_vertex.glsl", "shader/shape/shape_batch_frag.glsl");
     }
 
     void ShapeBatch::begin(){
@@ -64,7 +65,7 @@ namespace purple{
     }
 
     void ShapeBatch::flush(){
-        //do real opengul render
+        //do real opengl render
         executeGlCommands();
     }
 
@@ -72,9 +73,6 @@ namespace purple{
         if(index_ <= 0){
             return;
         }
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
 
         glBindBuffer(GL_ARRAY_BUFFER , vbo_);
         glBufferSubData(GL_ARRAY_BUFFER , vboOffset_ ,
@@ -331,7 +329,7 @@ namespace purple{
         glBindVertexArray(0);
 
         shader_ = ShaderManager::getInstance()->loadAssetShader("sprite_batch_render",
-                        "shader/sprite_batch_vertex.glsl", "shader/sprite_batch_frag.glsl");
+                        "shader/sprite/sprite_batch_vertex.glsl", "shader/sprite/sprite_batch_frag.glsl");
     }
 
     void SpriteBatch::begin(){
@@ -363,9 +361,6 @@ namespace purple{
             return;
         }
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_DEPTH_TEST);
         
         glBindBuffer(GL_ARRAY_BUFFER , vbo_);
         glBufferSubData(GL_ARRAY_BUFFER , vboOffset_ ,
@@ -410,10 +405,11 @@ namespace purple{
             return;
         }
 
+        // Log::i("SpriteBatch" , "current --> render  texture %d" , currentTextureId_);
         if(texId != currentTextureId_){
             end();
             currentTextureId_ = texId;
-            // Logi("SpriteBatch" , "switch texture %d" , currentTextureId_);
+            // Log::i("SpriteBatch" , "switch texture %d" , currentTextureId_);
             begin();
         }
 
@@ -483,8 +479,9 @@ namespace purple{
         const int offset = index_ + vertexIndex * attrCountPerVertex_;
 
         //rotate transform
-        Point point(x , y);
-        point.rotate(cx , cy , angle);
+        Point point{x , y};
+        Rotate(point , cx , cy , angle);        
+        // point.rotate(cx , cy , angle);
         
         //position
         vertexBuffer_[offset + 0] = point.x;

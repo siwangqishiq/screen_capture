@@ -32,8 +32,9 @@ namespace purple{
             return;
         }
         auto texInfoPtr = textureBank_[info.name];
-        // Logi("texture_manager" , "texture del %s" , (texInfoPtr->name).c_str());
+        // 
         if(texInfoPtr != nullptr){
+            Log::i("texture_manager" , "texture del %s" , (texInfoPtr->name).c_str());
             glDeleteTextures(1 , &(texInfoPtr->textureId));
         }
         textureBank_.erase(info.name);
@@ -280,19 +281,16 @@ namespace purple{
             return nullptr;
         }
 
+        // std::cout << " error texture 0000: " << glGetError() << std::endl;
         glBindTexture(GL_TEXTURE_2D_ARRAY , tId);
         glPixelStorei(GL_UNPACK_ALIGNMENT , 1);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MAG_FILTER , GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_R , GL_CLAMP_TO_EDGE);
-        
+
         // std::cout << "glTexImage3D ->" << std::endl;
         uint8_t *data = new uint8_t[width * height *depth];
-        for(int i = 0 ; i < width * height *depth;i++){
-            data[i] = 255;
+        for(int i = 0 ; i < width * height * depth;i++){
+            data[i] = 0;
         }
+        
         glTexImage3D(GL_TEXTURE_2D_ARRAY , 0, 
             convertChanelToInternalFormat(format),
             width , height , depth , 
@@ -300,10 +298,11 @@ namespace purple{
             data);
         delete[] data;
 
-        // std::cout << "glTexImage3D222 ->" << std::endl;
-        // glTextureStorage3D(tId, 0 , 
-        //     convertChanelToInternalFormat(format), 
-        //     width,height ,depth);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MIN_FILTER , GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_MAG_FILTER , GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D_ARRAY , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE);
+        
         glBindTexture(GL_TEXTURE_2D_ARRAY , 0);
         
         auto textureInfo = std::make_shared<TextureInfo>();

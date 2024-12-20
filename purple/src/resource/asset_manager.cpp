@@ -66,6 +66,11 @@ namespace purple{
     }
 
     std::unique_ptr<uint8_t[]> AssetManager::readFileAsBin(std::string path , int &length){
+#ifdef __ANDROID__
+        unsigned char* fileData = readAssetFileAsBinRaw(path , length);
+        return std::unique_ptr<uint8_t[]>(fileData);
+#else
+
         std::string filePath;
         if(path[0]=='/'){
             filePath = std::string(path.begin() + 1 , path.end());
@@ -73,7 +78,6 @@ namespace purple{
             filePath = assetRootDir() + path;
         }
         Log::i("asset" , "read file path %s" , filePath.c_str());
-
         try{
             std::ifstream binFile(filePath, std::ios::binary);
             // Logi("asset" , "readBinaryFile is good? %d" , binFile.good);
@@ -99,6 +103,7 @@ namespace purple{
             Log::e("error" , "readBinaryFile code %s" , e.what());
         }
         return nullptr;
+        #endif
     }
 
     int AssetManager::readBinaryFile(std::string path , std::vector<char> &dataVec){

@@ -6,11 +6,7 @@
 #include <stdio.h>
 #include "widget/timer.h"
 #include <algorithm>
-
-#ifndef __ANDROID__
-#define GLFW_INCLUDE_NONE
-#include "GLFW/glfw3.h"
-#endif
+#include "utils.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -22,28 +18,27 @@ namespace purple{
     int purple::Engine::ScreenWidth = 0;
     int purple::Engine::ScreenHeight = 0;
     const char* purple::Engine::TAG = "purple";
-    
+
+    bool UNITTEST = false;
+
     void Engine::init(int width , int height){
         Log::w(TAG,"init engine");
         long startTime = currentTimeMillis();
         ScreenWidth = width;
         ScreenHeight = height;
-
-        Log::w(TAG,"init screen size: %d  , %d" , ScreenWidth , ScreenHeight);
         
-        #ifndef __ANDROID__
-        // glad: load all OpenGL function pointers
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-            Log::e(TAG , "Failed to initialize glad");
+        Log::w(TAG,"init screen size: %d  , %d" , ScreenWidth , ScreenHeight);
+
+        if(UNITTEST){
             return;
         }
-        Log::w(TAG , "glad initialize success.");
-        #endif
-
+        
         renderEngine_ = std::make_shared<RenderEngine>();
         renderEngine_->init();
         renderEngine_->onScreenResize();
 
+        // std::cout << " error init2 : " << glGetError() << std::endl;
+        
         AudioManager::getInstance()->init();
         
         long endTime = currentTimeMillis();
@@ -65,6 +60,9 @@ namespace purple{
     }
 
     void Engine::tick(){
+        renderEngine_->resetDepth();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         if(timer_ != nullptr){
             timer_->trick();
         }
@@ -78,9 +76,16 @@ namespace purple{
 
 
     void Engine::dispose(){
+        if(UNITTEST){
+            return;
+        }
+
         Log::w(TAG,"engine dispose");
         if(renderEngine_ != nullptr){
             renderEngine_->free();
+        }
+        if(timer_ != nullptr){
+            timer_->clear();
         }
     }
 
@@ -107,9 +112,7 @@ namespace purple{
         }
 
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
-        #ifndef  __ANDROID__
-        glReadBuffer(GL_BACK_LEFT);
-        #endif
+        glReadBuffer(GL_BACK);
         const int channel = 3;
         const int size = channel * width * height;
         std::vector<uint8_t> pixels(size);

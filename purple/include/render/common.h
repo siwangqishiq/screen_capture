@@ -7,6 +7,7 @@
 namespace purple{
 
     const float FONT_DEFAULT_SIZE = 64.0f;
+    // const float FONT_DEFAULT_SIZE = 32.0f;
     
     //
     struct Point{
@@ -19,33 +20,6 @@ namespace purple{
         }
 
         Point(float _x , float _y):x(_x) , y(_y){}
-
-        /**
-        * @brief 
-        * 
-        * @param cx 
-        * @param cy 
-        * @param angle rad
-        */
-        inline void rotate(float cx , float cy , float angle){
-            
-            float s = sin(angle);
-            float c = cos(angle);
-
-            float originX = x;
-            float originY = y;
-            // translate point back to origin:
-            originX -= cx;
-            originY -= cy;
-
-            // rotate point
-            float xnew = originX * c - originY * s;
-            float ynew = originX * s + originY * c;
-
-            // translate point back:
-            x = xnew + cx;
-            y = ynew + cy;
-        }
     };
 
     enum ShapeType{
@@ -64,7 +38,7 @@ namespace purple{
         normal = 0,//普通
         italic = 1 //斜体
     };
-
+    
     enum TextGravity{
         TopLeft,
         TopCenter,
@@ -76,6 +50,8 @@ namespace purple{
         CenterRight,
         Center
     };
+
+    typedef TextGravity LayoutGravity;
 
     enum FillStyle{
         Filled = 0,
@@ -89,6 +65,7 @@ namespace purple{
         float top;
         float width;
         float height;
+        
         Rect(float l , float t , float w , float h){
             left = l;
             top = t;
@@ -124,6 +101,10 @@ namespace purple{
             p.y = (getBottom() + top) / 2.0f;
             return p;
         }
+
+        inline bool isPointInRect(float x , float y){
+            return x >= left && x <= left + width && y <= top && y >= top - height;
+        }
     };
 
     //矩形
@@ -155,6 +136,7 @@ namespace purple{
         TextStyle textStyle = normal;
         TextGravity textGravity = TopLeft;
         std::string fontName;
+        float fontWeight = 50.0f;
 
         inline void setTextSize(float size){
             textSizeScale = (size / FONT_DEFAULT_SIZE);

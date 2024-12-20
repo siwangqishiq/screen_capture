@@ -22,6 +22,9 @@ namespace purple{
 
         virtual void dispose();
 
+        //纹理所占显存大小
+        long textireSize();
+
         std::shared_ptr<TextureImageRegion> createImageRegion(float offsetX , float offsetY,
             float regionWidth , float regionHeight);
 
@@ -31,6 +34,7 @@ namespace purple{
         std::shared_ptr<TextureInfo> getTextureInfo(){
             return textureInfo_;
         }
+
         
     private:
         std::shared_ptr<TextureInfo> textureInfo_;

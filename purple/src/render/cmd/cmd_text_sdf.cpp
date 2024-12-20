@@ -44,12 +44,13 @@ namespace purple{
         shader.setUniformMat3("transMat" , engine_->normalMatrix_);
         shader.setUniformVec4("uTextColor" , paint_.textColor);
         shader.setUniformFloat("uFontSize" , paint_.getTextFontHeight());
-        
+        shader.setUniformFloat("uFontWeight" , paint_.fontWeight);
+
         glBindVertexArray(vao_);
         glBindBuffer(GL_ARRAY_BUFFER , vbo_);
-
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D_ARRAY, textRender_->getFontTextureInfo()->textureId);
+
         shader.setUniformInt("sdfTexture" , 0);
         
         glEnableVertexAttribArray(0);
@@ -69,26 +70,26 @@ namespace purple{
 
     Shader SdfTextRenderCommand::fetchSdfTextShader(){
         return ShaderManager::getInstance()->loadAssetShader(SAHDER_NAME_SDF_TEXT, 
-                    "shader/render_sdftext_vert.glsl", 
-                    "shader/render_sdftext_frag.glsl");
+                    "shader/text/render_sdftext_vert.glsl",
+                    "shader/text/render_sdftext_frag.glsl");
     }
 
 
-    void SdfTextRenderCommand::putTextParamsByRectLimit(
+    int SdfTextRenderCommand::putTextParamsByRectLimit(
                     std::wstring &text , 
                     Rect &limitRect, 
                     TextRenderOutInfo *outInfo,
                     TextPaint &paint){
+        // std::cout << " putTextParamsByRectLimit beigin ..." << std::endl;
         if(text.empty()){
+            // std::cout << " putTextParamsByRectLimit text is Empty" << std::endl;
             if(outInfo != nullptr){ //empty input to fill out rect
                 outInfo->outRect = createEmptyWrapRect(limitRect , paint);
                 outInfo->renderTextSize = 0;
             }
-            return;
+            return -1;
         }
-
         allocatorVRamForText(text.length());
-
         paint_ = paint;
 
         // Logi("debug" , "vertexCount = %d , attrCound = %d" , vertexCount_ , attrCount_);
@@ -99,5 +100,7 @@ namespace purple{
             *outInfo = innerOutInfo;
         }
         buildGlCommands(buf);
+
+        return 0;
     }
 }

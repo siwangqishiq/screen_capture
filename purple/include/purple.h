@@ -11,18 +11,21 @@
 #include "render/sprite.h"
 #include "json.h"
 #include "audio/audio.h"
+#include "input/input_common.h"
 
 
 namespace purple{
     
     const bool isDebug = true;
 
+    extern bool UNITTEST;
+
     class IApp{
     public:
         virtual void onInit() = 0;
         virtual void onTick() = 0;
         virtual void onDispose() = 0;
-        virtual void onEvent(int action , float x , float y){}
+        virtual void onResize(int w, int h){}
     };
 
     class RenderEngine;

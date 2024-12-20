@@ -7,8 +7,8 @@
 
 namespace purple{
     struct MemoryAllocatorInfo{
-        unsigned int bufferId = -1;
-        unsigned int vao = -1;
+        unsigned int bufferId = 0;
+        unsigned int vao = 0;
         int size = 0;
         int offset = 0;
     };
@@ -18,7 +18,7 @@ namespace purple{
     private:
         std::vector<std::shared_ptr<MemoryAllocatorInfo>> allocatedList_; //已分配的显存记录表
 
-        unsigned int currentBufferIdIndex_ = -1;
+        unsigned int currentBufferIdIndex_ = 0;
         
         unsigned int genBuffer();
 

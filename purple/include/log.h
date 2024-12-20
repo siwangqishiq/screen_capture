@@ -13,25 +13,6 @@
 namespace purple{
     #define _CRT_SECURE_NO_WARNINGS 
 
-    inline long long currentTimeMillis(){
-        using namespace std;
-        using namespace std::chrono;
-        // get absolute wall time
-        auto now = system_clock::now();
-        // find the number of milliseconds
-        auto ms = duration_cast<milliseconds>(now.time_since_epoch());
-        return ms.count();
-    }
-
-    inline long long currentTimeMicro(){
-        using namespace std;
-        using namespace std::chrono;
-
-        auto now = system_clock::now();
-        auto us = duration_cast<microseconds>(now.time_since_epoch());
-        return us.count();
-    }
-
     template<typename... Args>
     std::string FormatString(std::string format , Args... args){
         int lenStr = std::snprintf(nullptr, 0, format.c_str(), args...);

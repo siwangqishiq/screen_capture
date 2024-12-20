@@ -4845,7 +4845,7 @@ static int stbtt__matchpair(stbtt_uint8 *fc, stbtt_uint32 nm, stbtt_uint8 *name,
    stbtt_int32 i;
    stbtt_int32 count = ttUSHORT(fc+nm+2);
    stbtt_int32 stringOffset = nm + ttUSHORT(fc+nm+4);
-
+   
    for (i=0; i < count; ++i) {
       stbtt_uint32 loc = nm + 6 + 12 * i;
       stbtt_int32 id = ttUSHORT(fc+loc+6);

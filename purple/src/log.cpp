@@ -5,6 +5,8 @@ namespace purple{
     const std::string Log::TIME_FORMAT = "%H:%M:%S";
 
     using SystemClk = std::chrono::system_clock;
+    
+    extern bool UNITTEST;
 
 #ifdef __ANDROID__
     #include <android/log.h>
@@ -28,14 +30,24 @@ namespace purple{
 
 #else
     void Log::e(const std::string &tag , std::string msg){
+        if(UNITTEST){
+            return;
+        }
+
         printf(LIGHT_RED"%s[%s]:%s\n" NONE ,currentShowTime().c_str(), tag.c_str() , msg.c_str());
     }
 
     void Log::w(const std::string &tag , std::string msg){
+        if(UNITTEST){
+            return;
+        }
         printf(YELLOW"%s[%s]:%s\n" NONE ,currentShowTime().c_str(), tag.c_str() , msg.c_str());
     }
 
     void Log::i(const std::string &tag , std::string msg){
+        if(UNITTEST){
+            return;
+        }
         printf(WHITE"%s[%s]:%s\n" NONE ,currentShowTime().c_str(), tag.c_str() , msg.c_str());
     }
 #endif

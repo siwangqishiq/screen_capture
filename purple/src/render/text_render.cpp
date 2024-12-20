@@ -21,8 +21,58 @@ namespace purple{
     {
         SdfTextRenderCommand cmd(renderEngine_ , this);
         cmd.limitRect_ = showRect;
-        cmd.putTextParamsByRectLimit(text , showRect ,outInfo, textPaint);
-        cmd.runCommands();
+        auto ret =  cmd.putTextParamsByRectLimit(text , showRect ,outInfo, textPaint);
+        if(ret >= 0){
+            cmd.runCommands();
+        }
+    }
+
+    void TextRender::preCalTextRect(std::wstring text, 
+            TextPaint &textPaint,int maxWidth,Rect &outInfo){
+        if(text.empty()){
+            outInfo.width = 0;
+            outInfo.height = 0;
+            return;
+        }
+
+        const int size = text.length();
+        const int oneLineHeight = (FONT_DEFAULT_SIZE + textPaint.gapSize) * textPaint.textSizeScale;
+
+        int index = 0;    
+        int x = 0;
+        int y = oneLineHeight;
+        int lineWidth = 0;
+        
+        while(index < size){
+            // Log::i("test","size = %d index = %d", size , index);
+            wchar_t ch = text[index++];
+            if(ch == L'\n'){
+                y += oneLineHeight;
+                x = 0;
+                continue;
+            }
+
+            auto charInfoPtr = findCharInfo(ch , index);
+            if(charInfoPtr == nullptr){
+                continue;
+            }
+
+            const float charRealWidth = (charInfoPtr->width + textPaint.gapSize) * textPaint.textSizeScale;
+            if(x + charRealWidth <= maxWidth){
+                x += charRealWidth;
+                if(outInfo.width < x){
+                    outInfo.width = x;
+                }
+            }else{// change a new line
+                x = 0;
+                y += oneLineHeight;
+            }//end if
+        }//end while
+
+        if(outInfo.width < x){
+            outInfo.width = x;
+        }
+        outInfo.height = y;
     }
 
     void TextRender::renderText(std::wstring text , 
@@ -42,10 +92,11 @@ namespace purple{
     }
 
     std::shared_ptr<CharInfo> TextRender::findCharInfo(wchar_t &ch , int index){
-        if(charInfoMap_.find(ch) != charInfoMap_.end()){
+        if(charInfoMap_.find(ch) != charInfoMap_.end()){ //hit cache 
             return charInfoMap_[ch];
         }
 
+        //create
         std::shared_ptr<CharInfo> result = std::make_shared<CharInfo>();
 
         int width = 0;
@@ -59,10 +110,11 @@ namespace purple{
 
         unsigned char* sdfBitmap = stbtt_GetCodepointSDF(
             &fontInfo_, fontScale_, 
-            ch , 0, 128, -128/5.0f,
+            ch , 0, 128, 128/5.0f,
             &width, &height , &offX, &offY);
         if(sdfBitmap == nullptr || width <= 0 || height <= 0){
-            Log::e(TAG ,"sdf data is null index = %d!" , index);
+            Log::e(TAG ,"sdf data is null index = %d! width = %d , height = %d" 
+                , index , width, height);
         }
         
         std::vector<float> coords = addBitmapToTextures(sdfBitmap , width, height);
@@ -128,12 +180,16 @@ namespace purple{
         // Log::i(TAG ,"copy sdf data to texture 2d array cur off_x : %d , off_y : %d , off_z : %d w :%d , h : %d",
         //     this->offsetX_ , this->offsetY_ , offsetZ_ , width , height);
         // fontTextureInfo_
-        TextureManager::getInstance()->updateTexture2dArrayData(
-            fontTextureInfo_ , 
-            offsetX_ , 
-            offsetY_ ,
-            offsetZ_ , 
-            width , height , 1 , bitmap);
+
+        if(bitmap != nullptr && width != 0 && height != 0){
+            TextureManager::getInstance()->updateTexture2dArrayData(
+                fontTextureInfo_ , 
+                offsetX_ , 
+                offsetY_ ,
+                offsetZ_ , 
+                width , height , 1 , bitmap);
+        }
+    
         
         std::vector<float> texCoords(5);
         texCoords[0] = static_cast<float>(offsetX_) / static_cast<float>(texWidth_);
@@ -220,10 +276,11 @@ namespace purple{
 
             float charRealWidth = (charInfoPtr->width + paint.gapSize) * paint.textSizeScale;
 
-            if(x + charRealWidth <= limitRect.getRight() && ch != L'\n'){
+            const int adjustPadding = 16;
+            if(x + charRealWidth <= limitRect.getRight() + adjustPadding 
+                && ch != L'\n'){
                 renderCmd.putVertexDataToBuf(buf , index , x , y ,depthValue,
                     charInfoPtr , paint);
-                
                 x += charRealWidth;
                 lineWidth += charRealWidth;
                 if(outRect.width < lineWidth){

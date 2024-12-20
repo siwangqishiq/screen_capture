@@ -24,7 +24,7 @@ namespace purple{
         
         virtual void runCommands();
 
-        virtual void putTextParamsByRectLimit(
+        int putTextParamsByRectLimit(
                             std::wstring &text , 
                             Rect &limitRect, 
                             TextRenderOutInfo *outInfo,
@@ -36,6 +36,6 @@ namespace purple{
         TextRender *textRender_;
 
         Shader fetchSdfTextShader();
-    };
+    };//end class
 }
 

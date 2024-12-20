@@ -83,7 +83,7 @@ namespace purple{
 
     void VRamAllcator::createNewBuffer(){
         auto newAllocatorBufferId = genBuffer();
-        unsigned int vaoValue = -1;
+        unsigned int vaoValue = 0;
         glGenVertexArrays(1 , &vaoValue);
 
         auto info = std::make_shared<MemoryAllocatorInfo>();
@@ -104,7 +104,7 @@ namespace purple{
     }
 
     void VRamAllcator::freeMemory(){
-        currentBufferIdIndex_ = -1;
+        currentBufferIdIndex_ = 0;
         const int size = allocatedList_.size();
         unsigned int *delIds = new unsigned int[size];
         for(int i = 0 ; i < allocatedList_.size();i++){

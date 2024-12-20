@@ -26,23 +26,6 @@
 namespace purple{
     std::unordered_map<wchar_t , wchar_t> SymbolMap;
 
-    // void RenderEngine::render(){
-    //     // glClearColor(0.0f , 1.0f , 0.0f , 1.0f);
-    //     // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    //     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //     // glEnable(GL_DEPTH_TEST);
-        
-    //     //gl render
-    //     for(auto &cmd : renderCommandList_){
-    //         cmd->runCommands();
-    //         cmd->used = false;
-    //     }
-        
-    //     //clear cmd list
-    //     clearRenderCommands();
-    //     vramManager_->onPostRender();
-    // }
-
     void RenderEngine::free(){
         if(shapeBatch_ != nullptr){
             shapeBatch_->dispose();
@@ -53,6 +36,7 @@ namespace purple{
         ShaderManager::getInstance()->clear();
 
         AudioManager::getInstance()->dispose();
+        
     }
 
     void RenderEngine::clearRenderCommands(){
@@ -67,16 +51,26 @@ namespace purple{
         glViewport(0 , 0 , purple::Engine::ScreenWidth , purple::Engine::ScreenHeight);
         
         //打开混合模式 文字有透明度
+        glContextInit();
+    }
+
+    void RenderEngine::glContextInit(){
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_DEPTH_TEST);
+        // glDepthRangef(0.0f, 10.0f);
+        // glDepthFunc(GL_GREATER);
+        // glClearDepthf(1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     void RenderEngine::init(){
         Log::i(TAG , "render engine init start");
+        // glContextInit();
 
         vramManager_ = std::make_shared<VRamManager>();
-        // vramManager_ = VRamManager::getInstance();
-
+        
         loadShapeShader();
         shapeBatch_ = std::make_shared<ShapeBatch>(this);//std::shared_ptr<RenderEngine>(this)
         shapeBatch_->init();
@@ -85,7 +79,7 @@ namespace purple{
         spriteBatch_->init();
 
         clearRenderCommands();
-
+        
         loadTextRenderResource();//text render init
         // Logi(TAG , "render engine init end");
     }
@@ -98,6 +92,8 @@ namespace purple{
 
         //new add text render
         loadTextRender("text/heiti.ttf");
+        // loadTextRender("text/zhuhai.ttf");
+        // loadTextRender("text/fangzheng.ttf");
     }
 
     void RenderEngine::loadShapeShader(){
@@ -105,26 +101,26 @@ namespace purple{
         
         //实心矩形
         ShaderManager::getInstance()->loadAssetShader("primitive_rect" , 
-            "shader/primitive_vert.glsl", "shader/primitive_rect_frag.glsl");
+            "shader/shape/primitive_vert.glsl", "shader/shape/primitive_rect_frag.glsl");
 
         // GL_LINES 方式画线
         ShaderManager::getInstance()->loadAssetShader("primitive_lines" , 
-            "shader/primitive_lines_vert.glsl", "shader/primitive_lines_frag.glsl");
+            "shader/shape/primitive_lines_vert.glsl", "shader/shape/primitive_lines_frag.glsl");
         //render smooth lines
         ShaderManager::getInstance()->loadAssetShader("primitive_lines_smooth" , 
-            "shader/primitive_smooth_lines_vert.glsl", "shader/primitive_smooth_lines_frag.glsl");
+            "shader/shape/primitive_smooth_lines_vert.glsl", "shader/shape/primitive_smooth_lines_frag.glsl");
         
         //arc
         ShaderManager::getInstance()->loadAssetShader("primitive_arc" , 
-            "shader/primitive_arc_vert.glsl", "shader/primitive_arc_frag.glsl");
+            "shader/shape/primitive_arc_vert.glsl", "shader/shape/primitive_arc_frag.glsl");
 
         //triangle
         ShaderManager::getInstance()->loadAssetShader("primitive_triangles",
-            "shader/primitive_triangles_vert.glsl", "shader/primitive_triangles_frag.glsl");
+            "shader/shape/primitive_triangles_vert.glsl", "shader/shape/primitive_triangles_frag.glsl");
     }
 
     void RenderEngine::resetNormalMat(float w , float h){
-        Log::i(TAG , "reset normal matrix %f , %f" , w , h);
+        // Log::i(TAG , "reset normal matrix %f , %f" , w , h);
         normalMatrix_[0][0] = 2.0f / w;
         normalMatrix_[0][1] = 0.0f;
         normalMatrix_[0][2] = 0.0f;
@@ -392,9 +388,9 @@ namespace purple{
     }
 
     float RenderEngine::getAndChangeDepthValue(){
-        float result = depthValue;
-        depthValue -= 0.000001f;
-        return result;    
+        depthValue -= 0.00001f;
+        // const float result = depthValue;
+        return depthValue;    
     }
 
     void RenderEngine::resetDepth(){
@@ -434,6 +430,16 @@ namespace purple{
             textRender->renderTextWithRect(text , showRect , paint , outInfo);
         }
     } 
+
+    void RenderEngine::preCalculateTextSize(std::wstring &text, 
+            TextPaint &paint, int maxWidth, Rect &outInfo){
+        auto textRender = getTextRenderByName(paint.fontName);
+        if(textRender != nullptr){
+            textRender->preCalTextRect(text , paint , maxWidth , outInfo);
+        }
+    }
+
+
     /**
      * @brief  text layout calculate
      *

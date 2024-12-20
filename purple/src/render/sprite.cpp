@@ -59,6 +59,10 @@ namespace purple{
         return textureInfo_ != nullptr? textureInfo_->format : 0;
     }
 
+    long TextureImage::textireSize(){
+        return getWidth() * getHeight() * 4; //统一按照4字节计算
+    }
+
     void TextureImage::dispose(){
         if(textureInfo_ == nullptr){
             return;
