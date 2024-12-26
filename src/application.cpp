@@ -37,11 +37,13 @@ void Application::execute(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
+
     if(mAntiAliasing){
         glfwWindowHint(GLFW_SAMPLES, 4);
+        glEnable(GL_MULTISAMPLE);
     }
     #endif
-
+    
     // glfwWindowHint(GLFW_SAMPLES, 4);
     // glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
@@ -84,6 +86,7 @@ void Application::execute(){
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         return;
     }
+    
     #endif
 
     glfwSetWindowPos(window , 0 , 0);
@@ -164,10 +167,6 @@ void Application::execute(){
     
     //紫电引擎初始化
     purple::Engine::init(mScreenWidth , mScreenHeight);
-
-    if(mAntiAliasing){
-        glEnable(GL_MULTISAMPLE);
-    }
 
     //应用初始化
     init();
