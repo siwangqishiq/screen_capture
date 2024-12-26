@@ -37,11 +37,10 @@ void Application::execute(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
-    #endif
-    
     if(mAntiAliasing){
         glfwWindowHint(GLFW_SAMPLES, 4);
     }
+    #endif
 
     // glfwWindowHint(GLFW_SAMPLES, 4);
     // glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
