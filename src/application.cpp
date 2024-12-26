@@ -27,11 +27,18 @@ void Application::execute(){
         
     appInit();
 
+    #ifdef __ARM_ARCH //for 树梅派
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+    #else
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
-
+    #endif
+    
     if(mAntiAliasing){
         glfwWindowHint(GLFW_SAMPLES, 4);
     }
@@ -69,9 +76,16 @@ void Application::execute(){
     glfwMakeContextCurrent(window);
     glfwSetWindowUserPointer(window , this);
 
+    #ifdef __ARM_ARCH //for 树梅派
+    if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
+        return;
+    }
+    #else
+    // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         return;
     }
+    #endif
 
     glfwSetWindowPos(window , 0 , 0);
     // glfwSetWindowAttrib(window , GLFW_DECORATED , GLFW_TRUE);
@@ -517,8 +531,10 @@ void Application::renderSubThumbPreview(){
     infoRect.width = 230.0f;
     infoRect.height = infoTextSize * 2.0f + 16.0f;
     purple::TextPaint txtPaint;
+    
     txtPaint.setTextSize(infoTextSize);
     txtPaint.textGravity = purple::TextGravity::CenterLeft; 
+    // txtPaint.fontWeight = 100.0f;
 
     //调整预览窗口位置
     adjustScalePreviewWinPosition(previewLeft , previewTop , 
