@@ -38,10 +38,10 @@ void Application::execute(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED , GLFW_FALSE);
 
-    if(mAntiAliasing){
-        glfwWindowHint(GLFW_SAMPLES, 4);
-        glEnable(GL_MULTISAMPLE);
-    }
+    // if(mAntiAliasing){
+    //     glfwWindowHint(GLFW_SAMPLES, 4);
+    //     glEnable(GL_MULTISAMPLE);
+    // }
     #endif
     
     // glfwWindowHint(GLFW_SAMPLES, 4);
